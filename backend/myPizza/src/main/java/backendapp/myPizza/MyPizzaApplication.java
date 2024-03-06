@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class MyPizzaApplication {
+	// implementato sistema di autenticazione e websocket per messaggi client-to-client
 
 	public static void main(String[] args) {
 		SpringApplication.run(MyPizzaApplication.class, args);

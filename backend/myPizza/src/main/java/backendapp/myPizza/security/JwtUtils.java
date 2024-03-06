@@ -3,6 +3,7 @@ package backendapp.myPizza.security;
 import backendapp.myPizza.Models.entities.User;
 import backendapp.myPizza.Models.enums.TokenType;
 import backendapp.myPizza.Models.resDTO.TokenPair;
+import backendapp.myPizza.Models.resDTO.WsTokenPair;
 import backendapp.myPizza.exceptions.UnauthorizedException;
 import backendapp.myPizza.services.AuthUserService;
 import com.auth0.jwt.JWT;
@@ -56,6 +57,8 @@ public class JwtUtils {
     private String accessExp;
     @Value("${refresh_token.expiresIn}")
     private String refreshExp;
+    @Value("${websocket_token.expiresIn}")
+    private String websocketExp;
 
 
     private RSAPublicKey generatePublicKey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
@@ -78,14 +81,33 @@ public class JwtUtils {
         try {
             UUID userId = UUID.fromString(
                     Jwts.parser().
-                    verifyWith(Keys.hmacShaKeyFor(refreshPrivateKey.getBytes())).
-                    build()
-                    .parseSignedClaims(refreshToken).
-                    getPayload().
-                    getSubject());
+                            verifyWith(Keys.hmacShaKeyFor(refreshPrivateKey.getBytes())).
+                            build()
+                            .parseSignedClaims(refreshToken).
+                            getPayload().
+                            getSubject());
             User u = authUserSvc.findUserById(userId);
             System.out.println("Refresh");
             return new TokenPair(generateToken(u, TokenType.ACCESS), generateToken(u, TokenType.REFRESH));
+
+        } catch (Exception exception) {
+            throw new UnauthorizedException("Invalid refresh token");
+        }
+
+
+    }
+
+    public WsTokenPair generateWsTokenPair(String refreshToken) throws UnauthorizedException {
+        try {
+            UUID userId = UUID.fromString(
+                    Jwts.parser().
+                            verifyWith(Keys.hmacShaKeyFor(refreshPrivateKey.getBytes())).
+                            build()
+                            .parseSignedClaims(refreshToken).
+                            getPayload().
+                            getSubject());
+            User u = authUserSvc.findUserById(userId);
+            return new WsTokenPair(generateToken(u, TokenType.WEBSOCKET), generateToken(u, TokenType.REFRESH));
 
         } catch (Exception exception) {
             throw new UnauthorizedException("Invalid refresh token");
@@ -114,6 +136,7 @@ public class JwtUtils {
         long exp = 1;
         String privateKey = accessPrivateKey;
         String publicKey = accessPublicKey;
+        boolean restore = false;
         switch (type) {
             case TokenType.ACCESS -> {
                 exp = Long.parseLong(accessExp);
@@ -124,6 +147,10 @@ public class JwtUtils {
                 exp = Long.parseLong(refreshExp);
                 privateKey = refreshPrivateKey;
                 publicKey = refreshPublicKey;
+            }
+            case TokenType.WEBSOCKET -> {
+                exp = Long.parseLong(websocketExp);
+                privateKey = accessPrivateKey;
             }
         }
 

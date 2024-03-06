@@ -1,5 +1,6 @@
 package backendapp.myPizza.SocketIO;
 
+
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
@@ -7,9 +8,8 @@ import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DisconnectListener;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
@@ -18,20 +18,17 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 @Log4j2
 public class SocketIOConfig {
 
-
+//    @Value("${socket.host}")
     private String SOCKETHOST = "localhost";
+//    @Value("${socket.port}")
     private int SOCKETPORT = 8085;
     private SocketIOServer server;
-
-    @Autowired
-    private SocketIOAuth authorizationListener;
 
     @Bean
     public SocketIOServer socketIOServer() {
         Configuration config = new Configuration();
         config.setHostname(SOCKETHOST);
         config.setPort(SOCKETPORT);
-        config.setAuthorizationListener(authorizationListener);
         server = new SocketIOServer(config);
         server.start();
         server.addConnectListener(new ConnectListener() {
@@ -45,9 +42,8 @@ public class SocketIOConfig {
         server.addDisconnectListener(new DisconnectListener() {
             @Override
             public void onDisconnect(SocketIOClient client) {
-                client.getNamespace().getAllClients().forEach(data -> {
-                    log.info("user disconnected " + data.getSessionId().toString());
-                });
+                client.getNamespace().getAllClients().stream().forEach(data-> {
+                    log.info("user disconnected "+data.getSessionId().toString());});
             }
         });
         return server;

@@ -1,6 +1,5 @@
 package backendapp.myPizza.SocketIO.services;
 
-import com.corundumstudio.socketio.SocketIOClient;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;

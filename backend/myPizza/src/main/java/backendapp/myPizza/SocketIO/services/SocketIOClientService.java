@@ -23,4 +23,6 @@ public class SocketIOClientService {
     public void removeClient(UUID sessionId) {
         clients.remove(sessionId);
     }
+
+
 }

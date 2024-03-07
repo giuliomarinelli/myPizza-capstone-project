@@ -15,7 +15,7 @@ public class MessageService {
         UUID clientId = message.getRecipientClientId();
         SocketIOClient client = clientSvc.getClient(clientId);
         if (client != null) {
-            client.sendEvent("ciao", message);
+            client.sendEvent("message", message);
         }
     }
 }

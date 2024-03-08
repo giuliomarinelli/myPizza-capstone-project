@@ -1,5 +1,6 @@
 package backendapp.myPizza.Models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,6 +20,7 @@ public class Topping {
 
     private double price;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "toppings", fetch = FetchType.EAGER)
     private List<Product> products = new ArrayList<>();
 

@@ -27,6 +27,7 @@ public class Order {
             joinColumns = @JoinColumn(name = "order_id"),
             inverseJoinColumns = @JoinColumn(name = "product_name")
     )
+
     private List<Product> products = new ArrayList<>();
 
     private LocalDateTime orderTime;

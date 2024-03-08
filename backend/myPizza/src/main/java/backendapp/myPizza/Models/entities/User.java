@@ -67,6 +67,11 @@ public class User implements UserDetails {
         createdAt = LocalDateTime.now();
         lastUpdate = LocalDateTime.now();
         messagingUsername = firstName + " " + lastName;
+        profileImage = generateAvatar();
+    }
+
+    public String generateAvatar() {
+        return "https://ui-avatars.com/api/?name=" + firstName + "+" + lastName;
     }
 
 

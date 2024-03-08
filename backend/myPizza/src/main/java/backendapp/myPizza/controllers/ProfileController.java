@@ -3,6 +3,7 @@ package backendapp.myPizza.controllers;
 import backendapp.myPizza.Models.entities.Address;
 import backendapp.myPizza.Models.entities.Order;
 import backendapp.myPizza.Models.entities.User;
+import backendapp.myPizza.Models.reqDTO.ChangePasswordDTO;
 import backendapp.myPizza.Models.reqDTO.UserPutDTO;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.exceptions.BadRequestException;
@@ -44,4 +45,10 @@ public class ProfileController {
     public List<Address> getAddresses() throws UnauthorizedException {
         return profileSvc.getAddresses();
     }
+
+    @PatchMapping("/change-password")
+    public ConfirmRes changePassword(@RequestBody ChangePasswordDTO changePasswordDTO) throws UnauthorizedException, BadRequestException {
+        return profileSvc.changePassword(changePasswordDTO.oldPassword(), changePasswordDTO.newPassword());
+    }
+
 }

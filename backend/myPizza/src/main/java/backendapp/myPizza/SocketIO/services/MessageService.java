@@ -20,6 +20,7 @@ public class MessageService {
 
     public void sendMessageToClient(Message message) {
 
+
         Set<UUID> clientIds = sessionSvc.getClientIdsFromUserId(message.getRecipientUserId());
 
         for (UUID clientId : clientIds) {
@@ -27,6 +28,7 @@ public class MessageService {
             if (client != null) {
                 client.sendEvent("message", message);
             }
+
         }
 
 

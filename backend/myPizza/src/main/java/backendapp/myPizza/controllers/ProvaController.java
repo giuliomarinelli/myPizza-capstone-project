@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ProvaController {
-    @GetMapping("/comuni")
+    @GetMapping("/ciao")
     public ConfirmRes get() {
         return new ConfirmRes("ciao", HttpStatus.OK);
+
     }
 }

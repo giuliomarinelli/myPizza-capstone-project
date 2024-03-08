@@ -1,5 +1,5 @@
 package backendapp.myPizza.Models.enums;
 
 public enum TokenType {
-    ACCESS, REFRESH, WEBSOCKET
+    ACCESS, REFRESH, WS_ACCESS, WS_REFRESH
 }

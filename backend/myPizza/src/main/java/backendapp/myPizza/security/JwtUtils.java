@@ -1,17 +1,11 @@
 package backendapp.myPizza.security;
 
 import backendapp.myPizza.Models.entities.User;
+import backendapp.myPizza.Models.enums.TokenPairType;
 import backendapp.myPizza.Models.enums.TokenType;
 import backendapp.myPizza.Models.resDTO.TokenPair;
-import backendapp.myPizza.Models.resDTO.WsTokenPair;
 import backendapp.myPizza.exceptions.UnauthorizedException;
 import backendapp.myPizza.services.AuthUserService;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import net.iharder.Base64;
@@ -21,7 +15,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.security.Key;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPrivateKey;
@@ -40,79 +33,59 @@ public class JwtUtils {
     @Autowired
     private AuthUserService authUserSvc;
 
-    @Value("${access_token.publicKey}")
-    private String accessPublicKey;
+    @Value("${access_token.secret}")
+    private String accessSecret;
 
-    @Value("${access_token.privateKey}")
-    private String accessPrivateKey;
 
-    @Value("${refresh_token.publicKey}")
-    private String refreshPublicKey;
+    @Value("${refresh_token.secret}")
+    private String refreshSecret;
 
-    @Value("${refresh_token.privateKey}")
-    private String refreshPrivateKey;
+    @Value("${ws_access_token.secret}")
+    private String wsAccessSecret;
+
+    @Value("${ws_refresh_token.secret}")
+    private String wsRefreshSecret;
 
 
     @Value("${access_token.expiresIn}")
     private String accessExp;
     @Value("${refresh_token.expiresIn}")
     private String refreshExp;
-    @Value("${websocket_token.expiresIn}")
-    private String websocketExp;
+    @Value("${ws_access_token.expiresIn}")
+    private String wsAccessExp;
 
 
-    private RSAPublicKey generatePublicKey(String key) throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
-        KeyFactory kFactory = KeyFactory.getInstance("RSA");
-        // decode base64 of your key
-        byte[] buffer = Base64.decode(key, 0);
-        // generate the public key
-        X509EncodedKeySpec spec = new X509EncodedKeySpec(buffer);
-        return (RSAPublicKey) kFactory.generatePublic(spec);
-    }
 
-    private RSAPrivateKey generatePrivateKey(String key) throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
-        KeyFactory kFactory = KeyFactory.getInstance("RSA");
-        byte[] buffer = Base64.decode(key, 0);
-        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(buffer);
-        return (RSAPrivateKey) kFactory.generatePrivate(spec);
-    }
-
-    public TokenPair generateTokenPair(String refreshToken) throws UnauthorizedException {
+    public TokenPair generateTokenPair(String refreshToken, TokenPairType type) throws UnauthorizedException {
         try {
+            String secret = "";
+            switch (type) {
+                case TokenPairType.HTTP -> secret = refreshSecret;
+                case TokenPairType.WS -> secret = wsRefreshSecret;
+                default -> throw new Exception();
+            }
             UUID userId = UUID.fromString(
                     Jwts.parser().
-                            verifyWith(Keys.hmacShaKeyFor(refreshPrivateKey.getBytes())).
+                            verifyWith(Keys.hmacShaKeyFor(refreshSecret.getBytes())).
                             build()
                             .parseSignedClaims(refreshToken).
                             getPayload().
                             getSubject());
             User u = authUserSvc.findUserById(userId);
             System.out.println("Refresh");
-            return new TokenPair(generateToken(u, TokenType.ACCESS), generateToken(u, TokenType.REFRESH));
+            switch (type) {
+                case TokenPairType.HTTP -> {
+                    return new TokenPair(generateToken(u, TokenType.ACCESS), generateToken(u, TokenType.REFRESH), type);
+                }
+                case TokenPairType.WS -> {
+                    return new TokenPair(generateToken(u, TokenType.WS_ACCESS), generateToken(u, TokenType.WS_REFRESH), type);
+                }
+                default -> throw new Exception();
+            }
 
         } catch (Exception exception) {
             throw new UnauthorizedException("Invalid refresh token");
         }
-
-
-    }
-
-    public WsTokenPair generateWsTokenPair(String refreshToken) throws UnauthorizedException {
-        try {
-            UUID userId = UUID.fromString(
-                    Jwts.parser().
-                            verifyWith(Keys.hmacShaKeyFor(refreshPrivateKey.getBytes())).
-                            build()
-                            .parseSignedClaims(refreshToken).
-                            getPayload().
-                            getSubject());
-            User u = authUserSvc.findUserById(userId);
-            return new WsTokenPair(generateToken(u, TokenType.WEBSOCKET), generateToken(u, TokenType.REFRESH));
-
-        } catch (Exception exception) {
-            throw new UnauthorizedException("Invalid refresh token");
-        }
-
 
     }
 
@@ -120,9 +93,10 @@ public class JwtUtils {
     public void verifyAccessToken(String accessToken) throws UnauthorizedException {
 
         try {
-            Jwts.parser().verifyWith(Keys.hmacShaKeyFor(accessPrivateKey.getBytes())).build()
+            Jwts.parser().verifyWith(Keys.hmacShaKeyFor(accessSecret.getBytes())).build()
                     .parseSignedClaims(accessToken).getPayload();
-            System.out.println("authorized");
+        } catch (MalformedJwtException | SignatureException | UnsupportedJwtException | IllegalArgumentException e) {
+            throw new UnauthorizedException("Invalid access token");
         } catch (ExpiredJwtException e) {
             throw e;
         } catch (Exception e) {
@@ -131,26 +105,37 @@ public class JwtUtils {
 
     }
 
-    public String generateToken(User u, TokenType type) throws
-            NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+    public boolean verifyWsAccessToken(String wsAccessToken) {
+        try {
+            Jwts.parser().verifyWith(Keys.hmacShaKeyFor(wsAccessSecret.getBytes())).build()
+                    .parseSignedClaims(wsAccessToken).getPayload();
+            return true;
+        }
+        catch (Exception e) {
+            return false;
+        }
+    }
+
+    public String generateToken(User u, TokenType type) {
         long exp = 1;
-        String privateKey = accessPrivateKey;
-        String publicKey = accessPublicKey;
+        String secret = accessSecret;
         boolean restore = false;
         switch (type) {
             case TokenType.ACCESS -> {
                 exp = Long.parseLong(accessExp);
-                privateKey = accessPrivateKey;
-                publicKey = accessPublicKey;
+                secret = accessSecret;
             }
             case TokenType.REFRESH -> {
                 exp = Long.parseLong(refreshExp);
-                privateKey = refreshPrivateKey;
-                publicKey = refreshPublicKey;
+                secret = refreshSecret;
             }
-            case TokenType.WEBSOCKET -> {
-                exp = Long.parseLong(websocketExp);
-                privateKey = accessPrivateKey;
+            case TokenType.WS_ACCESS -> {
+                exp = Long.parseLong(wsAccessExp);
+                secret = wsAccessSecret;
+            }
+            case TokenType.WS_REFRESH -> {
+                exp = Long.parseLong(refreshExp);
+                secret = wsRefreshSecret;
             }
         }
 
@@ -164,7 +149,7 @@ public class JwtUtils {
                 .claim("restore", false)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + exp))
-                .signWith(Keys.hmacShaKeyFor(privateKey.getBytes()))
+                .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
                 .compact();
     }
 
@@ -172,7 +157,7 @@ public class JwtUtils {
 
         try {
             return UUID.fromString(Jwts.parser()
-                    .verifyWith(Keys.hmacShaKeyFor(accessPrivateKey.getBytes()))
+                    .verifyWith(Keys.hmacShaKeyFor(accessSecret.getBytes()))
                     .build()
                     .parseSignedClaims(accessToken)
                     .getPayload()
@@ -181,6 +166,19 @@ public class JwtUtils {
             throw new UnauthorizedException("Invalid access token");
         }
 
+    }
+
+    public UUID extractUserIdFromWsAccessToken(String wsAccessToken) throws UnauthorizedException {
+        try {
+            return UUID.fromString(Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(wsAccessSecret.getBytes()))
+                    .build()
+                    .parseSignedClaims(wsAccessToken)
+                    .getPayload()
+                    .getSubject());
+        } catch (Exception e) {
+            throw new UnauthorizedException("Invalid ws_access token");
+        }
     }
 
 }

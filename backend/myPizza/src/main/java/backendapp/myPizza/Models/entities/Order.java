@@ -44,10 +44,12 @@ public class Order {
 
     private String messageToCustomer;
 
+    private double deliveryCost = 1.5;
+
     private double totalAmount;
 
     public void calcTotalAmount() {
-        totalAmount = products.stream().mapToDouble(Product::getProductTotalAmount).sum();
+        totalAmount = deliveryCost + products.stream().mapToDouble(Product::getPrice).sum();
     }
 
     @ManyToOne(fetch = FetchType.EAGER)

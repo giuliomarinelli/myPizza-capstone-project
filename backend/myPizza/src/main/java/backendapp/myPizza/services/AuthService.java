@@ -1,14 +1,20 @@
 package backendapp.myPizza.services;
 
+import backendapp.myPizza.Models.entities.Address;
+import backendapp.myPizza.Models.entities.City;
 import backendapp.myPizza.Models.entities.User;
 import backendapp.myPizza.Models.enums.TokenPairType;
 import backendapp.myPizza.Models.enums.TokenType;
-import backendapp.myPizza.Models.reqDTO.UserDTO;
+import backendapp.myPizza.Models.reqDTO.UserPostDTO;
 import backendapp.myPizza.Models.resDTO.TokenPair;
+import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.exceptions.UnauthorizedException;
+import backendapp.myPizza.repositories.AddressRepository;
+import backendapp.myPizza.repositories.CityRepository;
 import backendapp.myPizza.repositories.UserRepository;
 import backendapp.myPizza.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +27,9 @@ import java.util.*;
 public class AuthService {
 
     @Autowired
+    private AddressRepository addressRp;
+
+    @Autowired
     private PasswordEncoder encoder;
 
     @Autowired
@@ -29,10 +38,33 @@ public class AuthService {
     @Autowired
     private UserRepository userRp;
 
-    public User register(UserDTO userDTO) {
-        User u = new User(userDTO.firstName(), userDTO.lastName(), userDTO.email(),
-                encoder.encode(userDTO.password()), userDTO.phoneNumber());
-        return userRp.save(u);
+    @Autowired
+    private CityRepository cityRp;
+
+    public User register(UserPostDTO userPostDTO) throws BadRequestException {
+        City city = cityRp.findByNameAndProvinceCode(userPostDTO.address().city(), userPostDTO.address().province())
+                .orElseThrow(
+                        () -> new BadRequestException("City entered doesn't exist")
+                );
+
+        User u = new User(userPostDTO.firstName(), userPostDTO.lastName(), userPostDTO.email(),
+                encoder.encode(userPostDTO.password()), userPostDTO.phoneNumber());
+        try {
+            userRp.save(u);
+        } catch (DataIntegrityViolationException e) {
+            if (userRp.findAllEmails().contains(u.getEmail()) && userRp.findAllPhoneNumbers().contains(u.getPhoneNumber())) {
+                throw new BadRequestException("Email and phoneNumber already exist. Cannot create");
+            } else if (userRp.findAllEmails().contains(u.getEmail())) {
+                throw new BadRequestException("Email already exists. Cannot create");
+            } else if (userRp.findAllPhoneNumbers().contains(u.getPhoneNumber())) {
+                throw new BadRequestException("phoneNumber already exists. Cannot create");
+            }
+        }
+        Address address = new Address(userPostDTO.address().road(), userPostDTO.address().civic(), city, u);
+        address.set_default(true);
+        addressRp.save(address);
+        u.getAddresses().add(address);
+        return u;
     }
 
     public Map<TokenPairType, TokenPair> login(String email, String password) throws UnauthorizedException, NoSuchAlgorithmException, InvalidKeySpecException, IOException {

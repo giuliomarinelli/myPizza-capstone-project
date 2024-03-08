@@ -34,7 +34,9 @@ public class Product {
 
     private int viewOrder;
 
-    public double getProductTotalAmount() {
-        return toppings.stream().mapToDouble(Topping::getPrice).sum() + basePrice;
+    private double price;
+
+    public void setProductTotalAmount() {
+        price = toppings.stream().mapToDouble(Topping::getPrice).sum() + basePrice;
     }
 }

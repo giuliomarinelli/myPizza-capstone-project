@@ -39,6 +39,11 @@ public class User implements UserDetails {
 
     private LocalDateTime lastUpdate;
 
+    private String messagingUsername;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+    private List<Order> orders = new ArrayList<>();
+
     public User(String firstName, String lastName, String email, String hashPassword, String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -48,6 +53,7 @@ public class User implements UserDetails {
         this.scope = List.of(UserScope.USER);
         createdAt = LocalDateTime.now();
         lastUpdate = LocalDateTime.now();
+        messagingUsername = firstName + " " + lastName;
     }
 
     @JsonIgnore
@@ -55,8 +61,8 @@ public class User implements UserDetails {
     private List<Address> addresses = new ArrayList<>();
 
     private _2FAStrategy _2FA;
-    @JsonIgnore
 
+    @JsonIgnore
     private List<UserScope> scope;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

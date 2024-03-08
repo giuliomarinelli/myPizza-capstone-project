@@ -2,6 +2,8 @@ package backendapp.myPizza.security;
 
 
 import backendapp.myPizza.Models.entities.User;
+import backendapp.myPizza.Models.enums.TokenPairType;
+import backendapp.myPizza.Models.resDTO.ErrorRes;
 import backendapp.myPizza.Models.resDTO.TokenPair;
 import backendapp.myPizza.exceptions.UnauthorizedException;
 import backendapp.myPizza.services.AuthService;
@@ -41,6 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private AuthUserService authUserSvc;
 
     private static int count = 0;
+
     @Override
     protected void doFilterInternal(HttpServletRequest req, @NonNull HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
         try {
@@ -69,7 +72,7 @@ public class JwtFilter extends OncePerRequestFilter {
             } catch (ExpiredJwtException e) {
                 System.out.println(e.getMessage() + " N." + count);
                 count++;
-                TokenPair newTokens = jwtUtils.generateTokenPair(tokens.getRefreshToken());
+                TokenPair newTokens = jwtUtils.generateTokenPair(tokens.getRefreshToken(), TokenPairType.HTTP);
                 Cookie accessToken = new Cookie("__access_tkn", newTokens.getAccessToken());
                 accessToken.setHttpOnly(true);
                 accessToken.setDomain("localhost");
@@ -94,11 +97,8 @@ public class JwtFilter extends OncePerRequestFilter {
             res.setStatus(HttpStatus.UNAUTHORIZED.value());
             res.setContentType("application/json;charset=UTF-8");
             res.getWriter().write(mapper.writeValueAsString(
-//                    new ErrorResponse(HttpStatus.UNAUTHORIZED,
-//                            "Unauthorized", e.getMessage()
-
-//                    )
-                    "err " + e.getMessage()));
+                    new ErrorRes("Unauthorized", e.getMessage(), HttpStatus.UNAUTHORIZED))
+            );
         }
     }
 

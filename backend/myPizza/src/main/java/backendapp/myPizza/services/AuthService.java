@@ -1,6 +1,7 @@
 package backendapp.myPizza.services;
 
 import backendapp.myPizza.Models.entities.User;
+import backendapp.myPizza.Models.enums.TokenPairType;
 import backendapp.myPizza.Models.enums.TokenType;
 import backendapp.myPizza.Models.reqDTO.UserDTO;
 import backendapp.myPizza.Models.resDTO.TokenPair;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class AuthService {
@@ -34,14 +35,20 @@ public class AuthService {
         return userRp.save(u);
     }
 
-    public TokenPair login(String email, String password) throws UnauthorizedException, NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+    public Map<TokenPairType, TokenPair> login(String email, String password) throws UnauthorizedException, NoSuchAlgorithmException, InvalidKeySpecException, IOException {
         User u = userRp.findByEmail(email).orElseThrow(
                 () -> new UnauthorizedException("Email and/or password are incorrect")
         );
         if (!encoder.matches(password, u.getHashPassword()))
             throw new UnauthorizedException("Email and/or password are incorrect");
-        return new TokenPair(jwtUtils.generateToken(u, TokenType.ACCESS),
-                jwtUtils.generateToken(u, TokenType.REFRESH));
+        Map<TokenPairType, TokenPair> tokenMap = new HashMap<>();
+        TokenPair httpTokenPair = new TokenPair(jwtUtils.generateToken(u, TokenType.ACCESS),
+                jwtUtils.generateToken(u, TokenType.REFRESH), TokenPairType.HTTP);
+        tokenMap.put(TokenPairType.HTTP, httpTokenPair);
+        TokenPair wsTokenPair = new TokenPair(jwtUtils.generateToken(u, TokenType.WS_ACCESS),
+                jwtUtils.generateToken(u, TokenType.WS_REFRESH), TokenPairType.WS);
+        tokenMap.put(TokenPairType.WS, wsTokenPair);
+        return tokenMap;
     }
 
 

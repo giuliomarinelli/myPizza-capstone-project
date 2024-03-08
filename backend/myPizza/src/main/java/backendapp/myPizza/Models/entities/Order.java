@@ -27,6 +27,7 @@ public class Order {
             joinColumns = @JoinColumn(name = "order_id"),
             inverseJoinColumns = @JoinColumn(name = "product_name")
     )
+
     private List<Product> products = new ArrayList<>();
 
     private LocalDateTime orderTime;
@@ -44,10 +45,12 @@ public class Order {
 
     private String messageToCustomer;
 
+    private double deliveryCost = 1.5;
+
     private double totalAmount;
 
     public void calcTotalAmount() {
-        totalAmount = products.stream().mapToDouble(Product::getProductTotalAmount).sum();
+        totalAmount = deliveryCost + products.stream().mapToDouble(Product::getPrice).sum();
     }
 
     @ManyToOne(fetch = FetchType.EAGER)

@@ -27,10 +27,13 @@ public class User implements UserDetails {
 
     private String lastName;
 
+    @Column(unique = true)
     private String email;
 
+    @JsonIgnore
     private String hashPassword;
 
+    @Column(unique = true)
     private String phoneNumber;
 
     private String profileImage;
@@ -41,8 +44,18 @@ public class User implements UserDetails {
 
     private String messagingUsername;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private List<Order> orders = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<Address> addresses = new ArrayList<>();
+
+    private _2FAStrategy _2FA;
+
+    @JsonIgnore
+    private List<UserScope> scope;
 
     public User(String firstName, String lastName, String email, String hashPassword, String phoneNumber) {
         this.firstName = firstName;
@@ -54,16 +67,15 @@ public class User implements UserDetails {
         createdAt = LocalDateTime.now();
         lastUpdate = LocalDateTime.now();
         messagingUsername = firstName + " " + lastName;
+        profileImage = generateAvatar();
     }
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
-    private List<Address> addresses = new ArrayList<>();
+    public String generateAvatar() {
+        return "https://ui-avatars.com/api/?name=" + firstName + "+" + lastName;
+    }
 
-    private _2FAStrategy _2FA;
 
-    @JsonIgnore
-    private List<UserScope> scope;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         HashSet<GrantedAuthority> authorities = new HashSet<GrantedAuthority>(scope.size());
@@ -72,6 +84,8 @@ public class User implements UserDetails {
             authorities.add(new SimpleGrantedAuthority(s.name()));
         return authorities;
     }
+
+
 
     @JsonIgnore
     @Override

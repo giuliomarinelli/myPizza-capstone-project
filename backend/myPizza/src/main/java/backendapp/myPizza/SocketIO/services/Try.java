@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
-@Component
+//@Component
 public class Try implements CommandLineRunner {
     @Autowired
     private SessionTrackingService trackingSvc;

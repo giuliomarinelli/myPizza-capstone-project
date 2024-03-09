@@ -13,6 +13,7 @@ import java.util.UUID;
 public class Message {
     private UUID senderUserId;
     private UUID recipientUserId;
+    private UUID orderId;
     private String from;
     private String to;
     private String message;

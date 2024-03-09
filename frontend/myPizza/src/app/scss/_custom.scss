@@ -1,0 +1,49 @@
+.dark {
+  background-color: $gray-800 !important;
+}
+
+.close-btn {
+  color: $gray-600;
+  font-size: 2rem;
+  transition: color 0.35s;
+  cursor: pointer;
+  position: absolute;
+  right: 15px;
+  top: 7px;
+
+  &:hover {
+    color: lighten($gray-600, 10%)
+  }
+}
+
+.main-nav {
+  border-bottom: 1px solid $gray-600;
+}
+
+.nanum-gothic-coding-bold {
+  font-family: 'Nanum Gothic Coding', monospace;
+  font-weight: bold;
+}
+
+.footer-bottom {
+  min-height: calc(100vh - 64px - 56.8px);
+}
+
+.mild-gray {
+  color: $gray-500;
+}
+
+.email-border {
+  border: 2px solid $blue-200;
+}
+
+.password-border {
+  border: 2px solid $blue-200;
+}
+
+.box {
+  max-width: 450px;
+  padding: 15px 25px;
+  background-color: rgba($cyan-200, 0.4);
+  border-radius: 20px;
+}

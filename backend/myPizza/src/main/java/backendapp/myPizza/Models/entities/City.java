@@ -1,5 +1,6 @@
 package backendapp.myPizza.Models.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,6 +26,7 @@ public class City {
 
     private String region;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "city")
     List<Address> addresses = new ArrayList<>();
 

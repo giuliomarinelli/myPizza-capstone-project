@@ -1,6 +1,6 @@
 package backendapp.myPizza.Models.reqDTO;
 
-public record UserDTO(
+public record UserPostDTO(
         String firstName,
 
         String lastName,

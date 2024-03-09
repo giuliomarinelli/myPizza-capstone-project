@@ -1,0 +1,59 @@
+.stretch,
+.sidenav-container {
+  min-height: 100vh;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
+
+.main-menu-offcanvas {
+  width: 100%;
+
+  @media screen and (min-width: 376px) {
+    width: min(380px, 65%)
+  }
+
+  @media screen and (min-width: 600px) {
+    width: min(380px, 45%)
+  }
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.material-icon {
+  border: none;
+  display: flex;
+  align-self: center;
+  color: white;
+  background-color: transparent;
+}
+
+.logo-container {
+  width: 30px;
+}
+
+.offcanvas-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  li {
+    list-style-type: none;
+    text-transform: uppercase;
+  }
+}
+
+.active {
+  font-weight: bold;
+}
+
+#footer {
+  border-top: .5px solid white;
+}
+
+.right-link {
+  font-size: 1rem;
+}

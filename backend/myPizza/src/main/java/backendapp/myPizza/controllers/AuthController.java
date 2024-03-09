@@ -3,16 +3,16 @@ package backendapp.myPizza.controllers;
 import backendapp.myPizza.Models.entities.User;
 import backendapp.myPizza.Models.enums.TokenPairType;
 import backendapp.myPizza.Models.reqDTO.LoginDTO;
-import backendapp.myPizza.Models.reqDTO.UserDTO;
+import backendapp.myPizza.Models.reqDTO.UserPostDTO;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.Models.resDTO.TokenPair;
+import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.exceptions.UnauthorizedException;
 import backendapp.myPizza.services.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -27,9 +27,11 @@ public class AuthController {
     private AuthService authSvc;
 
     @PostMapping("/register")
-    public User register(@RequestBody UserDTO userDTO) {
-        return authSvc.register(userDTO);
+    public User register(@RequestBody UserPostDTO userPostDTO) throws BadRequestException {
+        return authSvc.register(userPostDTO);
     }
+
+
 
 
 

@@ -1,8 +1,9 @@
 <mat-sidenav-container class="sidenav-container text-white" (backdropClick)="close('backdrop')">
-  <mat-sidenav #sidenav (keydown.escape)="close('escape')"  class="main-menu-offcanvas light">
+  <mat-sidenav #sidenav (keydown.escape)="close('escape')" class="main-menu-offcanvas light">
     <aside class="position-relative">
       <button>Toggle</button>
-      <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="close" class="close-btn" mat-button (click)="close('toggle button')"></mat-icon>
+      <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="close" class="close-btn" mat-button
+        (click)="close('toggle button')"></mat-icon>
       <nav>
         <ul>
           <li>ciao</li>

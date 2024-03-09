@@ -1,23 +1,77 @@
 <mat-sidenav-container class="sidenav-container text-white" (backdropClick)="close('backdrop')">
-  <mat-sidenav #sidenav (keydown.escape)="close('escape')" class="main-menu-offcanvas light">
-    <aside class="position-relative">
-      <button>Toggle</button>
-      <mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="close" class="close-btn" mat-button
-        (click)="close('toggle button')"></mat-icon>
+  <mat-sidenav #sidenav (keydown.escape)="close('escape')" class="main-menu-offcanvas dark">
+    <aside>
+      <mat-toolbar class="bg-dark main-nav text-white px-2">
+        <span>Menu principale</span>
+        <span class="spacer"></span>
+        <button mat-icon-button class="material-icon" aria-label="Example icon-button with share icon"
+          (click)="close('toggle button')">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-toolbar>
       <nav>
-        <ul>
-          <li>ciao</li>
-          <li>ciao</li>
-          <li>ciao</li>
-          <li>ciao</li>
-          <li>ciao</li>
+        <ul class="offcanvas-menu pt-4">
+          <li><a (click)="close('')" routerLink="/" routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }">Home</a></li>
+          <li><a (click)="close('')" routerLink="/ordina-a-domicilio" routerLinkActive="active">ordina a domicilio</a>
+          </li>
+          <li><a (click)="close('')" routerLink="/la-nostra-pizzeria" routerLinkActive="active">la nostra pizzeria</a>
+          </li>
+          <li><a (click)="close('')" routerLink="/il-nostro-menu" routerLinkActive="active">il nostro menu</a></li>
+          <li><a (click)="close('')" routerLink="/contatti" routerLinkActive="active">contatti</a></li>
+        </ul>
+        <hr class="hr text-white">
+        <ul class="offcanvas-menu">
+          <li><a (click)="close('')" routerLink="/registrati" routerLinkActive="active">Registrati</a></li>
+          <li><a (click)="close('')" routerLink="/login" routerLinkActive="active">Login</a></li>
         </ul>
       </nav>
     </aside>
   </mat-sidenav>
 
   <mat-sidenav-content class="dark stretch">
-    <p><button mat-button (click)="sidenav.open()">Open</button></p>
-    <p>Closed due to: {{reason}}</p>
+    <nav>
+      <mat-toolbar class="bg-dark main-nav px-2">
+        <div class="container-md d-flex">
+          <a routerLink="/" title="MyPizza - Pizzeria" class="ms-2 me-4 d-flex gap-3 align-items-center">
+            <div class="logo-container">
+              <img src="../assets/logo.png" alt="MyPizza Logo" class="img-fluid">
+            </div>
+            <p class="text-white m-0 nanum-gothic-coding-bold">MyPizza</p>
+          </a>
+          <div ngClass="d-none d-md-block" mat-tab-nav-bar [backgroundColor]="background" [tabPanel]="tabPanel"
+            mat-stretch-tabs="false" class="fit-content">
+            @for (link of links; track link) {
+            <a mat-tab-link [routerLink]="link.path" [active]="activeLink === link"> {{link.name}} </a>
+            }
+            <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
+
+          </div>
+          <div ngClass="d-none d-sm-block d-md-none" mat-tab-nav-bar [backgroundColor]="background"
+            [tabPanel]="tabPanel1" mat-stretch-tabs="false" class="fit-content">
+            @for (link of smMdLinks; track link) {
+            <a mat-tab-link [routerLink]="link.path" [active]="activeLink === link"> {{link.name}} </a>
+            }
+            <mat-tab-nav-panel #tabPanel1></mat-tab-nav-panel>
+
+          </div>
+          <span class="spacer"></span>
+          <div class="d-none d-lg-flex align-items-center">
+            <a routerLink="/login" class="me-3 right-link">Accedi</a>
+            <a routerLink="/registrati" class="me-3 right-link">Registrati</a>
+          </div>
+          <button mat-icon-button (click)="sidenav.open()" aria-label="Example icon-button with menu icon"
+            class="material-icon d-lg-none">
+            <mat-icon>menu</mat-icon>
+          </button>
+        </div>
+      </mat-toolbar>
+    </nav>
+    <router-outlet></router-outlet>
+    <footer id="footer" class="bg-dark py-3 px-2">
+      <div class="container-md text-center text-white">
+        &copy; 2024 MyPizza. Tutti i diritti riservati
+      </div>
+    </footer>
   </mat-sidenav-content>
 </mat-sidenav-container>

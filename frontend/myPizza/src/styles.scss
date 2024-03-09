@@ -31,10 +31,31 @@ $myPizza-theme: mat.define-light-theme((color: (primary: $myPizza-primary,
 // that you are using.
 @include mat.all-component-themes($myPizza-theme);
 
+
+
 /* You can add global styles to this file, and also import other style files */
+
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding:wght@400;700&display=swap');
 
 @import './app/scss/functions';
 @import './app/scss/variables';
 @import './app/scss/variables-dark';
 @import '../node_modules/bootstrap/scss/bootstrap';
+
+.mdc-tab__text-label {
+  color: $white !important;
+  text-transform: uppercase !important;
+  transition: color .2s;
+
+  &:hover {
+    color: rgba($white, .8) !important;
+  }
+}
+
+
+.mdc-tab-indicator__content--underline {
+  border-top: 4px solid darken(#3f51b5, 6%) !important;
+  margin-bottom: 4px !important;
+}
+
 @import './app/scss/custom';

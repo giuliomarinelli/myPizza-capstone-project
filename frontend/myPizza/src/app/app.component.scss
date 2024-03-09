@@ -1,0 +1,16 @@
+.stretch,
+.sidenav-container {
+  min-height: 100vh;
+}
+
+.main-menu-offcanvas {
+  width: 100%;
+
+  @media screen and (min-width: 376px) {
+    width: min(360px, 60%)
+  }
+
+  @media screen and (min-width: 600px) {
+    width: min(350px, 45%)
+  }
+}

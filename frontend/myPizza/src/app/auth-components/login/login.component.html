@@ -1,26 +1,7 @@
-<div class="footer-bottom d-flex justify-content-center align-items-center">
-  <div class="form-signin mt-3" cz-shortcut-listen="true">
-    <form class="box">
-      <h1 class="display-3 text-white text-center mb-3">LOGIN</h1>
-      <div class="form-floating">
-        <input class="form-control email-border" formControlName="email" type="email" id="email" placeholder="Email" />
-        <label for="email" class="mild-gray">Email</label>
-      </div>
-      <div class="form-floating">
-        <input formControlName="password" type="password" class="form-control password-border" id="password"
-          placeholder="Password" />
-        <label for="password" class="mild-gray">Password</label>
-      </div>
-      <button class="w-100 btn btn-lg btn-primary" type="submit">ACCEDI</button>
-      <div class="mt-2">
-        <p class="m-0 text-white small">
-          Non sei ancora registrato?
-          <a href="/registrati">Registrati subito</a>
-        </p>
-        <p class="m-0 text-white small">
-          <a href="/recupera-password">Hai dimenticato la password?</a>
-        </p>
-      </div>
-    </form>
-  </div>
+<form method="post">
+  <h2 class="sr-only">Login Form</h2>
+  <div class="illustration"><i class="icon ion-ios-locked-outline"></i></div>
+  <div class="form-group"><input class="form-control" type="email" name="email" placeholder="Email"></div>
+  <div class="form-group"><input class="form-control" type="password" name="password" placeholder="Password"></div>
+  <div class="form-group"><button class="btn btn-primary btn-block" type="submit">Log In</button></div><a href="#" class="forgot">Forgot your email or password?</a></form>
 </div>

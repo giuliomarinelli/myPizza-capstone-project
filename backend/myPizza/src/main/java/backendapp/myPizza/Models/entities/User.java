@@ -1,5 +1,6 @@
 package backendapp.myPizza.Models.entities;
 
+import backendapp.myPizza.Models.enums.Gender;
 import backendapp.myPizza.Models.enums.UserScope;
 import backendapp.myPizza.Models.enums._2FAStrategy;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -36,6 +37,8 @@ public class User implements UserDetails {
     @Column(unique = true)
     private String phoneNumber;
 
+    private Gender gender;
+
     private String profileImage;
 
     private LocalDateTime createdAt;
@@ -57,13 +60,14 @@ public class User implements UserDetails {
     @JsonIgnore
     private List<UserScope> scope;
 
-    public User(String firstName, String lastName, String email, String hashPassword, String phoneNumber) {
+    public User(String firstName, String lastName, String email, String hashPassword, String phoneNumber, Gender gender) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.hashPassword = hashPassword;
         this.phoneNumber = phoneNumber;
-        this.scope = List.of(UserScope.USER);
+        this.gender = gender;
+        scope = List.of(UserScope.USER);
         createdAt = LocalDateTime.now();
         lastUpdate = LocalDateTime.now();
         messagingUsername = firstName + " " + lastName;

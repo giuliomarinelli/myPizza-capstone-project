@@ -12,6 +12,7 @@ import backendapp.myPizza.repositories.CityRepository;
 import backendapp.myPizza.repositories.UserRepository;
 import backendapp.myPizza.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -68,9 +69,10 @@ public class ProfileService {
         u.setLastName(userPutDTO.lastName());
         u.setEmail(userPutDTO.email());
         u.setPhoneNumber(userPutDTO.phoneNumber());
+        u.setGender(userPutDTO.gender());
         try {
             userRp.save(u);
-        } catch (IllegalArgumentException e) {
+        } catch (DataIntegrityViolationException e) {
             if (userRp.findAllEmails().contains(u.getEmail()) || userRp.findAllPhoneNumbers().contains(u.getPhoneNumber())) {
                 throw new BadRequestException("Email and/or phoneNumber already exist. Cannot update");
             }

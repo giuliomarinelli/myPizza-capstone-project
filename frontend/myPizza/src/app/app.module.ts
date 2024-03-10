@@ -9,6 +9,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { HomeModule } from './pages/home/home.module'
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { HomeModule } from './pages/home/home.module'
     ReactiveFormsModule,
     FormsModule,
     MatTabsModule,
-    HomeModule
+    HomeModule,
+    HttpClientModule
   ],
   providers: [
     provideClientHydration(),

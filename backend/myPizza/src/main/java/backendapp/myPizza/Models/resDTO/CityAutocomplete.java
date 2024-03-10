@@ -1,4 +1,4 @@
-package backendapp.myPizza.Models.reqDTO;
+package backendapp.myPizza.Models.resDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,2 +1,5 @@
-package backendapp.myPizza.Models.enums;public class Gender {
+package backendapp.myPizza.Models.enums;
+
+public enum Gender {
+    M, F
 }

@@ -1,10 +1,9 @@
-package it.epicode.backend.bwii.epic_energy_services.Models.entities;
+package backendapp.myPizza.Models.entities;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Data
@@ -12,5 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "international_prefixes")
 public class InternationalPrefix {
+    @Id
+    @Setter(AccessLevel.NONE)
     private String prefix;
 }

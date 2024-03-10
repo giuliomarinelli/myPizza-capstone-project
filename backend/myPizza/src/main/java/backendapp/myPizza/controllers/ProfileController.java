@@ -6,6 +6,7 @@ import backendapp.myPizza.Models.entities.User;
 import backendapp.myPizza.Models.reqDTO.ChangePasswordDTO;
 import backendapp.myPizza.Models.reqDTO.UserPutDTO;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
+import backendapp.myPizza.Models.resDTO.IsLoggedInRes;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.exceptions.UnauthorizedException;
 import backendapp.myPizza.services.ProfileService;
@@ -51,4 +52,8 @@ public class ProfileController {
         return profileSvc.changePassword(changePasswordDTO.oldPassword(), changePasswordDTO.newPassword());
     }
 
+    @GetMapping("/is-logged-in")
+    public IsLoggedInRes isLoggedIng() {
+        return new IsLoggedInRes(true);
+    }
 }

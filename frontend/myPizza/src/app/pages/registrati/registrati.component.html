@@ -1,0 +1,152 @@
+<div class="footer-bottom d-flex justify-content-center align-items-center">
+  <div class="form-dark form-width">
+    <form [formGroup]="registerForm" (submit)="performRegister()">
+      <div class="illustration mb-3">
+        <i class="bi bi-r-square-fill"></i>
+      </div>
+      <div class="row">
+        <div class="col-12 col-sm-6 px-2">
+          <div class="form-group">
+            <input
+              [ngClass]="{'form-control': true, 'is-valid': isValid('firstName'), 'is-invalid': isInvalid('firstName')}"
+              type="text" formControlName="firstName" placeholder="Nome" (keydown)="validLogin = true">
+          </div>
+          <div class="feedback">
+            @if(isInvalid('firstName')) {
+            <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.firstName}}</p>
+            }
+            @else {
+            <p class="m-0 mb-2 feedback-h"></p>
+            }
+          </div>
+          <div class="form-group">
+            <input
+              [ngClass]="{'form-control': true, 'is-valid': isValid('lastName'), 'is-invalid': isInvalid('lastName')}"
+              type="text" formControlName="lastName" placeholder="Cognome" (keydown)="validLogin = true">
+          </div>
+          <div class="feedback">
+            @if(isInvalid('lastName')) {
+            <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.lastName}}</p>
+            }
+            @else {
+            <p class="m-0 mb-2 feedback-h"></p>
+            }
+          </div>
+          <div class="form-group">
+            <input [ngClass]="{'form-control': true, 'is-valid': isValid('email'), 'is-invalid': isInvalid('email')}"
+              type="email" formControlName="email" placeholder="Email" (keydown)="validLogin = true">
+          </div>
+          <div class="feedback">
+            @if(isInvalid('email')) {
+            <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.email}}</p>
+            }
+            @else {
+            <p class="m-0 mb-2 feedback-h"></p>
+            }
+          </div>
+          <div class="row">
+            <div class="col-5">
+              <select class="form-select" data-bs-theme="dark" aria-label="Default select example" style="size: 8"
+                formControlName="prefix">
+                <option selected value="+39">+39</option>
+                @for(item of internationalPrefixList; track item) {
+                <option [value]="item">{{item}}</option>
+                }
+              </select>
+            </div>
+            <div class="col-7">
+              <div class="form-group">
+                <input
+                  [ngClass]="{'form-control': true, 'is-valid': isValid('phoneNumber'), 'is-invalid': isInvalid('phoneNumber')}"
+                  type="text" formControlName="phoneNumber" placeholder="Telefono" (keydown)="validLogin = true">
+              </div>
+              <div class="feedback">
+                @if(isInvalid('phoneNumber')) {
+                <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.phoneNumber}}</p>
+                }
+                @else {
+                <p class="m-0 mb-2 feedback-h"></p>
+                }
+              </div>
+            </div>
+          </div>
+          <select data-bs-theme="dark" class="form-select" aria-label="Default select example" style="size: 8"
+            formControlName="gender">
+            <option selected value="0">(genere)</option>
+            <option value="F">Donna</option>
+            <option value="M">Uomo</option>
+          </select>
+          <div class="feedback">
+            @if(isInvalid('gender')) {
+            <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.gender}}</p>
+            }
+            @else {
+            <p class="m-0 mb-2 feedback-h"></p>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-sm-6 px-2">
+          <div class="row">
+            <div class="col-9">
+              <div class="form-group">
+                <input [ngClass]="{'form-control': true, 'is-valid': isValid('road'), 'is-invalid': isInvalid('road')}"
+                  type="text" formControlName="road" placeholder="Via" (keydown)="validLogin = true">
+              </div>
+              <div class="feedback">
+                @if(isInvalid('road')) {
+                <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.road}}</p>
+                }
+                @else {
+                <p class="m-0 mb-2 feedback-h"></p>
+                }
+              </div>
+            </div>
+            <div class="col-3">
+              <div class="form-group">
+                <input
+                  [ngClass]="{'form-control': true, 'is-valid': isValid('civic'), 'is-invalid': isInvalid('civic')}"
+                  type="text" formControlName="civic" placeholder="N°" (keydown)="validLogin = true">
+              </div>
+              <div class="feedback">
+                @if(isInvalid('civic')) {
+                <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.civic}}</p>
+                }
+                @else {
+                <p class="m-0 mb-2 feedback-h"></p>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="form-group mb-2">
+        <input [ngClass]="{'form-control': true, 'is-valid': isValid('email'), 'is-invalid': isInvalid('email')}"
+          type="email" formControlName="email" placeholder="Email" (keydown)="validLogin = true">
+      </div>
+      <div class="form-group mb-1">
+        <input [ngClass]="{'form-control': true, 'is-valid': isValid('password'), 'is-invalid': isInvalid('password')}"
+          type="password" formControlName="password" placeholder="Password" (keydown)="validLogin = true">
+      </div>
+      <div class="feedback">
+        @if(!valid) {
+        <p class="m-0 mb-2 invalid feedback-h">{{errorMsg}}</p>
+        }
+        @else if (!validLogin) {
+        <p class="m-0 mb-2 invalid feedback-h">{{loginErrorMsg}}</p>
+        }
+        @else {
+        <p class="m-0 mb-2 feedback-h"></p>
+        }
+      </div>
+      <div class="form-group mb-2"><button class="btn btn-primary btn-block" type="submit">Log In</button></div>
+      <div>
+        <a href="#" class="mb-2 forgot">Password dimenticata?</a>
+        <p class="m-0 mb-2 forgot">oppure</p>
+        <div class="form-group m-0"><a class="btn btn-outline-info w-100 btn-block" href="/registrati">Registrati</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

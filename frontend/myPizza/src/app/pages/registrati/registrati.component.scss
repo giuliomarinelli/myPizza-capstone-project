@@ -1,0 +1,17 @@
+.form-width {
+  @media screen and (min-width: 576px){
+    max-width: 690px;
+  }
+
+  @media screen and (min-width: 768px) {
+    max-width: 768px;
+  }
+
+  max-width: 320px;
+  width: 100%;
+  margin: 30px 20px;
+}
+
+.feedback-h {
+  height: 36px;
+}

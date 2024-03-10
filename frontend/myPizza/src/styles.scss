@@ -32,7 +32,6 @@ $myPizza-theme: mat.define-light-theme((color: (primary: $myPizza-primary,
 @include mat.all-component-themes($myPizza-theme);
 
 
-
 /* You can add global styles to this file, and also import other style files */
 
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic+Coding:wght@400;700&display=swap');
@@ -41,6 +40,9 @@ $myPizza-theme: mat.define-light-theme((color: (primary: $myPizza-primary,
 @import './app/scss/variables';
 @import './app/scss/variables-dark';
 @import '../node_modules/bootstrap/scss/bootstrap';
+@import '../node_modules/bootstrap-icons/font/bootstrap-icons.min.css';
+
+
 
 .mdc-tab__text-label {
   color: $white !important;

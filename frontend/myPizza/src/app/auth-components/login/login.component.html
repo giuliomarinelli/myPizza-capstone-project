@@ -1,25 +1,34 @@
 <div class="footer-bottom d-flex justify-content-center align-items-center">
-  <div class="form-signin mt-3" cz-shortcut-listen="true">
-    <form class="box">
-      <h1 class="display-3 text-white text-center mb-3">LOGIN</h1>
-      <div class="form-floating">
-        <input class="form-control email-border" formControlName="email" type="email" id="email" placeholder="Email" />
-        <label for="email" class="mild-gray">Email</label>
+  <div class="form-dark form-width">
+    <form [formGroup]="loginForm" (submit)="performLogin()">
+      <div class="illustration">
+        <i class="bi bi-lock"></i>
       </div>
-      <div class="form-floating">
-        <input formControlName="password" type="password" class="form-control password-border" id="password"
-          placeholder="Password" />
-        <label for="password" class="mild-gray">Password</label>
+      <div class="form-group mb-2">
+        <input [ngClass]="{'form-control': true, 'is-valid': isValid('email'), 'is-invalid': isInvalid('email')}"
+          type="email" formControlName="email" placeholder="Email" (keydown)="validLogin = true">
       </div>
-      <button class="w-100 btn btn-lg btn-primary" type="submit">ACCEDI</button>
-      <div class="mt-2">
-        <p class="m-0 text-white small">
-          Non sei ancora registrato?
-          <a href="/registrati">Registrati subito</a>
-        </p>
-        <p class="m-0 text-white small">
-          <a href="/recupera-password">Hai dimenticato la password?</a>
-        </p>
+      <div class="form-group mb-1">
+        <input [ngClass]="{'form-control': true, 'is-valid': isValid('password'), 'is-invalid': isInvalid('password')}"
+          type="password" formControlName="password" placeholder="Password" (keydown)="validLogin = true">
+      </div>
+      <div class="feedback">
+        @if(!valid) {
+        <p class="m-0 mb-2 invalid feedback-h">{{errorMsg}}</p>
+        }
+        @else if (!validLogin) {
+        <p class="m-0 mb-2 invalid feedback-h">{{loginErrorMsg}}</p>
+        }
+        @else {
+        <p class="m-0 mb-2 feedback-h"></p>
+        }
+      </div>
+      <div class="form-group mb-2"><button class="btn btn-primary btn-block" type="submit">Log In</button></div>
+      <div>
+        <a href="#" class="mb-2 forgot">Password dimenticata?</a>
+        <p class="m-0 mb-2 forgot">oppure</p>
+        <div class="form-group m-0"><a class="btn btn-outline-info w-100 btn-block" href="/registrati">Registrati</a>
+        </div>
       </div>
     </form>
   </div>

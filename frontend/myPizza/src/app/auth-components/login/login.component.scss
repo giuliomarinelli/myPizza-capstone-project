@@ -1,49 +1,7 @@
-.form-signin {
-  width: 100%;
-  padding: 0 20px;
-  @media screen and (min-width: 426px) {
-    width: 400px;
-  }
+.form-width {
+  max-width: 320px;
 }
 
-
-a {
-  color: rgb(31, 95, 191);
-  text-decoration: none;
-  &:hover {
-    text-decoration: underline;
-  }
-}
-
-
-.form-signin .form-floating:focus-within {
-  z-index: 2;
-}
-
-.form-signin input[type="email"] {
-  margin-bottom: -1px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-}
-
-.form-signin input[type="password"] {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-
-.invalid-form-feedback {
-  color: var(--bs-form-invalid-color);
-}
-
-.feedback {
-  font-size: 0.875rem;
-}
-
-.invalid {
-  color: var(--bs-form-invalid-color);
-}
-
-.valid {
-  color: var(--bs-form-valid-color);
+.feedback-h {
+  height: 36px;
 }

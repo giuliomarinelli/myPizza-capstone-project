@@ -1,5 +1,7 @@
 package backendapp.myPizza.Models.reqDTO;
 
+import backendapp.myPizza.Models.enums.Gender;
+
 public record UserPostDTO(
         String firstName,
 
@@ -10,6 +12,8 @@ public record UserPostDTO(
         String phoneNumber,
 
         String password,
+
+        Gender gender,
 
         AddressDTO address
 

@@ -41,8 +41,8 @@ $dark-border-subtle-dark:           $gray-800 !default;
 // scss-docs-end theme-border-subtle-dark-variables
 
 $body-color-dark:                   $gray-300 !default;
-$body-bg-dark:                      $gray-900 !default;
-$body-secondary-color-dark:         rgba($body-color-dark, .75) !default;
+$body-bg-dark:                      lighten(#1e2833, 6%);//$gray-900 !default;
+$body-secondary-color-dark:         $white;//rgba($body-color-dark, .40) !default;
 $body-secondary-bg-dark:            $gray-800 !default;
 $body-tertiary-color-dark:          rgba($body-color-dark, .5) !default;
 $body-tertiary-bg-dark:             mix($gray-800, $gray-900, 50%) !default;
@@ -61,11 +61,11 @@ $mark-bg-dark:                      $yellow-800 !default;
 // Forms
 //
 
-$form-select-indicator-color-dark:  $body-color-dark !default;
-$form-select-indicator-dark:        url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='#{$form-select-indicator-color-dark}' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/></svg>") !default;
+$form-select-indicator-color-dark:  $white;//$body-color-dark !default;
+$form-select-indicator-dark:        url('./arrow-down.svg');//url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path fill='none' stroke='#{$form-select-indicator-color-dark}' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/></svg>") !default;
 
 $form-switch-color-dark:            rgba($white, .25) !default;
-$form-switch-bg-image-dark:         url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'><circle r='3' fill='#{$form-switch-color-dark}'/></svg>") !default;
+$form-switch-bg-image-dark:         url('./arrow-down.svg');//url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'><circle r='3' fill='#{$form-switch-color-dark}'/></svg>") !default;
 
 // scss-docs-start form-validation-colors-dark
 $form-valid-color-dark:             $green-300 !default;

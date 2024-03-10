@@ -52,7 +52,7 @@ public class AuthController {
         wsAccessToken.setHttpOnly(true);
         wsAccessToken.setDomain("localhost");
         wsAccessToken.setPath("/");
-        Cookie wsRefreshToken = new Cookie("__ws_refresh_tkn", wsTokens.getAccessToken());
+        Cookie wsRefreshToken = new Cookie("__ws_refresh_tkn", wsTokens.getRefreshToken());
         wsRefreshToken.setHttpOnly(true);
         wsRefreshToken.setDomain("localhost");
         wsRefreshToken.setPath("/");
@@ -64,7 +64,7 @@ public class AuthController {
     }
 
     @GetMapping("/logout")
-    public void logout(HttpServletResponse res) {
+    public ConfirmRes logout(HttpServletResponse res) {
         Cookie accessToken = new Cookie("__access_tkn", null);
         Cookie refreshToken = new Cookie("__refresh_tkn", null);
         Cookie wsAccessToken = new Cookie("__ws_access_tkn", null);
@@ -81,6 +81,7 @@ public class AuthController {
         res.addCookie(refreshToken);
         res.addCookie(wsAccessToken);
         res.addCookie(wsRefreshToken);
+        return new ConfirmRes("Logout successfully", HttpStatus.OK);
     }
 
 }

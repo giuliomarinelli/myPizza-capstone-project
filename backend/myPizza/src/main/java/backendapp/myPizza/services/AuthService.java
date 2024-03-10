@@ -48,7 +48,7 @@ public class AuthService {
                 );
 
         User u = new User(userPostDTO.firstName(), userPostDTO.lastName(), userPostDTO.email(),
-                encoder.encode(userPostDTO.password()), userPostDTO.phoneNumber());
+                encoder.encode(userPostDTO.password()), userPostDTO.phoneNumber(), userPostDTO.gender());
         try {
             userRp.save(u);
         } catch (DataIntegrityViolationException e) {

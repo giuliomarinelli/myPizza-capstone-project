@@ -10,7 +10,8 @@
     color: #2980ef;
   }
 
-  form {
+  form,
+  .formset {
 
     width: 90%;
     background-color: #1e2833;
@@ -49,9 +50,11 @@
 
   .feedback {
     font-size: .75rem;
+
     .valid {
       color: var(--bs-form-valid-border-color)
     }
+
     .invalid {
       color: var(--bs-form-invalid-border-color)
     }

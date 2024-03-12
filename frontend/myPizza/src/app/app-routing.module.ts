@@ -10,7 +10,8 @@ const routes: Routes = [
   { path: 'il-nostro-menu', loadChildren: () => import('./pages/il-nostro-menu/il-nostro-menu.module').then(m => m.IlNostroMenuModule) },
   { path: 'la-nostra-pizzeria', loadChildren: () => import('./pages/la-nostra-pizzeria/la-nostra-pizzeria.module').then(m => m.LaNostraPizzeriaModule) },
   { path: '', loadChildren: () => import('./pages/home/home.module').then(m => m.HomeModule), pathMatch: 'full' },
-  { path: 'registrati', loadChildren: () => import('./pages/registrati/registrati.module').then(m => m.RegistratiModule) }];
+  { path: 'registrati', loadChildren: () => import('./pages/registrati/registrati.module').then(m => m.RegistratiModule) },
+  { path: 'my-pizza', loadChildren: () => import('./pages/my-pizza/my-pizza.module').then(m => m.MyPizzaModule) }];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

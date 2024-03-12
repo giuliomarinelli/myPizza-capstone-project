@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { Observable, map } from 'rxjs';
 import { InternationalPrefix } from '../Models/i-international-prefix';
+import { CityAutocomplete } from '../Models/i-city-autocomplete';
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,12 @@ export class PublicApiService {
     return this.http.get<InternationalPrefix[]>(`${this.backendUrl}/public/international-prefixes`).pipe(map(res => {
       return res.map(r => r.prefix)
     }))
+  }
+
+  public cityAutocomplete(q: string, limit?: number): Observable<CityAutocomplete[]> {
+    let apiUrl = `${this.backendUrl}/public/city-autocomplete?q=${q}`
+    if (limit) apiUrl += `&limit=${limit}`
+    return this.http.get<CityAutocomplete[]>(apiUrl)
   }
 
 }

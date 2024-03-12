@@ -12,6 +12,6 @@ import java.util.Optional;
 public interface CityRepository extends JpaRepository<City, Integer> {
     public Optional<City> findByNameAndProvinceCode(String name, String provinceCode);
 
-    @Query(value = "SELECT c FROM City c WHERE c.name LIKE CONCAT('%',:q,'%') LIMIT :limit", nativeQuery = true)
+    @Query(value = "SELECT * FROM cities WHERE LOWER(name) LIKE CONCAT('%',LOWER(:q),'%') LIMIT :limit", nativeQuery = true)
     public List<City> search(String q, int limit);
 }

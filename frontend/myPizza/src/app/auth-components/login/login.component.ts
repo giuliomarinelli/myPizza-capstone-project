@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { Router, RoutesRecognized } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -9,7 +10,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class LoginComponent {
 
-  constructor(private fb: FormBuilder, private authSvc: AuthService) { }
+  constructor(private fb: FormBuilder, private authSvc: AuthService, private router: Router) { }
 
   protected errorMsg: string = ''
 
@@ -18,6 +19,10 @@ export class LoginComponent {
   protected valid!: boolean
 
   protected validLogin: boolean = true
+
+  private currentRoute: string = this.router.url
+
+
 
   ngDoCheck() {
     this.errorMsg = `${this.setInvalidMessages('email')}${this.setInvalidMessages('password')}`
@@ -56,7 +61,9 @@ export class LoginComponent {
       this.authSvc.login(this.loginForm.value).subscribe(
 
         res => {
-          console.log('Login ok')
+          this.authSvc.loggedInSbj.next(true)
+          console.log(this.currentRoute)
+          if (this.currentRoute === '/login') this.router.navigate(['/my-pizza'])
         },
         err => {
           this.validLogin = false

@@ -10,7 +10,15 @@ export interface UserRegister {
   address: AddressRegisterDTO
 }
 
-export type UserPostDTO = Omit<UserRegister, 'confirmPassword'>
+export interface UserPostDTO {
+  firstName: string
+  lastName: string
+  email: string
+  phoneNumber: string
+  gender: string
+  password: string
+  address: AddressDTO
+}
 
 export interface AddressRegisterDTO {
   road: string

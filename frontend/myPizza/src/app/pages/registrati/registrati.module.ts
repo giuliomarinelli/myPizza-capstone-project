@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import {MatAutocompleteModule} from '@angular/material/autocomplete'
 import { RegistratiRoutingModule } from './registrati-routing.module';
 import { RegistratiComponent } from './registrati.component';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -13,7 +13,8 @@ import { ReactiveFormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     RegistratiRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatAutocompleteModule
   ]
 })
 export class RegistratiModule { }

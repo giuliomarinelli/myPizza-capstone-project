@@ -1,9 +1,11 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, Inject, PLATFORM_ID, ViewChild, afterNextRender } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { iLink } from './Models/i-link';
 import { ThemePalette } from '@angular/material/core';
 import { Router, RoutesRecognized } from '@angular/router';
-import { MatTabNavPanel } from '@angular/material/tabs';
+import { isPlatformBrowser } from '@angular/common';
+import { AuthService } from './services/auth.service';
+import { User } from './Models/i-user';
 
 @Component({
   selector: '#root',
@@ -12,10 +14,42 @@ import { MatTabNavPanel } from '@angular/material/tabs';
 })
 export class AppComponent {
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: string, private authSvc: AuthService) {
 
-  ngDoCheck() {
+    afterNextRender(() => {
+      this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
+        if (isLoggedIn) {
+          this.isLoggedIn = true
+          this.getProfile()
+        } else {
+          this.authSvc.isLoggedInQuery().subscribe(res => {
+            this.isLoggedIn = res.loggedIn
+            this.authSvc.loggedInSbj.next(res.loggedIn)
+            this.getProfile()
+          })
+        }
+      })
+    })
+  }
 
+  protected isLoggedIn = false
+
+  protected userProfile!: User
+  protected userSuffix!: string
+
+  protected logout(): void {
+    this.authSvc.logout().subscribe(res => this.isLoggedIn = false)
+  }
+
+  protected get useClient(): boolean {
+    return isPlatformBrowser(this.platformId)
+  }
+
+  private getProfile() {
+    this.authSvc.getProfile().subscribe(res => {
+      this.userSuffix = res.gender === 'M' ? 'o' : 'a'
+      this.userProfile = res
+    })
   }
 
   @ViewChild('sidenav') sidenav!: MatSidenav;
@@ -29,6 +63,7 @@ export class AppComponent {
     this.reason = reason;
     this.sidenav.close();
   }
+
 
   protected links: iLink[] = [
     {
@@ -73,6 +108,9 @@ export class AppComponent {
       }
 
     })
+
+
+
 
   }
 }

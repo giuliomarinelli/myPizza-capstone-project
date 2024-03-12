@@ -3,8 +3,9 @@ import { BehaviorSubject, Observable, catchError, map, tap } from 'rxjs';
 import { environment } from '../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 import { IsLoggedIn } from '../Models/is-logged-in';
-import { UserLogin } from '../Models/user-dto';
+import { UserLogin, UserPostDTO } from '../Models/user-dto';
 import { ConfirmRes } from '../Models/confirm-res';
+import { User } from '../Models/i-user';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +29,14 @@ export class AuthService {
 
   public logout(): Observable<ConfirmRes> {
     return this.http.get<ConfirmRes>(`${this.backendUrl}/auth/logout`, { withCredentials: true })
+  }
+
+  public register(userPostDTO: UserPostDTO): Observable<User> {
+    return this.http.post<User>(`${this.backendUrl}/auth/register`, userPostDTO)
+  }
+
+  public getProfile(): Observable<User> {
+    return this.http.get<User>(`${this.backendUrl}/api/user-profile`, { withCredentials: true })
   }
 
 }

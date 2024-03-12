@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { IsLoggedIn } from '../Models/is-logged-in';
 import { UserLogin, UserPostDTO } from '../Models/user-dto';
 import { ConfirmRes } from '../Models/confirm-res';
-import { User } from '../Models/i-user';
+import { AuthoritiesRes, User } from '../Models/i-user';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +16,9 @@ export class AuthService {
 
   public loggedInSbj = new BehaviorSubject<boolean>(false)
   public isLoggedIn$ = this.loggedInSbj.asObservable()
+
+  public adminSbj = new BehaviorSubject<boolean>(false)
+  public isAdmin$ = this.adminSbj.asObservable()
 
   private backendUrl = environment.backendUrl;
 
@@ -37,6 +40,13 @@ export class AuthService {
 
   public getProfile(): Observable<User> {
     return this.http.get<User>(`${this.backendUrl}/api/user-profile`, { withCredentials: true })
+  }
+
+  public isAdmin(): Observable<boolean> {
+    return this.http.get<AuthoritiesRes>(`${this.backendUrl}/api/user-profile/get-authorities`, { withCredentials: true }).pipe(map(res => {
+      if (res.authorities.includes('ADMIN')) return true
+      return false
+    }))
   }
 
 }

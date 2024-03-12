@@ -1,3 +1,4 @@
+import { MyPizzaGesShComponentsModule } from './../../../my-pizza-ges-sh-components/my-pizza-ges-sh-components.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -11,7 +12,8 @@ import { AggiungiProdottiComponent } from './aggiungi-prodotti.component';
   ],
   imports: [
     CommonModule,
-    AggiungiProdottiRoutingModule
+    AggiungiProdottiRoutingModule,
+    MyPizzaGesShComponentsModule
   ]
 })
 export class AggiungiProdottiModule { }

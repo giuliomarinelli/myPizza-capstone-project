@@ -1,17 +1,18 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SaveProductComponent } from './save-product/save-product.component';
+import { ProductSaveComponent } from './product-save/product-save.component';
 import { ReactiveFormsModule } from '@angular/forms';
 
 
 
 @NgModule({
   declarations: [
-    SaveProductComponent
+    ProductSaveComponent
   ],
   imports: [
     CommonModule,
     ReactiveFormsModule
-  ]
+  ],
+  exports: [ProductSaveComponent]
 })
-export class MyPizzaGesComponentsModule { }
+export class MyPizzaGesShComponentsModule { }

@@ -4,3 +4,13 @@ export interface ProductDTO {
   toppings: string[]
   category: string
 }
+
+export interface ProductErrorMsg {
+  name: string
+  basePrice: string
+  toppings: string
+  category: string
+  newCategory: string
+}
+
+

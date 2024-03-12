@@ -16,3 +16,7 @@ export interface User {
 export interface Autority {
   authority: string
 }
+
+export interface AuthoritiesRes {
+  authorities: string[]
+}

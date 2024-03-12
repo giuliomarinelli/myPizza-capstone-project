@@ -1,0 +1,55 @@
+<div class="form-dark form-width">
+  <div class="formset" [formGroup]="productForm">
+    @if (type) {
+    @if (type === 'ADD') {
+    <div class="illustration">
+      <i class="bi bi-plus-circle"></i>
+    </div>
+    } @else if(type === 'UPDATE') {
+    <div class="illustration">
+      <i class="bi bi-pencil-square"></i>
+    </div>
+    }
+    }
+    <div class="row">
+      <div class="col-12 col-sm-6">
+        <div class="form-group mb-1">
+          <input [ngClass]="{'form-control': true, 'is-valid': isValid('name'), 'is-invalid': isInvalid('name')}"
+            type="text" formControlName="name" placeholder="Nome prodotto">
+        </div>
+        <div class="feedback">
+          @if(isInvalid('name')) {
+          <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.name}}</p>
+          }
+          @else {
+          <p class="m-0 mb-2 feedback-h"></p>
+          }
+
+        </div>
+      </div>
+      <div class="col-12 col-sm-6">
+        <div class="form-group mb-1">
+          <input
+            [ngClass]="{'form-control': true, 'is-valid': isValid('basePrice'), 'is-invalid': isInvalid('basePrice')}"
+            type="text" formControlName="basePrice" placeholder="Prezzo base">
+        </div>
+        <div class="feedback">
+          @if(isInvalid('basePrice')) {
+          <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.name}}</p>
+          }
+          @else {
+          <p class="m-0 mb-2 feedback-h"></p>
+          }
+        </div>
+      </div>
+      <div>
+        <select class="form-select" data-bs-theme="dark" aria-label="Default select example" style="size: 8"
+          formControlName="prefix">
+          @for(category of categories?.categories; track category) {
+          <option [value]="category">{{category}}</option>
+          }
+        </select>
+      </div>
+    </div>
+  </div>
+</div>

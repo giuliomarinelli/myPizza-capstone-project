@@ -21,10 +21,12 @@ export class AppComponent {
         if (isLoggedIn) {
           this.isLoggedIn = true
           this.getProfile()
+          this.authSvc.isAdmin().subscribe(isAdmin => this.authSvc.adminSbj.next(isAdmin))
         } else {
           this.authSvc.isLoggedInQuery().subscribe(res => {
             this.isLoggedIn = res.loggedIn
             this.authSvc.loggedInSbj.next(res.loggedIn)
+            this.authSvc.isAdmin().subscribe(isAdmin => this.authSvc.adminSbj.next(isAdmin))
             this.getProfile()
           })
         }

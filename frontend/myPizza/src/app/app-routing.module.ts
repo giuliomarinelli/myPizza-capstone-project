@@ -14,8 +14,7 @@ const routes: Routes = [
   { path: 'my-pizza', loadChildren: () => import('./pages/my-pizza/my-pizza.module').then(m => m.MyPizzaModule) },
   { path: 'my-pizza-ges', loadChildren: () => import('./pages/my-pizza-ges/my-pizza-ges.module').then(m => m.MyPizzaGesModule) },
   { path: 'my-pizza-ges/aggiungi-prodotti', loadChildren: () => import('./pages/my-pizza-ges/aggiungi-prodotti/aggiungi-prodotti.module').then(m => m.AggiungiProdottiModule) },
-  { path: 'my-pizza-ges/modifica-prodotti', loadChildren: () => import('./pages/my-pizza-ges/modifica-prodotti/modifica-prodotti.module').then(m => m.ModificaProdottiModule) }];
-
+]
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]

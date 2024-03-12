@@ -1,1 +1,5 @@
-<p>aggiungi-prodotti works!</p>
+<div class="footer-bottom py-2">
+  <h1 class="h1 text-center mb-4">Aggiungi prodotti</h1>
+  <app-product-save *ngIf="useClient" [type]="'ADD'" [categories]="categories"
+    [toppings]="toppings" [productNames]="productNames"></app-product-save>
+</div>

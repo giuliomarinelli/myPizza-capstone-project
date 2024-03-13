@@ -9,7 +9,7 @@
           <div class="form-group">
             <input
               [ngClass]="{'form-control': true, 'is-valid': isValid('firstName'), 'is-invalid': isInvalid('firstName')}"
-              type="text" formControlName="firstName" placeholder="Nome" (keydown)="validLogin = true">
+              type="text" formControlName="firstName" placeholder="Nome">
           </div>
           <div class="feedback">
             @if(isInvalid('firstName')) {
@@ -22,7 +22,7 @@
           <div class="form-group">
             <input
               [ngClass]="{'form-control': true, 'is-valid': isValid('lastName'), 'is-invalid': isInvalid('lastName')}"
-              type="text" formControlName="lastName" placeholder="Cognome" (keydown)="validLogin = true">
+              type="text" formControlName="lastName" placeholder="Cognome">
           </div>
           <div class="feedback">
             @if(isInvalid('lastName')) {
@@ -34,7 +34,7 @@
           </div>
           <div class="form-group">
             <input [ngClass]="{'form-control': true, 'is-valid': isValid('email'), 'is-invalid': isInvalid('email')}"
-              type="email" formControlName="email" placeholder="Email" (keydown)="validLogin = true">
+              type="email" formControlName="email" placeholder="Email">
           </div>
           <div class="feedback">
             @if(isInvalid('email')) {
@@ -58,7 +58,7 @@
               <div class="form-group">
                 <input
                   [ngClass]="{'form-control': true, 'is-valid': isValid('phoneNumber'), 'is-invalid': isInvalid('phoneNumber')}"
-                  type="text" formControlName="phoneNumber" placeholder="Telefono" (keydown)="validLogin = true">
+                  type="text" formControlName="phoneNumber" placeholder="Telefono">
               </div>
               <div class="feedback">
                 @if(isInvalid('phoneNumber')) {
@@ -77,8 +77,8 @@
             <option value="M">Uomo</option>
           </select>
           <div class="feedback">
-            @if(isInvalid('gender')) {
-            <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.gender}}</p>
+            @if(isGenderInvalid()) {
+            <p class="m-0 mb-2 invalid feedback-h">Devi selezionare un genere.</p>
             }
             @else {
             <p class="m-0 mb-2 feedback-h"></p>
@@ -86,65 +86,87 @@
           </div>
         </div>
         <div class="col-12 col-sm-6 px-2">
-          <div class="row">
-            <div class="col-9">
-              <div class="form-group">
-                <input [ngClass]="{'form-control': true, 'is-valid': isValid('road'), 'is-invalid': isInvalid('road')}"
-                  type="text" formControlName="road" placeholder="Via" (keydown)="validLogin = true">
+          <div formGroupName="address">
+            <div class="row">
+              <div class="col-7">
+                <div class="form-group">
+                  <input
+                    [ngClass]="{'form-control': true, 'is-valid': isValid('address.road'), 'is-invalid': isInvalid('address.road')}"
+                    type="text" formControlName="road" placeholder="Via">
+                </div>
+                <div class="feedback">
+                  @if(isInvalid('address.road')) {
+                  <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.road}}</p>
+                  }
+                  @else {
+                  <p class="m-0 mb-2 feedback-h"></p>
+                  }
+                </div>
               </div>
-              <div class="feedback">
-                @if(isInvalid('road')) {
-                <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.road}}</p>
-                }
-                @else {
-                <p class="m-0 mb-2 feedback-h"></p>
-                }
+              <div class="col-5">
+                <div class="form-group">
+                  <input
+                    [ngClass]="{'form-control': true, 'is-valid': isValid('address.civic'), 'is-invalid': isInvalid('address.civic')}"
+                    type="text" formControlName="civic" placeholder="N°">
+                </div>
+                <div class="feedback">
+                  @if(isInvalid('address.civic')) {
+                  <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.civic}}</p>
+                  }
+                  @else {
+                  <p class="m-0 mb-2 feedback-h"></p>
+                  }
+                </div>
               </div>
             </div>
-            <div class="col-3">
-              <div class="form-group">
-                <input
-                  [ngClass]="{'form-control': true, 'is-valid': isValid('civic'), 'is-invalid': isInvalid('civic')}"
-                  type="text" formControlName="civic" placeholder="N°" (keydown)="validLogin = true">
-              </div>
-              <div class="feedback">
-                @if(isInvalid('civic')) {
-                <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.civic}}</p>
+            <div class="form-group">
+              <input type="text" placeholder="Città" aria-label="Number" matInput
+                [ngClass]="{'form-control': true, 'is-valid': isValid('address.cityAutocomplete'), 'is-invalid': isInvalid('address.cityAutocomplete')}"
+                formControlName="cityAutocomplete" [matAutocomplete]="auto" (input)="onCityInput()">
+              <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setCity($event)">
+                @for (option of citySetOptions; track option) {
+                <mat-option data-bs-theme="dark" [value]="option.autocomplete">{{option.autocomplete}}</mat-option>
                 }
-                @else {
-                <p class="m-0 mb-2 feedback-h"></p>
-                }
-              </div>
+              </mat-autocomplete>
             </div>
+            <div class="feedback">
+              @if(isInvalid('address.cityAutocomplete')) {
+              <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.cityAutocomplete}}</p>
+              }
+              @else {
+              <p class="m-0 mb-2 feedback-h"></p>
+              }
+            </div>
+            <input type="hidden" formControlName="city" value="">
+            <input type="hidden" formControlName="province" value="">
           </div>
-        </div>
-      </div>
-
-
-      <div class="form-group mb-2">
-        <input [ngClass]="{'form-control': true, 'is-valid': isValid('email'), 'is-invalid': isInvalid('email')}"
-          type="email" formControlName="email" placeholder="Email" (keydown)="validLogin = true">
-      </div>
-      <div class="form-group mb-1">
-        <input [ngClass]="{'form-control': true, 'is-valid': isValid('password'), 'is-invalid': isInvalid('password')}"
-          type="password" formControlName="password" placeholder="Password" (keydown)="validLogin = true">
-      </div>
-      <div class="feedback">
-        @if(!valid) {
-        <p class="m-0 mb-2 invalid feedback-h">{{errorMsg}}</p>
-        }
-        @else if (!validLogin) {
-        <p class="m-0 mb-2 invalid feedback-h">{{loginErrorMsg}}</p>
-        }
-        @else {
-        <p class="m-0 mb-2 feedback-h"></p>
-        }
-      </div>
-      <div class="form-group mb-2"><button class="btn btn-primary btn-block" type="submit">Log In</button></div>
-      <div>
-        <a href="#" class="mb-2 forgot">Password dimenticata?</a>
-        <p class="m-0 mb-2 forgot">oppure</p>
-        <div class="form-group m-0"><a class="btn btn-outline-info w-100 btn-block" href="/registrati">Registrati</a>
+          <div class="form-group">
+            <input
+              [ngClass]="{'form-control': true, 'is-valid': isValid('password'), 'is-invalid': isInvalid('password')}"
+              type="password" formControlName="password" placeholder="Password">
+          </div>
+          <div class="feedback">
+            @if(isInvalid('password')) {
+            <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.password}}</p>
+            }
+            @else {
+            <p class="m-0 mb-2 feedback-h"></p>
+            }
+          </div>
+          <div class="form-group">
+            <input
+              [ngClass]="{'form-control': true, 'is-valid': isValid('confirmPassword') && match, 'is-invalid': isInvalid('confirmPassword') || unmatch}"
+              type="password" formControlName="confirmPassword" placeholder="Conferma password">
+          </div>
+          <div class="feedback">
+            @if(isInvalid('confirmPassword') || unmatch) {
+            <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.confirmPassword}}</p>
+            }
+            @else {
+            <p class="m-0 mb-2 feedback-h"></p>
+            }
+          </div>
+          <button class="btn btn-primary w-100">Registrati</button>
         </div>
       </div>
     </form>

@@ -3,6 +3,7 @@ package backendapp.myPizza.services;
 import backendapp.myPizza.Models.entities.Address;
 import backendapp.myPizza.Models.entities.Order;
 import backendapp.myPizza.Models.entities.User;
+import backendapp.myPizza.Models.enums.UserScope;
 import backendapp.myPizza.Models.reqDTO.UserPutDTO;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.exceptions.BadRequestException;
@@ -14,10 +15,12 @@ import backendapp.myPizza.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,6 +48,14 @@ public class ProfileService {
         return userRp.findById(userId).orElseThrow(
                 () -> new UnauthorizedException("Invalid access token and refresh token")
         );
+    }
+
+    public List<UserScope> getAuthorities() throws UnauthorizedException {
+        UUID userId = jwtUtils.extractUserIdFromReq();
+        User u = userRp.findById(userId).orElseThrow(
+                () -> new UnauthorizedException("Invalid access token and refresh token")
+        );
+        return u.getScope();
     }
 
     public ConfirmRes changePassword(String oldPassword, String newPassword) throws UnauthorizedException, BadRequestException {

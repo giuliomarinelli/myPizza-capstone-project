@@ -56,10 +56,22 @@
 
           </div>
           <span class="spacer"></span>
+          @if(isLoggedIn) {
+          <div class="text-white d-flex align-items-center gap-3">
+            <a href="#" (click)="logout()">Logout</a>
+            <div class="avatar">
+              <img [src]="userProfile.profileImage" class="img-fluid">
+            </div>
+          </div>
+          } @else {
           <div class="d-none d-lg-flex align-items-center">
             <a routerLink="/login" class="me-3 right-link">Accedi</a>
             <a routerLink="/registrati" class="me-3 right-link">Registrati</a>
           </div>
+          }
+
+
+
           <button mat-icon-button (click)="sidenav.open()" aria-label="Example icon-button with menu icon"
             class="material-icon d-lg-none">
             <mat-icon>menu</mat-icon>

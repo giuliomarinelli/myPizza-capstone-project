@@ -5,6 +5,7 @@ import backendapp.myPizza.Models.entities.Order;
 import backendapp.myPizza.Models.entities.User;
 import backendapp.myPizza.Models.reqDTO.ChangePasswordDTO;
 import backendapp.myPizza.Models.reqDTO.UserPutDTO;
+import backendapp.myPizza.Models.resDTO.AuthoritiesRes;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.Models.resDTO.IsLoggedInRes;
 import backendapp.myPizza.exceptions.BadRequestException;
@@ -55,5 +56,10 @@ public class ProfileController {
     @GetMapping("/is-logged-in")
     public IsLoggedInRes isLoggedIng() {
         return new IsLoggedInRes(true);
+    }
+
+    @GetMapping("get-authorities")
+    public AuthoritiesRes getAuthorities() throws UnauthorizedException {
+        return new AuthoritiesRes(profileSvc.getAuthorities());
     }
 }

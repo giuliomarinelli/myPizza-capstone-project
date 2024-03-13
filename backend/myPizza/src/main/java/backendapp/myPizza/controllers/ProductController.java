@@ -3,7 +3,11 @@ package backendapp.myPizza.controllers;
 import backendapp.myPizza.Models.entities.Product;
 import backendapp.myPizza.Models.entities.Topping;
 import backendapp.myPizza.Models.reqDTO.AddToppingsDTO;
+import backendapp.myPizza.Models.reqDTO.ManyProductsPostDTO;
 import backendapp.myPizza.Models.reqDTO.ProductDTO;
+import backendapp.myPizza.Models.resDTO.CategoriesRes;
+import backendapp.myPizza.Models.resDTO.ProductNamesRes;
+import backendapp.myPizza.Models.resDTO.ToppingsRes;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,17 +27,33 @@ public class ProductController {
     private ProductService productSvc;
 
     @GetMapping("/toppings")
-    public Page<Topping> getAllToppings(Pageable pageable) {
-        return productSvc.findAllToppings(pageable);
+    public ToppingsRes getAllToppings() {
+        return new ToppingsRes(productSvc.findAllToppings());
     }
+
     @PostMapping("/toppings")
-    public Page<Topping> addToppings(@RequestBody AddToppingsDTO addToppingsDTO, Pageable pageable) throws BadRequestException {
-        return productSvc.addToppings(addToppingsDTO.toppings(), pageable);
+    public ToppingsRes addToppings(@RequestBody AddToppingsDTO addToppingsDTO) throws BadRequestException {
+        return new ToppingsRes(productSvc.addToppings(addToppingsDTO.toppings()));
     }
 
     @PostMapping("/products")
     public Product addProduct(@RequestBody ProductDTO productDTO) throws BadRequestException {
         return productSvc.addProduct(productDTO);
+    }
+
+    @GetMapping("/products/product-names")
+    public ProductNamesRes getProductNames() {
+        return new ProductNamesRes(productSvc.getProductNames());
+    }
+
+    @PostMapping("/products/add-many")
+    public List<Product> addManyProducts(@RequestBody ManyProductsPostDTO manyProductsPostDTO) throws BadRequestException {
+        return productSvc.addManyProducts(manyProductsPostDTO);
+    }
+
+    @GetMapping("/products/categories")
+    public CategoriesRes getCategories() {
+        return new CategoriesRes(productSvc.getAllCategories());
     }
 
 }

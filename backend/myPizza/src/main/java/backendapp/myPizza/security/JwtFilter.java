@@ -70,8 +70,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 filterChain.doFilter(req, res);
             } catch (ExpiredJwtException e) {
-                System.out.println(e.getMessage() + " N." + count);
-                count++;
                 TokenPair newTokens = jwtUtils.generateTokenPair(tokens.getRefreshToken(), TokenPairType.HTTP);
                 Cookie accessToken = new Cookie("__access_tkn", newTokens.getAccessToken());
                 accessToken.setHttpOnly(true);
@@ -83,7 +81,6 @@ public class JwtFilter extends OncePerRequestFilter {
                 refreshToken.setPath("/");
                 res.addCookie(accessToken);
                 res.addCookie(refreshToken);
-                System.out.println(newTokens);
                 UUID userId = jwtUtils.extractUserIdFromAccessToken(newTokens.getAccessToken());
                 User u = authUserSvc.findUserById(userId);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(u, cookies, u.getAuthorities());

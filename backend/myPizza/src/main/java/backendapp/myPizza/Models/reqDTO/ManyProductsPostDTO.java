@@ -2,7 +2,6 @@ package backendapp.myPizza.Models.reqDTO;
 
 import java.util.List;
 
-public record ManyProductsDTO(
+public record ManyProductsPostDTO(
         List<ProductDTO> products
-) {
-}
+) { }

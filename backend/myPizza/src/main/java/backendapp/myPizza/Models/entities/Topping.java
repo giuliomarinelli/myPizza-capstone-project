@@ -20,6 +20,9 @@ public class Topping {
 
     private double price;
 
+    @Transient
+    private String description;
+
     @JsonIgnore
     @ManyToMany(mappedBy = "toppings", fetch = FetchType.EAGER)
     private List<Product> products = new ArrayList<>();

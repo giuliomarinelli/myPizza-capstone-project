@@ -1,5 +1,6 @@
 package backendapp.myPizza.Models.resDTO;
 
+import backendapp.myPizza.Models.enums.UserScope;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,5 +12,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthoritiesRes {
-    private List<GrantedAuthority> authorities;
+    private List<UserScope> authorities;
 }

@@ -18,4 +18,5 @@ public class AuthUserService {
                 () -> new UnauthorizedException("Invalid access token")
         );
     }
+
 }

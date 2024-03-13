@@ -34,8 +34,6 @@ public class Product {
 
     private String category;
 
-    private int viewOrder;
-
     private double price;
 
     public void setProductTotalAmount() {

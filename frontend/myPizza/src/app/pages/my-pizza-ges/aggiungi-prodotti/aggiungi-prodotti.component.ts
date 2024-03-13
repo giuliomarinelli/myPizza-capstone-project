@@ -67,7 +67,6 @@ export class AggiungiProdottiComponent {
         const i = event.i
         if (i != undefined) {
             this.addProductData[i] = event
-            console.log(this.addProductData)
         }
 
     }
@@ -77,9 +76,9 @@ export class AggiungiProdottiComponent {
     }
 
     protected delete(e: number): void {
-        this.addProductForms.splice(e, 1)
-        this.addProductData.splice(e, 1)
-
+        this.addProductForms[e] = false
+        this.addProductData[e].deleted = true
+        console.log(this.addProductData)
     }
 
     protected saveValidation(e: ProductValidation) {
@@ -89,25 +88,27 @@ export class AggiungiProdottiComponent {
 
     protected performSubmit() {
         let isAllValid: boolean = true
-        for (let i = 0; i < this.addProductData.length; i++) {
-            if (this.addProductData[i].isValid === false) {
+        const addProductDataActive = this.addProductData.filter(p => p.deleted === false)
+        for (let i = 0; i < addProductDataActive.length; i++) {
+            if (addProductDataActive[i].isValid === false) {
                 isAllValid = false
                 break
             }
         }
+        console.log(addProductDataActive)
         if (!isAllValid) {
             this.mark = true
             return
         }
 
 
-        const products: ProductDTO[] = this.addProductData.map((p: AddProduct, ind: number) => {
+        const products: ProductDTO[] = this.addProductData.filter(p => p.deleted === false).map((p: AddProduct, ind: number) => {
             const { newCategory, toppings, isValid, i, ...otherProps } = p
             let name = ''
             let basePrice = 0
             let category = ''
             if (otherProps.basePrice !== null) basePrice = otherProps.basePrice
-            if (otherProps.category !== null) category = otherProps.category
+            if (otherProps.category !== null) category = newCategory ? newCategory : otherProps.category
             if (otherProps.name !== null) name = otherProps.name
             return {
                 name,

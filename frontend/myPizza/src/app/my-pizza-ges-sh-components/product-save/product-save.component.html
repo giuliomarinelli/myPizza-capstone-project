@@ -1,4 +1,4 @@
-<div class="form-dark form-width">
+<div class="form-dark form-width" *ngIf="nonDeleted">
   <div class="formset" [formGroup]="productForm">
     @if (type) {
     @if (type === 'ADD') {

@@ -189,7 +189,6 @@ export class RegistratiComponent {
     }
 
     protected performRegister(): void {
-        console.log(this.registerForm)
         if (this.registerForm.valid) {
             if (this.registerForm.get('gender')?.value === '0') {
                 this.markAll()

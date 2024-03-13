@@ -10,7 +10,12 @@
     color: #2980ef;
   }
 
-  form {
+  .btn-set {
+    @extend .btn-primary
+  }
+
+  form,
+  .formset {
 
     width: 90%;
     background-color: #1e2833;
@@ -21,6 +26,12 @@
 
     input:autofill {
       background-color: none !important;
+    }
+
+    input:disabled {
+      &::placeholder {
+        text-decoration: line-through;
+      }
     }
 
     input:-webkit-autofill,
@@ -49,9 +60,11 @@
 
   .feedback {
     font-size: .75rem;
+
     .valid {
       color: var(--bs-form-valid-border-color)
     }
+
     .invalid {
       color: var(--bs-form-invalid-border-color)
     }

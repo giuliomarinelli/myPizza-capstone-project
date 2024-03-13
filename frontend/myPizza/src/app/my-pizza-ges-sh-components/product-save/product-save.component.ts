@@ -19,6 +19,8 @@ export class ProductSaveComponent {
 
   }
 
+  @Input() public nonDeleted: boolean = true
+
   @Input() public mark: boolean = false
 
   @Input() public type: string | undefined
@@ -80,7 +82,8 @@ export class ProductSaveComponent {
       newCategory: this.productForm.get('newCategory')?.value,
       toppings,
       i: this.i,
-      isValid: this.productForm.valid
+      isValid: this.productForm.valid,
+      deleted: !this.nonDeleted
     })
   }
 
@@ -120,7 +123,7 @@ export class ProductSaveComponent {
 
   private setInvalidMessages(fieldName: string): string {
     const field: AbstractControl | null = this.productForm.get(fieldName)
-    console.log(fieldName, field)
+
     let errorMsg = ''
     if (field) {
       if (field.errors) {
@@ -215,7 +218,6 @@ export class ProductSaveComponent {
 
   protected remove(toppingDesc: string): void {
     const index = this.addedToppingDescriptions.indexOf(toppingDesc);
-    console.log(this.addedToppingDescriptions)
     this.addedToppingDescriptions.splice(index, 1);
     this.onFormInputEmit()
     this.announcer.announce(`Removed ${toppingDesc}`);

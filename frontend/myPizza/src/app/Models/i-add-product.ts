@@ -8,4 +8,5 @@ export interface AddProduct {
   toppings: Topping[]
   i: number | null
   isValid: boolean
+  deleted: boolean
 }

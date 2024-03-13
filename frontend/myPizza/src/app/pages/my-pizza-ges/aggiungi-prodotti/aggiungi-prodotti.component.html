@@ -3,7 +3,7 @@
     <h1 class="h1 text-center mb-4">Aggiungi prodotti</h1>
     @for(form of addProductForms; track form; let i = $index) {
       <app-product-save *ngIf="useClient" [type]="'ADD'" [categories]="categories" [i]="i" [mark]="mark"
-      [toppingDescriptions]="toppingDescriptions" [toppings]="toppings" [productNames]="productNames"
+      [toppingDescriptions]="toppingDescriptions" [toppings]="toppings" [productNames]="productNames" [nonDeleted]="form"
       (onFormInput)="act($event)" (onDelete)="delete($event)" (onValidation)="saveValidation($event)"></app-product-save>
     <div class="mb-4"></div>
     }

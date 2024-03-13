@@ -15,7 +15,7 @@
       <div class="col-12 col-sm-6">
         <div class="form-group mb-1">
           <input [ngClass]="{'form-control': true, 'is-valid': isValid('name'), 'is-invalid': isInvalid('name')}"
-            type="text" formControlName="name" placeholder="Nome prodotto">
+            type="text" formControlName="name" placeholder="Nome prodotto" (input)="onFormInputEmit()">
         </div>
         <div class="feedback">
           @if(isInvalid('name')) {
@@ -31,7 +31,7 @@
         <div class="form-group mb-1">
           <input
             [ngClass]="{'form-control': true, 'is-valid': isValid('basePrice'), 'is-invalid': isInvalid('basePrice')}"
-            type="text" formControlName="basePrice" placeholder="Prezzo base">
+            type="text" formControlName="basePrice" placeholder="Prezzo base" (input)="onInputBasePrice()">
         </div>
         <div class="feedback">
           @if(isInvalid('basePrice')) {
@@ -42,14 +42,88 @@
           }
         </div>
       </div>
-      <div>
-        <select class="form-select" data-bs-theme="dark" aria-label="Default select example" style="size: 8"
-          formControlName="prefix">
-          @for(category of categories?.categories; track category) {
-          <option [value]="category">{{category}}</option>
-          }
-        </select>
+      <div class="row">
+        <div class="col-12 col-sm-6">
+          <select class="form-select" data-bs-theme="dark" aria-label="Default select example" style="size: 8"
+            formControlName="category" (change)="onFormInputEmit()">
+            @for(category of categories?.categories; track category) {
+            <option [value]="category">{{category}}</option>
+            }
+          </select>
+          <div class="feedback">
+            @if(isInvalid('basePrice')) {
+            <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.name}}</p>
+            }
+            @else {
+            <p class="m-0 mb-2 feedback-h"></p>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-sm-6">
+          <div class="form-group mb-1">
+            <input
+              [ngClass]="{'form-control': true, 'is-valid': isValid('newCategory'), 'is-invalid': isInvalid('newCategory')}"
+              type="text" formControlName="newCategory" placeholder="Nuova categoria" (input)="onFormInputEmit()">
+          </div>
+          <div class="feedback">
+            @if(isInvalid('newCategory')) {
+            <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.name}}</p>
+            }
+            @else {
+            <p class="m-0 mb-2 feedback-h"></p>
+            }
+
+          </div>
+
+        </div>
       </div>
+      <div class="form-group mb-1 d-flex justify-content-center align-items-center gap-2">
+        <label for="full-price mb-1">Prezzo totale €:</label>
+        <input id="full-price" class="form-control w-total" type="text" [formControl]="fullPriceCtrl"
+          placeholder="Prezzo totale">
+      </div>
+      <div class="feedback">
+        @if(isInvalid('basePrice')) {
+        <p class="m-0 mb-2 invalid feedback-h">{{errorMsg.name}}</p>
+        }
+        @else {
+        <p class="m-0 mb-2 feedback-h"></p>
+        }
+      </div>
+      <div class="d-flex justify-content-center">
+        <mat-form-field class="w-97 mb-3">
+          <mat-label>Aggiungi ingredienti (facoltativo)</mat-label>
+          <mat-chip-grid #chipGrid aria-label="Fruit selection">
+            @for (toppingDesc of addedToppingDescriptions; track toppingDesc) {
+            <mat-chip-row (removed)="remove(toppingDesc)">
+              {{toppingDesc}}
+              <button matChipRemove [attr.aria-label]="'remove ' + toppingDesc">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+            }
+          </mat-chip-grid>
+          <input placeholder="Nuovo ingrediente..." #toppingInput [formControl]="toppingDescriptionsControl"
+            [matChipInputFor]="chipGrid" [matAutocomplete]="auto" [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            (matChipInputTokenEnd)="add($event)" />
+          <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
+            @for (toppingDesc of toppingDescriptions; track toppingDesc) {
+            <mat-option [value]="toppingDesc">{{toppingDesc}}</mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+
+      @if(i > 0) {
+      <div class="d-flex justify-content-center">
+        <div class="btn-set btn-w">
+          <button class="btn btn-primary d-flex gap-3 justify-content-center align-items-center" (click)="onDeleteEmit()">
+            <i class="bi bi-trash-fill"></i>
+            <p class="m-0">Rimuovi</p>
+          </button>
+        </div>
+      </div>
+      }
     </div>
   </div>
 </div>

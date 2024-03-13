@@ -1,7 +1,12 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { CategoriesRes, ProductNamesRes, Topping, ToppingRes } from '../../Models/i-product';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { CategoriesRes, ProductNamesRes, ProductValidation, Topping, ToppingRes } from '../../Models/i-product';
 import { ProductErrorMessage } from '../../classes/product-error-message';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { Observable, map, startWith } from 'rxjs';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { AddProduct } from '../../Models/i-add-product';
 
 @Component({
   selector: 'app-product-save',
@@ -10,7 +15,11 @@ import { ProductErrorMessage } from '../../classes/product-error-message';
 })
 export class ProductSaveComponent {
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder) {
+
+  }
+
+  @Input() public mark: boolean = false
 
   @Input() public type: string | undefined
 
@@ -18,55 +27,94 @@ export class ProductSaveComponent {
 
   @Input() public toppings: ToppingRes | undefined
 
+  @Input() public toppingDescriptions!: string[]
+
   @Input() public categories: CategoriesRes | undefined
 
-  @Output() public onFormInput = new EventEmitter<FormGroup>()
+  @Input() public i!: number
+
+  @Output() public onFormInput = new EventEmitter<AddProduct>()
+
+  @Output() public onDelete = new EventEmitter<number>()
+
+  @Output() public onValidation = new EventEmitter<ProductValidation>()
 
   protected errorMsg = new ProductErrorMessage()
+
+  private calcFullPrice() {
+    const toppings: Topping[] = []
+    this.addedToppingDescriptions.forEach(el => {
+      const topping = this.toppings?.toppings.find(t => t.description === el)
+      if (topping) toppings.push(topping)
+    })
+    const toppingsAmount = toppings.length ? toppings.map(t => t.price).reduce((c, p) => c + p) : 0
+      this.fullPriceCtrl.setValue((Number(this.productForm.get('basePrice')?.value) + toppingsAmount).toFixed(2))
+  }
 
   protected nameAlreadyExists: ValidatorFn = (formField: AbstractControl): ValidationErrors | null => {
     if (formField.value) {
       if (this.productNames?.productNames.includes(formField.value))
-      return { nameAlreadyExists: true }
+        return { nameAlreadyExists: true }
     }
     return null
   }
 
-  protected OnFormInputEmit() {
-    this.onFormInput.emit(this.productForm)
+  protected unselectedCategory: ValidatorFn = (formField: AbstractControl): ValidationErrors | null => {
+    if (formField.value) {
+      if (formField.value === '(seleziona una categoria)')
+        return { unselectedCategory: true }
+    }
+    return null
   }
 
-  public productForm: FormGroup = this.fb.group({
-    name: this.fb.control(null, [Validators.required, this.nameAlreadyExists]),
-    basePrice: this.fb.control(null, [Validators.required, Validators.pattern(/^[0-9]+\.?[0-9]*$/)]),
-    toppings: this.fb.array([]),
-    category: this.fb.control('- Inserisci nuova -'),
-    newCategory: this.fb.control(null)
-  })
-
-  protected getToppings(): FormArray {
-    return this.productForm.controls['toppings'] as FormArray
-  }
-
-  protected addTopping(topping: Topping): void {
-    (this.productForm.controls['topping'] as FormArray).push({
-      name: this.fb.control(topping.name),
-      price: this.fb.control(topping.price)
+  protected onFormInputEmit() {
+    const toppings: Topping[] = []
+    this.addedToppingDescriptions.forEach(el => {
+      const topping = this.toppings?.toppings.find(t => t.description === el)
+      if (topping) toppings.push(topping)
+    })
+    this.onFormInput.emit({
+      name: this.productForm.get('name')?.value,
+      basePrice: Number(this.productForm.get('basePrice')?.value),
+      category: this.productForm.get('category')?.value,
+      newCategory: this.productForm.get('newCategory')?.value,
+      toppings,
+      i: this.i,
+      isValid: this.productForm.valid
     })
   }
 
-  protected removeTopping(i: number) {
-    (this.productForm.controls['topping'] as FormArray).removeAt(i)
+  protected onDeleteEmit() {
+    this.onDelete.emit(this.i)
   }
+
+  protected productForm: FormGroup = this.fb.group({
+    name: this.fb.control(null, [Validators.required, this.nameAlreadyExists]),
+    basePrice: this.fb.control(null, [Validators.required, Validators.pattern(/^[0-9]+\.?[0-9]*$/)]),
+    category: this.fb.control('(seleziona una categoria)', [this.unselectedCategory]),
+    newCategory: this.fb.control({ value: null, disabled: true })
+  })
+
+  protected fullPriceCtrl = new FormControl({ value: '0.00', disabled: true })
+
+
 
 
   ngDoCheck() {
-
+    if (this.productForm.get('category')?.value === '- Inserisci nuova -') {
+      this.productForm.get('newCategory')?.enable()
+    } else {
+      this.productForm.get('newCategory')?.reset()
+      this.productForm.get('newCategory')?.setValue(null)
+      this.productForm.get('newCategory')?.disable()
+      this.onFormInputEmit()
+    }
+    if (this.mark) this.markAll()
 
   }
 
   ngOnInit() {
-
+    this.onFormInputEmit()
   }
 
 
@@ -132,6 +180,65 @@ export class ProductSaveComponent {
       }
     });
   }
+
+  protected onInputBasePrice() {
+    this.calcFullPrice()
+    this.onFormInputEmit()
+  }
+
+
+
+  protected separatorKeysCodes: number[] = [] //[13, 188];
+  protected toppingDescriptionsControl = new FormControl('');
+  protected addedToppingDescriptions: string[] = []
+
+
+  @ViewChild('toppingInput') toppingInput: ElementRef<HTMLInputElement> | undefined;
+
+  announcer = inject(LiveAnnouncer);
+
+
+
+  protected add(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+    // Add our fruit
+    if (value) {
+      this.addedToppingDescriptions.push(value);
+    }
+    this.onFormInputEmit()
+    this.calcFullPrice()
+    // Clear the input value
+    event.chipInput!.clear();
+
+    this.toppingDescriptionsControl.setValue(null);
+  }
+
+  protected remove(toppingDesc: string): void {
+    const index = this.addedToppingDescriptions.indexOf(toppingDesc);
+    console.log(this.addedToppingDescriptions)
+    this.addedToppingDescriptions.splice(index, 1);
+    this.onFormInputEmit()
+    this.announcer.announce(`Removed ${toppingDesc}`);
+    this.calcFullPrice()
+  }
+
+  protected selected(event: MatAutocompleteSelectedEvent): void {
+    const toppingDesc: string = event.option.viewValue
+    if (this.addedToppingDescriptions.includes(toppingDesc)) {
+      const ind = this.addedToppingDescriptions.indexOf(toppingDesc)
+      this.addedToppingDescriptions.splice(ind, 1)
+    } else {
+      this.addedToppingDescriptions.push(event.option.viewValue);
+    }
+
+    this.onFormInputEmit()
+    this.calcFullPrice()
+
+    if (this.toppingInput) this.toppingInput.nativeElement.value = '';
+    this.toppingDescriptionsControl.setValue(null);
+  }
+
+
 
 
 }

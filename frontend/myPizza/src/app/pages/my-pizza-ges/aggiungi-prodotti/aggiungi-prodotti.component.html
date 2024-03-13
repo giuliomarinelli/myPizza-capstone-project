@@ -1,5 +1,27 @@
 <div class="footer-bottom py-2">
-  <h1 class="h1 text-center mb-4">Aggiungi prodotti</h1>
-  <app-product-save *ngIf="useClient" [type]="'ADD'" [categories]="categories"
-    [toppings]="toppings" [productNames]="productNames"></app-product-save>
+  <div class="container-md">
+    <h1 class="h1 text-center mb-4">Aggiungi prodotti</h1>
+    @for(form of addProductForms; track form; let i = $index) {
+      <app-product-save *ngIf="useClient" [type]="'ADD'" [categories]="categories" [i]="i" [mark]="mark"
+      [toppingDescriptions]="toppingDescriptions" [toppings]="toppings" [productNames]="productNames"
+      (onFormInput)="act($event)" (onDelete)="delete($event)" (onValidation)="saveValidation($event)"></app-product-save>
+    <div class="mb-4"></div>
+    }
+    <div class="d-flex justify-content-center">
+      <div class="row my-4 w-90">
+        <div class="col-6">
+          <button class="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-3" (click)="addForm()">
+            <i class="bi bi-plus-circle-fill"></i>
+            <p class="m-0">Nuovo</p>
+          </button>
+        </div>
+        <div class="col-6">
+          <button class="btn btn-primary w-100 d-flex justify-content-center align-items-center gap-3" (click)="performSubmit()">
+            <i class="bi bi-plus-circle-fill"></i>
+            <p class="m-0">Salva</p>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

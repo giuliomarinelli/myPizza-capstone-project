@@ -13,4 +13,8 @@ export interface ProductErrorMsg {
   newCategory: string
 }
 
+export interface ManyProductsPostDTO {
+  products: ProductDTO[]
+}
+
 

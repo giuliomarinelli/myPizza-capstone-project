@@ -10,6 +10,10 @@
     color: #2980ef;
   }
 
+  .btn-set {
+    @extend .btn-primary
+  }
+
   form,
   .formset {
 
@@ -22,6 +26,12 @@
 
     input:autofill {
       background-color: none !important;
+    }
+
+    input:disabled {
+      &::placeholder {
+        text-decoration: line-through;
+      }
     }
 
     input:-webkit-autofill,

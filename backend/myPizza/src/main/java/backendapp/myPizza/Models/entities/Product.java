@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +35,17 @@ public class Product {
 
     private String category;
 
+    private LocalDateTime createdAt;
+
+    @Transient
     private double price;
+
+    public Product(String name, double basePrice, String category) {
+        this.name = name;
+        this.basePrice = basePrice;
+        this.category = category;
+        createdAt = LocalDateTime.now();
+    }
 
     public void setProductTotalAmount() {
         price = toppings.stream().mapToDouble(Topping::getPrice).sum() + basePrice;

@@ -1,12 +1,13 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { CategoriesRes, ProductNamesRes, ProductValidation, Topping, ToppingRes } from '../../Models/i-product';
+import { CategoriesRes, OnProductUpdate, Product, ProductNamesRes, ProductValidation, Topping, ToppingRes } from '../../Models/i-product';
 import { ProductErrorMessage } from '../../classes/product-error-message';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { Observable, map, startWith } from 'rxjs';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { AddProduct } from '../../Models/i-add-product';
+import { ProductDTO } from '../../Models/i-product-dto';
 
 @Component({
   selector: 'app-product-save',
@@ -35,13 +36,22 @@ export class ProductSaveComponent {
 
   @Input() public i!: number
 
+  @Input() public productToUpdate: Product | undefined
+
   @Output() public onFormInput = new EventEmitter<AddProduct>()
 
   @Output() public onDelete = new EventEmitter<number>()
 
   @Output() public onValidation = new EventEmitter<ProductValidation>()
 
+  @Output() public onCancel = new EventEmitter<boolean>()
+
+  @Output() public onProductUpdate = new EventEmitter<OnProductUpdate>()
+
+  private onlyOnce: boolean = true
+
   protected errorMsg = new ProductErrorMessage()
+
 
   private calcFullPrice() {
     const toppings: Topping[] = []
@@ -50,7 +60,7 @@ export class ProductSaveComponent {
       if (topping) toppings.push(topping)
     })
     const toppingsAmount = toppings.length ? toppings.map(t => t.price).reduce((c, p) => c + p) : 0
-      this.fullPriceCtrl.setValue((Number(this.productForm.get('basePrice')?.value) + toppingsAmount).toFixed(2))
+    this.fullPriceCtrl.setValue((Number(this.productForm.get('basePrice')?.value) + toppingsAmount).toFixed(2))
   }
 
   protected nameAlreadyExists: ValidatorFn = (formField: AbstractControl): ValidationErrors | null => {
@@ -67,6 +77,39 @@ export class ProductSaveComponent {
         return { unselectedCategory: true }
     }
     return null
+  }
+
+  protected onCancelEmit() {
+    this.onCancel.emit(false)
+  }
+
+  protected onProductUpdateEmit() {
+    if (this.productForm.valid) {
+      const toppings: string[] = []
+      this.addedToppingDescriptions.forEach(desc => {
+        const topping: Topping | undefined = this.toppings?.toppings.find(t => t.description === desc)
+        if (topping) toppings.push(topping.name)
+      })
+      const value = this.productForm.value
+      const name: string = value['name']
+      const basePrice: number = Number(value['basePrice'])
+      const _category: string = value['category']
+      const newCategory: string = value['newCategory']
+      const category: string = _category === '- Inserisci nuova -' ? newCategory : _category
+      this.onProductUpdate.emit({
+        i: this.i,
+        product: {
+          name,
+          basePrice,
+          toppings,
+          category
+        }
+      })
+    } else {
+      this.markAll()
+      console.log('errore validazione')
+
+    }
   }
 
   protected onFormInputEmit() {
@@ -113,11 +156,20 @@ export class ProductSaveComponent {
       this.onFormInputEmit()
     }
     if (this.mark) this.markAll()
-
   }
 
   ngOnInit() {
     this.onFormInputEmit()
+    if (this.productToUpdate && this.onlyOnce) {
+      this.productForm.controls['name']?.setValue(this.productToUpdate.name)
+      this.productForm.controls['basePrice']?.setValue(this.productToUpdate.basePrice)
+      this.productForm.controls['category']?.setValue(this.productToUpdate.category)
+      this.productToUpdate.toppings.forEach(t => this.addedToppingDescriptions.push(t.description))
+      const i = this.productNames?.productNames.findIndex(n => n === this.productToUpdate?.name)
+      if (i != undefined) this.productNames?.productNames.splice(i, 1)
+      this.onlyOnce = false
+      if (this.mark) this.markAll()
+    }
   }
 
 
@@ -165,7 +217,7 @@ export class ProductSaveComponent {
 
   private markAll(): void {
     Object.values(this.productForm.controls).forEach(control => {
-      if (control.invalid) {
+      if (control.enabled) {
         this.markAsDirtyAndUpdateValueAndValidity(control)
       }
       const road: AbstractControl | null = this.productForm.get('address.road')

@@ -6,11 +6,15 @@ import { MatChipsModule } from '@angular/material/chips'
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
+import { ProductCardComponent } from './product-card/product-card.component';
+import { ProductsComponent } from './products/products.component';
 
 
 @NgModule({
   declarations: [
-    ProductSaveComponent
+    ProductSaveComponent,
+    ProductCardComponent,
+    ProductsComponent
   ],
   imports: [
     CommonModule,
@@ -20,6 +24,10 @@ import { MatIconModule } from '@angular/material/icon';
     MatFormFieldModule,
     MatIconModule
   ],
-  exports: [ProductSaveComponent]
+  exports: [
+    ProductSaveComponent,
+    ProductCardComponent,
+    ProductsComponent
+  ]
 })
 export class MyPizzaGesShComponentsModule { }

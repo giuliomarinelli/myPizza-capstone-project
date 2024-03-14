@@ -1,7 +1,10 @@
+import { ProductDTO } from "./i-product-dto"
+
 export interface Topping {
   name: string
   price: number
   description: string
+  createdAt: Date
 }
 
 export interface ToppingRes {
@@ -14,6 +17,7 @@ export interface Product {
   basePrice: number
   category: string
   price: number
+  createdAt: Date
 }
 
 export interface ProductNamesRes {
@@ -29,6 +33,7 @@ export interface ProductValidation {
   i: number
 }
 
-export interface Product {
-
+export interface OnProductUpdate {
+  i: number
+  product: ProductDTO
 }

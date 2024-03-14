@@ -2,23 +2,23 @@
   <div class="illustration">
     <mat-icon [inline]="true">restaurant</mat-icon>
   </div>
-  <h2 class="h2 fs-title text-center mb-4 nanum-gothic-coding-bold margin-fix capitalize carminium-red">{{product.name}}</h2>
+  <h2 class="h2 fs-title text-center mb-4 nanum-gothic-coding-bold margin-fix capitalize carminium-red">{{name}}</h2>
   <div class="d-flex justify-content-center">
     <div>
       <p class="nanum-gothic-coding-bold moderate-yellow d-flex align-items-baseline gap-2">
         <span class="fs-item-title">Categoria:</span>
-        <span class="nanum-gothic-coding-normal fs-item">{{product.category}}</span>
+        <span class="nanum-gothic-coding-normal fs-item">{{category}}</span>
       </p>
       <p class="nanum-gothic-coding-bold moderate-green d-flex align-items-baseline gap-2">
         <span class="fs-item-title">Prezzo:</span>
-        <span class="nanum-gothic-coding-normal fs-item">{{product.price.toFixed(2)}}€</span>
+        <span class="nanum-gothic-coding-normal fs-item">{{_price.toFixed(2)}}€</span>
       </p>
-      @if (product.toppings.length)
+      @if (_toppingDescriptions.length)
       {
       <p class="nanum-gothic-coding-bold my-pizza-blue fs-item-title">Ingredienti:</p>
-      <ul>
-        @for (t of product.toppings; track t) {
-        <li class="nanum-gothic-coding-normal fs-item">{{t.description}}</li>
+      <ul class="mb-5">
+        @for (t of _toppingDescriptions; track t) {
+        <li class="nanum-gothic-coding-normal fs-item">{{t}}</li>
         }
       </ul>
       }

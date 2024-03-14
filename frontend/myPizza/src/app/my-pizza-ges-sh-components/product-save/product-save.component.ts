@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { CategoriesRes, Product, ProductNamesRes, ProductValidation, Topping, ToppingRes } from '../../Models/i-product';
+import { CategoriesRes, OnProductUpdate, Product, ProductNamesRes, ProductValidation, Topping, ToppingRes } from '../../Models/i-product';
 import { ProductErrorMessage } from '../../classes/product-error-message';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { Observable, map, startWith } from 'rxjs';
@@ -46,9 +46,12 @@ export class ProductSaveComponent {
 
   @Output() public onCancel = new EventEmitter<boolean>()
 
+  @Output() public onProductUpdate = new EventEmitter<OnProductUpdate>()
+
   private onlyOnce: boolean = true
 
   protected errorMsg = new ProductErrorMessage()
+
 
   private calcFullPrice() {
     const toppings: Topping[] = []
@@ -57,7 +60,7 @@ export class ProductSaveComponent {
       if (topping) toppings.push(topping)
     })
     const toppingsAmount = toppings.length ? toppings.map(t => t.price).reduce((c, p) => c + p) : 0
-      this.fullPriceCtrl.setValue((Number(this.productForm.get('basePrice')?.value) + toppingsAmount).toFixed(2))
+    this.fullPriceCtrl.setValue((Number(this.productForm.get('basePrice')?.value) + toppingsAmount).toFixed(2))
   }
 
   protected nameAlreadyExists: ValidatorFn = (formField: AbstractControl): ValidationErrors | null => {
@@ -78,6 +81,35 @@ export class ProductSaveComponent {
 
   protected onCancelEmit() {
     this.onCancel.emit(false)
+  }
+
+  protected onProductUpdateEmit() {
+    if (this.productForm.valid) {
+      const toppings: string[] = []
+      this.addedToppingDescriptions.forEach(desc => {
+        const topping: Topping | undefined = this.toppings?.toppings.find(t => t.description === desc)
+        if (topping) toppings.push(topping.name)
+      })
+      const value = this.productForm.value
+      const name: string = value['name']
+      const basePrice: number = Number(value['basePrice'])
+      const _category: string = value['category']
+      const newCategory: string = value['newCategory']
+      const category: string = _category === '- Inserisci nuova -' ? newCategory : _category
+      this.onProductUpdate.emit({
+        i: this.i,
+        product: {
+          name,
+          basePrice,
+          toppings,
+          category
+        }
+      })
+    } else {
+      this.markAll()
+      console.log('errore validazione')
+
+    }
   }
 
   protected onFormInputEmit() {

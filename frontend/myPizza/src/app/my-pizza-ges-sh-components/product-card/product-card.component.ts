@@ -8,11 +8,22 @@ import { Product } from '../../Models/i-product';
 })
 export class ProductCardComponent {
 
-  @Input() public product: Product = {
-    name: '',
-    toppings: [],
-    basePrice: 0,
-    price: 0,
-    category: ''
+  @Input() public name: string = ''
+
+  @Input() public category: string = ''
+
+  @Input() public price: number = 0
+
+  @Input() public toppingDescriptions: string[] = []
+
+  protected _price: number = 0
+
+  protected _toppingDescriptions: string[] = []
+
+  ngDoCheck() {
+    this._price = this.price
+    this._toppingDescriptions = this.toppingDescriptions
+    console.log(this.name, this.category, this.price, this.toppingDescriptions)
   }
+
 }

@@ -3,7 +3,7 @@ import { environment } from '../../environments/environment.development';
 import { Observable } from 'rxjs';
 import { CategoriesRes, Product, ProductNamesRes, ToppingRes } from '../Models/i-product';
 import { HttpClient } from '@angular/common/http';
-import { ManyProductsPostDTO } from '../Models/i-product-dto';
+import { ManyProductsPostDTO, ProductDTO } from '../Models/i-product-dto';
 import { Page } from '../Models/i-page';
 import { ConfirmRes } from '../Models/confirm-res';
 
@@ -41,4 +41,7 @@ export class ProductService {
     return this.http.delete<ConfirmRes>(`${this.backendUrl}/api/products/${name}`, { withCredentials: true })
   }
 
+  public updateProductByName(name: string, productDTO: ProductDTO): Observable<Product> {
+    return this.http.put<Product>(`${this.backendUrl}/api/products/${name}`, productDTO, { withCredentials: true })
+  }
 }

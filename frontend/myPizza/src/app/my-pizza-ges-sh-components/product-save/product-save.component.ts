@@ -1,12 +1,13 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { CategoriesRes, ProductNamesRes, ProductValidation, Topping, ToppingRes } from '../../Models/i-product';
+import { CategoriesRes, Product, ProductNamesRes, ProductValidation, Topping, ToppingRes } from '../../Models/i-product';
 import { ProductErrorMessage } from '../../classes/product-error-message';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { Observable, map, startWith } from 'rxjs';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { AddProduct } from '../../Models/i-add-product';
+import { ProductDTO } from '../../Models/i-product-dto';
 
 @Component({
   selector: 'app-product-save',
@@ -35,11 +36,17 @@ export class ProductSaveComponent {
 
   @Input() public i!: number
 
+  @Input() public productToUpdate: Product | undefined
+
   @Output() public onFormInput = new EventEmitter<AddProduct>()
 
   @Output() public onDelete = new EventEmitter<number>()
 
   @Output() public onValidation = new EventEmitter<ProductValidation>()
+
+  @Output() public onCancel = new EventEmitter<boolean>()
+
+  private onlyOnce: boolean = true
 
   protected errorMsg = new ProductErrorMessage()
 
@@ -67,6 +74,10 @@ export class ProductSaveComponent {
         return { unselectedCategory: true }
     }
     return null
+  }
+
+  protected onCancelEmit() {
+    this.onCancel.emit(false)
   }
 
   protected onFormInputEmit() {
@@ -113,11 +124,20 @@ export class ProductSaveComponent {
       this.onFormInputEmit()
     }
     if (this.mark) this.markAll()
-
   }
 
   ngOnInit() {
     this.onFormInputEmit()
+    if (this.productToUpdate && this.onlyOnce) {
+      this.productForm.controls['name']?.setValue(this.productToUpdate.name)
+      this.productForm.controls['basePrice']?.setValue(this.productToUpdate.basePrice)
+      this.productForm.controls['category']?.setValue(this.productToUpdate.category)
+      this.productToUpdate.toppings.forEach(t => this.addedToppingDescriptions.push(t.description))
+      const i = this.productNames?.productNames.findIndex(n => n === this.productToUpdate?.name)
+      if (i != undefined) this.productNames?.productNames.splice(i, 1)
+      this.onlyOnce = false
+      if (this.mark) this.markAll()
+    }
   }
 
 
@@ -165,7 +185,7 @@ export class ProductSaveComponent {
 
   private markAll(): void {
     Object.values(this.productForm.controls).forEach(control => {
-      if (control.invalid) {
+      if (control.enabled) {
         this.markAsDirtyAndUpdateValueAndValidity(control)
       }
       const road: AbstractControl | null = this.productForm.get('address.road')

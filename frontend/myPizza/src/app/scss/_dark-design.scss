@@ -1,4 +1,9 @@
-.form-dark {
+$primary-btn-color: lighten(#214a80, 5%);
+$danger-btn-color: $red-500;
+$secondary-btn-color: $gray-700;
+
+
+.dark-design {
 
   display: flex;
   justify-content: center;
@@ -11,11 +16,64 @@
   }
 
   .btn-set {
-    @extend .btn-primary
+    .btn-primary {
+      border: none;
+      border-radius: 4px;
+      padding: 11px;
+      box-shadow: none;
+      text-shadow: none;
+      outline: none;
+      width: 100%;
+      transition: all .5s;
+      background-color: $primary-btn-color;
+
+      &:hover,
+      &:active {
+        background: #214a80;
+        outline: none;
+      }
+    }
+
+    .btn-danger {
+      border: none;
+      border-radius: 4px;
+      padding: 11px;
+      box-shadow: none;
+      text-shadow: none;
+      outline: none;
+      width: 100%;
+      transition: all .5s;
+      background-color: $danger-btn-color;
+
+      &:hover,
+      &:active {
+        background: rgba($danger-btn-color, .68);
+        outline: none;
+      }
+    }
+
+    .btn-secondary {
+      border: none;
+      border-radius: 4px;
+      padding: 11px;
+      box-shadow: none;
+      text-shadow: none;
+      outline: none;
+      width: 100%;
+      transition: all .5s;
+      background-color: $secondary-btn-color;
+
+      &:hover,
+      &:active {
+        background: rgba($secondary-btn-color, .68);
+        outline: none;
+      }
+    }
   }
 
   form,
-  .formset {
+  .formset,
+  .my-pizza-card {
 
     width: 90%;
     background-color: #1e2833;
@@ -41,21 +99,6 @@
       transition: all 5000s ease-in-out 0s;
     }
 
-    .btn-primary {
-      border: none;
-      border-radius: 4px;
-      padding: 11px;
-      box-shadow: none;
-      text-shadow: none;
-      outline: none;
-      width: 100%;
-
-      &:hover,
-      &:active {
-        background: #214a80;
-        outline: none;
-      }
-    }
   }
 
   .feedback {

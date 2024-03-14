@@ -9,7 +9,7 @@ export interface ToppingRes {
 }
 
 export interface Product {
-  id: string
+  name: string
   toppings: Topping[]
   basePrice: number
   category: string
@@ -27,4 +27,8 @@ export interface CategoriesRes {
 export interface ProductValidation {
   isValid: boolean
   i: number
+}
+
+export interface Product {
+
 }

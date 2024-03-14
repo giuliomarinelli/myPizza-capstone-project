@@ -2,6 +2,15 @@
   background-color: $gray-800 !important;
 }
 
+a {
+  color: $cyan-400;
+  transition: color .35s;
+  text-decoration: none;
+  &:hover, &:active {
+    color: rgba($cyan-400, .85)
+  }
+}
+
 .close-btn {
   color: $gray-600;
   font-size: 2rem;
@@ -23,6 +32,11 @@
 .nanum-gothic-coding-bold {
   font-family: 'Nanum Gothic Coding', monospace;
   font-weight: bold;
+}
+
+.nanum-gothic-coding-normal {
+  font-family: 'Nanum Gothic Coding', monospace;
+  font-weight: 400;
 }
 
 .footer-bottom {
@@ -48,4 +62,5 @@
   border-radius: 20px;
 }
 
-@import './form-dark';
+@import './dark-design';
+@import './custom-colors'

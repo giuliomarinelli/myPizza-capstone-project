@@ -1,10 +1,13 @@
-import { Component, Inject, PLATFORM_ID, afterNextRender } from '@angular/core';
+import { Component, Inject, PLATFORM_ID, afterNextRender, afterRender } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { ProductService } from '../../../services/product.service';
 import { isPlatformBrowser } from '@angular/common';
 import { CategoriesRes, ProductNamesRes, ProductValidation, ToppingRes } from '../../../Models/i-product';
 import { AddProduct } from '../../../Models/i-add-product';
 import { ManyProductsPostDTO, ProductDTO } from '../../../Models/i-product-dto';
+import { MatDialog } from '@angular/material/dialog';
+import { AggiungiProdottiDialogComponent } from '../aggiungi-prodotti-dialog/aggiungi-prodotti-dialog.component';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-aggiungi-prodotti',
@@ -12,27 +15,39 @@ import { ManyProductsPostDTO, ProductDTO } from '../../../Models/i-product-dto';
     styleUrl: './aggiungi-prodotti.component.scss'
 })
 export class AggiungiProdottiComponent {
-    constructor(private authSvc: AuthService, private productSvc: ProductService, @Inject(PLATFORM_ID) private platformId: string) {
+    constructor(private authSvc: AuthService, private productSvc: ProductService,
+        @Inject(PLATFORM_ID) private platformId: string, public dialog: MatDialog, private router: Router) {
         afterNextRender(() => {
             this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
-                if (isLoggedIn) {
+                if (isLoggedIn && this.onlyOnce) {
                     this.authSvc.isAdmin$.subscribe(isAdmin => {
                         if (isAdmin) {
                             console.log('accesso admin concesso')
-                            this.productSvc.getCategories().subscribe(res => this.categories = res)
-                            this.productSvc.getProductNames().subscribe(res => this.productNames = res)
-                            this.productSvc.getToppings().subscribe(res => {
-                                this.toppings = res
-                                this.toppingDescriptions = this.toppings.toppings.map(t => t.description)
-                            })
+                            this.isAdmin = true
                         } else {
                             console.log('accesso negato, miss permissions')
                         }
                     })
                 } else (console.log('accesso negato: non loggato'))
             })
+
         })
     }
+
+
+    protected openDialog() {
+        const dialogRef = this.dialog.open(AggiungiProdottiDialogComponent)
+
+        dialogRef.afterClosed().subscribe(result => {
+            console.log(`Dialog result: ${result}`);
+        });
+    }
+
+    private onlyOnce: boolean = true
+
+    private isAdmin: boolean = false
+
+    public isLoading = true
 
     public categories!: CategoriesRes
 
@@ -49,6 +64,20 @@ export class AggiungiProdottiComponent {
         newCategory: null,
         toppings: [],
         i: null
+    }
+
+    ngDoCheck() {
+        if (this.isAdmin && this.onlyOnce) {
+            this.onlyOnce = false
+            this.productSvc.getCategories().subscribe(res => this.categories = res)
+            this.productSvc.getProductNames().subscribe(res => this.productNames = res)
+            this.productSvc.getToppings().subscribe(res => {
+                this.toppings = res
+                this.toppingDescriptions = this.toppings.toppings.map(t => t.description)
+                this.isLoading = false
+            })
+
+        }
     }
 
     protected validation: ProductValidation[] = []
@@ -71,6 +100,11 @@ export class AggiungiProdottiComponent {
 
     }
 
+    protected isproductDeleted(i: number) {
+        if (this.addProductData[i] != undefined) return this.addProductData[i].deleted
+        return false
+    }
+
     protected addForm(): void {
         this.addProductForms.push(true)
     }
@@ -87,6 +121,7 @@ export class AggiungiProdottiComponent {
     }
 
     protected performSubmit() {
+        this.isLoading = true
         let isAllValid: boolean = true
         const addProductDataActive = this.addProductData.filter(p => p.deleted === false)
         for (let i = 0; i < addProductDataActive.length; i++) {
@@ -98,6 +133,7 @@ export class AggiungiProdottiComponent {
         console.log(addProductDataActive)
         if (!isAllValid) {
             this.mark = true
+            this.isLoading = false
             return
         }
 
@@ -120,7 +156,10 @@ export class AggiungiProdottiComponent {
 
         const productsDTO: ManyProductsPostDTO = { products }
 
-        console.log(productsDTO)
+        this.productSvc.addManyProducts(productsDTO).subscribe(res => {
+            this.isLoading = false
+            this.openDialog()
+        })
 
     }
 

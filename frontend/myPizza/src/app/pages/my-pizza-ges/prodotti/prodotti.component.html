@@ -1,0 +1,51 @@
+@if(products.length === 0) {
+<div class="container-lg footer-bottom d-flex justify-content-center align-items-center text-white">
+  <h3 class="h3">Non ci sono prodotti! <a routerLink="/my-pizza-ges/aggiungi-prodotti">Clicca qui</a> per aggiungerne.</h3>
+</div>
+} @else {
+<div class="container-lg" infiniteScroll [infiniteScrollDistance]="0.8" [fromRoot]="true"
+  [infiniteScrollThrottle]="1000" (scrolled)="onScroll()">
+  <div class="row align-items-stretch">
+    @for(product of products; track product; let i = $index) {
+    <div class="my-3 col-12 col-md-6 dark-design">
+      @if (edit[i] === false) {
+      <div class="my-pizza-card d-flex flex-column justify-content-between">
+        <app-product-card *ngIf="useClient" [product]="products[i]" class="align-self-stretch"></app-product-card>
+        <div class="btn-set row g-0">
+          <div class="col-12 col-sm-6 pe-sm-1 mb-3 mb-sm-0">
+            <button class="btn btn-primary d-flex justify-content-center align-items-center gap-3"
+              (click)="edit[i] = true">
+              <span>
+                <i class="bi bi-pencil-fill"></i>
+              </span>
+              <span>Modifica</span>
+            </button>
+          </div>
+          <div class="col-12 col-sm-6 ps-sm-1">
+            <button class="btn btn-danger d-flex justify-content-center align-items-center gap-3" (click)="deleteProduct(i)">
+              <span>
+                <i class="bi bi-trash"></i>
+              </span>
+              <span>Elimina</span>
+            </button>
+          </div>
+        </div>
+
+      </div>} @else {
+
+      <div class="formset">
+        <app-product-save *ngIf="useClient" [type]="'UPDATE'" [categories]="categories" [i]="i"
+          [toppingDescriptions]="toppingDescriptions" [toppings]="toppings" [productNames]="productNames"
+          [nonDeleted]="true" [mark]="true" [productToUpdate]="products[i]" (onCancel)="edit[i] = $event"
+          (onDelete)="deleteProduct($event); edit[$event]=false">
+        </app-product-save>
+      </div>
+
+      }
+    </div>
+    }
+  </div>
+</div>
+<div class="d-none d-md-block h-spacer" *ngIf="count === 0"></div>
+}
+<app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>

@@ -21,7 +21,10 @@ export class AppComponent {
         if (isLoggedIn) {
           this.isLoggedIn = true
           this.getProfile()
-          this.authSvc.isAdmin().subscribe(isAdmin => this.authSvc.adminSbj.next(isAdmin))
+          this.authSvc.isAdmin().subscribe(isAdmin => {
+            this.authSvc.adminSbj.next(isAdmin)
+            this.isAdmin = true
+          })
         } else {
           this.authSvc.isLoggedInQuery().subscribe(res => {
             this.isLoggedIn = res.loggedIn
@@ -34,10 +37,14 @@ export class AppComponent {
     })
   }
 
+  protected brand: string = 'MyPizza'
+
   protected isLoggedIn = false
 
   protected userProfile!: User
   protected userSuffix!: string
+
+  private isAdmin = false
 
   protected logout(): void {
     this.authSvc.logout().subscribe(res => this.isLoggedIn = false)
@@ -97,6 +104,7 @@ export class AppComponent {
         this.activeLink = this.links[0]
         this.isHome = false
         const path = event.url
+        if (path.startsWith('/my-pizza-ges')) this.brand = 'MyPizzaGes'
         const i = this.links.findIndex(link => link.path === path.trim())
         if (i) {
           this.activeLink = this.links[i]

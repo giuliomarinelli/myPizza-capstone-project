@@ -15,10 +15,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @Service
 public class ProductService {
@@ -29,12 +30,12 @@ public class ProductService {
     @Autowired
     private ProductRepository productRp;
 
+    private static final DecimalFormat df = new DecimalFormat("0.00");
+
     public List<Topping> findAllToppings() {
         return toppingRp.findAll().stream()
-                .peek(t -> t.setDescription(t.getName() + " (" + t.getPrice() + "€)")).toList();
+                .peek(t -> t.setDescription(t.getName() + " (" + df.format(t.getPrice()) + "€)")).toList();
     }
-
-
 
     public List<Topping> addToppings(List<Topping> toppings) throws BadRequestException {
         try {
@@ -45,27 +46,73 @@ public class ProductService {
         return findAllToppings();
     }
 
-    public Topping updateToppingByName(String name, Topping newTopping) throws BadRequestException {
-        Topping topping = toppingRp.findById(name).orElseThrow(
-                () -> new BadRequestException("Topping you're trying to update doesn't exist")
-        );
-        topping.setName(newTopping.getName());
-        topping.setPrice(newTopping.getPrice());
-        return toppingRp.save(topping);
+//    public Topping updateToppingByName(String name, Topping newTopping) throws BadRequestException {
+//        Topping topping = toppingRp.findByName(name).orElseThrow(
+//                () -> new BadRequestException("Topping you're trying to update doesn't exist")
+//        );
+//        topping.setName(newTopping.getName());
+//        topping.setPrice(newTopping.getPrice());
+//        return toppingRp.save(topping);
+//    }
+
+
+//    public ConfirmRes deleteToppingByName(String name) throws BadRequestException {
+//        Topping topping = toppingRp.findByName(name).orElseThrow(
+//                () -> new BadRequestException("Topping you're trying to delete doesn't exist")
+//        );
+//        toppingRp.delete(topping);
+//        return new ConfirmRes("Topping '" + name + "' has been successfully deleted", HttpStatus.OK);
+//    }
+
+    public Page<Product> getAllProducts(Pageable pageable) {
+        return productRp.findAll(pageable).map(p -> {
+            p.setToppings(p.getToppings().stream()
+                    .peek(t -> t.setDescription(t.getName() + " (" + df.format(t.getPrice()) + "€)")).toList());
+            p.setProductTotalAmount();
+            return p;
+        });
     }
 
-    public ConfirmRes deleteToppingByName(String name) throws BadRequestException {
-        Topping topping = toppingRp.findById(name).orElseThrow(
-                () -> new BadRequestException("Topping you're trying to delete doesn't exist")
+    public Product updateProductByName(String oldName, ProductDTO productDTO) throws BadRequestException {
+
+        Product oldProduct = productRp.findByName(oldName).orElseThrow(
+                () -> new BadRequestException("The product you're trying to update (name: '" + oldName + "') doesn't exist")
         );
-        toppingRp.delete(topping);
-        return new ConfirmRes("Topping '" + name + "' has been successfully deleted", HttpStatus.OK);
+        productRp.delete(oldProduct);
+
+        Product product = new Product(productDTO.name(), productDTO.basePrice(), productDTO.category());
+
+        List<Topping> toppings = new ArrayList<>();
+
+        for (String name : productDTO.toppings()) {
+            Topping t = toppingRp.findByName(name).orElseThrow(
+                    () -> new BadRequestException("Topping (old name: '" + name + "') you're trying to update doesn't exist")
+            );
+            t.setDescription(t.getName() + " (" + df.format(t.getPrice()) + "€)");
+            toppings.add(t);
+        }
+
+        for (Topping t : toppings) {
+            product.getToppings().add(t);
+        }
+
+        product.setProductTotalAmount();
+        productRp.save(product);
+        return product;
+    }
+
+    public ConfirmRes deleteProductByName(String name) throws BadRequestException {
+        Product product = productRp.findByName(name).orElseThrow(
+                () -> new BadRequestException("The product you're trying to delete doesn't exist")
+        );
+        productRp.delete(product);
+        return new ConfirmRes("Product with name '" + name + "' deleted successfully", HttpStatus.OK);
     }
 
     public List<String> getAllCategories() {
         List<String> categories = productRp.getAllCategories();
-        categories.addLast("- Inserisci nuova -");
         categories.addFirst("(seleziona una categoria)");
+        categories.addLast("- Inserisci nuova -");
         return categories;
     }
 
@@ -77,12 +124,12 @@ public class ProductService {
         List<ProductDTO> products = manyProductsPostDTO.products();
         // Handling exceptions before making db transactions
         for (ProductDTO p : products) {
-            Optional<Product> product = productRp.findById(p.name());
+            Optional<Product> product = productRp.findByName(p.name());
             if (product.isPresent())
                 throw new BadRequestException("Product with name '" + p.name() + "' already exists");
             List<String> toppingsNames = p.toppings();
             for (String name : toppingsNames) {
-                toppingRp.findById(name).orElseThrow(
+                toppingRp.findByName(name).orElseThrow(
                         () -> new BadRequestException("Topping '" + name + "' doesn't exist")
                 );
             }
@@ -90,17 +137,20 @@ public class ProductService {
         // Handling exception finish
         List<Product> addedProducts = new ArrayList<>();
         for (ProductDTO p : products) {
-            Product newProduct = new Product();
-            newProduct.setName(p.name());
-            newProduct.setCategory(p.category());
-            newProduct.setBasePrice(p.basePrice());
+            Product newProduct = new Product(p.name(), p.basePrice(), p.category());
+
+
             for (String name : p.toppings()) {
-                assert toppingRp.findById(name).isPresent();
-                newProduct.getToppings().add(toppingRp.findById(name).get());
-                addedProducts.add(newProduct);
+                assert toppingRp.findByName(name).isPresent();
+                newProduct.getToppings().add(toppingRp.findByName(name).get());
             }
+            addedProducts.add(newProduct);
         }
-        return productRp.saveAll(addedProducts);
+        productRp.saveAll(addedProducts);
+        return addedProducts.stream()
+                .peek(p -> p.setToppings(p.getToppings().stream()
+                        .peek(t -> t.setDescription(t.getName() + " (" + df.format(t.getPrice()) + "€)"))
+                        .toList())).toList();
     }
 
     public Product addProduct(ProductDTO productDTO) throws BadRequestException {
@@ -108,18 +158,21 @@ public class ProductService {
         p.setName(productDTO.name());
         p.setBasePrice(productDTO.basePrice());
         for (String toppingName : productDTO.toppings()) {
-            Topping topping = toppingRp.findById(toppingName)
+            Topping topping = toppingRp.findByName(toppingName)
                     .orElseThrow(
                             () -> new BadRequestException("Topping with name '" + toppingName + "doesn't exist")
                     );
         }
         for (String toppingName : productDTO.toppings()) {
-            assert toppingRp.findById(toppingName).isPresent();
-            Topping topping = toppingRp.findById(toppingName).get();
+            assert toppingRp.findByName(toppingName).isPresent();
+            Topping topping = toppingRp.findByName(toppingName).get();
             p.getToppings().add(topping);
         }
         p.setCategory(productDTO.category());
         p.setProductTotalAmount();
+        p.setToppings(p.getToppings().stream()
+                .peek(t -> t.setDescription(t.getName() + " (" + df.format(t.getPrice()) + "€)")).toList());
+
         return productRp.save(p);
 
     }

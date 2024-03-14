@@ -6,6 +6,7 @@ import backendapp.myPizza.Models.reqDTO.AddToppingsDTO;
 import backendapp.myPizza.Models.reqDTO.ManyProductsPostDTO;
 import backendapp.myPizza.Models.reqDTO.ProductDTO;
 import backendapp.myPizza.Models.resDTO.CategoriesRes;
+import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.Models.resDTO.ProductNamesRes;
 import backendapp.myPizza.Models.resDTO.ToppingsRes;
 import backendapp.myPizza.exceptions.BadRequestException;
@@ -56,4 +57,19 @@ public class ProductController {
         return new CategoriesRes(productSvc.getAllCategories());
     }
 
+    @GetMapping("/products")
+    public Page<Product> getAllProducts(Pageable pageable) {
+        return productSvc.getAllProducts(pageable);
+    }
+
+    @DeleteMapping("/products/{name}")
+    public ConfirmRes deleteProduct(@PathVariable String name) throws BadRequestException {
+        return productSvc.deleteProductByName(name);
+    }
+
+    @PutMapping("/products/{name}")
+    public Product updateProduct(@PathVariable String name, @RequestBody ProductDTO productDTO) throws BadRequestException {
+        System.out.println("ciao");
+        return productSvc.updateProductByName(name, productDTO);
+    }
 }

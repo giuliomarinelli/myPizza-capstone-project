@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -20,6 +21,8 @@ public class Topping {
 
     private double price;
 
+    private LocalDateTime createdAt;
+
     @Transient
     private String description;
 
@@ -27,5 +30,9 @@ public class Topping {
     @ManyToMany(mappedBy = "toppings", fetch = FetchType.EAGER)
     private List<Product> products = new ArrayList<>();
 
-
+    public Topping(String name, double price) {
+        this.name = name;
+        this.price = price;
+        createdAt = LocalDateTime.now();
+    }
 }

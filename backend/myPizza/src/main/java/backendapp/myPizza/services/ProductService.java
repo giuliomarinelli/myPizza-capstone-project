@@ -52,6 +52,10 @@ public class ProductService {
         Topping oldTopping = toppingRp.findByName(oldName).orElseThrow(
                 () -> new BadRequestException("Topping you're trying to update doesn't exist")
         );
+        for (Product p : oldTopping.getProducts()) {
+            p.getToppings().remove(oldTopping);
+            productRp.save(p);
+        }
         toppingRp.delete(oldTopping);
         Topping topping = new Topping(toppingDTO.name(), toppingDTO.price());
         toppingRp.save(topping);

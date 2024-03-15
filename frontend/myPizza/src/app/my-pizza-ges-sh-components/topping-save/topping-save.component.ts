@@ -1,7 +1,9 @@
+import { OnToppingCreate } from './../../Models/i-product';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { OnToppingUpdate, Topping, ToppingDTO } from '../../Models/i-product';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
+import { OnViewRemove } from '../../Models/i-product-dto';
 
 @Component({
   selector: 'app-topping-save',
@@ -20,13 +22,13 @@ export class ToppingSaveComponent {
 
   @Input() public i: number = 0
 
-  @Output() protected onCreate = new EventEmitter<Topping>()
+  @Output() protected onCreate = new EventEmitter<OnToppingCreate>()
 
   @Output() protected onUpdate = new EventEmitter<OnToppingUpdate>()
 
   @Output() protected onDelete = new EventEmitter<number>()
 
-  @Output() protected onViewRemove = new EventEmitter<number>()
+  @Output() protected onViewRemove = new EventEmitter<OnViewRemove>()
 
   @Output() protected onLoading = new EventEmitter<boolean>()
 
@@ -34,7 +36,7 @@ export class ToppingSaveComponent {
 
   protected nameAlreadyExists: ValidatorFn = (formField: AbstractControl): ValidationErrors | null => {
     if (formField.value) {
-      if (this.toppingNames.includes(formField.value))
+      if (this.toppingNames.includes(formField.value) && this.topping.name !== formField.value)
         return { nameAlreadyExists: true }
     }
     return null
@@ -57,8 +59,18 @@ export class ToppingSaveComponent {
     if (this.type === 'UPDATE' && this.topping != undefined) {
       this.toppingForm.controls['name']?.setValue(this.topping.name)
       this.toppingForm.controls['price']?.setValue(this.topping.price)
+      const ind: number | undefined = this.toppingNames.findIndex(tn => tn === this.topping.name)
+      if (ind) this.toppingNames.splice(ind, 1)
       this.markAll()
     }
+    console.log('start')
+    this.onLoading.emit(true)
+  }
+
+  ngAfterViewInit() {
+    console.log('stop')
+
+    this.onLoading.emit(false)
   }
 
   protected delete() {
@@ -67,6 +79,15 @@ export class ToppingSaveComponent {
       this.onDelete.emit(this.i)
       this.onLoading.emit(false)
     })
+  }
+
+  protected viewRemove() {
+    this.onLoading.emit(true)
+    this.onViewRemove.emit({
+      i: this.i,
+      type: this.type
+    })
+    this.onLoading.emit(false)
   }
 
   protected performSubmit(): void {
@@ -81,7 +102,10 @@ export class ToppingSaveComponent {
       switch (this.type) {
         case 'ADD':
           this.productSvc.addTopping(toppingDTO).subscribe(res => {
-            this.onCreate.emit(res)
+            this.onCreate.emit({
+              topping: res,
+              i: this.i
+            })
             this.onLoading.emit(false)
           })
           break

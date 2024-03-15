@@ -1,28 +1,99 @@
-<div [formGroup]="toppingForm">
-  <div class="col-12 col-sm-6">
-    <div class="form-group mb-1">
-      <input [ngClass]="{'form-control': true, 'is-valid': isValid('name'), 'is-invalid': isInvalid('name')}"
-        type="text" formControlName="name" placeholder="Nome">
+<div [formGroup]="toppingForm" class="topping-save-bg p-4">
+  <div class="col-12">
+    @if (type === 'ADD') {
+    <div class="illustration">
+      <i class="bi bi-plus-circle"></i>
     </div>
-    <div class="feedback">
-      @if(isInvalid('name')) {
-      <p class="m-0 mb-2 invalid feedback-h">Errore</p>
-      }
-      @else {
-      <p class="m-0 mb-2 feedback-h"></p>
-      }
+    } @else if(type === 'UPDATE') {
+    <div class="illustration">
+      <i class="bi bi-pencil-square"></i>
     </div>
-    <div class="form-group mb-1">
-      <input [ngClass]="{'form-control': true, 'is-valid': isValid('price'), 'is-invalid': isInvalid('price')}"
-        type="text" formControlName="price" placeholder="Prezzo">
+    }
+    <div class="row">
+      <div class="col-12 col-mb-6 col-md-12 col-lg-6">
+        <div class="form-group mb-1">
+          <input [ngClass]="{'form-control': true, 'is-valid': isValid('name'), 'is-invalid': isInvalid('name')}"
+            type="text" formControlName="name" placeholder="Nome">
+        </div>
+        <div class="feedback">
+          @if(isInvalid('name')) {
+          <p class="m-0 mb-2 invalid feedback-h">Errore</p>
+          }
+          @else {
+          <p class="m-0 mb-2 feedback-h"></p>
+          }
+
+        </div>
+      </div>
+      <div class="col-12 col-mb-6 col-md-12 col-lg-6">
+        <div class="form-group mb-1">
+          <input [ngClass]="{'form-control': true, 'is-valid': isValid('price'), 'is-invalid': isInvalid('price')}"
+            type="text" formControlName="price" placeholder="Prezzo">
+        </div>
+        <div class="feedback">
+          @if(isInvalid('price')) {
+          <p class="m-0 mb-2 invalid feedback-h">Errore</p>
+          }
+          @else {
+          <p class="m-0 mb-2 feedback-h"></p>
+          }
+        </div>
+      </div>
     </div>
-    <div class="feedback">
-      @if(isInvalid('price')) {
-      <p class="m-0 mb-2 invalid feedback-h">Errore</p>
-      }
-      @else {
-      <p class="m-0 mb-2 feedback-h"></p>
-      }
-    </div>
+    <div class="btn-set row g-0 px-3">
+      @if(type === 'UPDATE')
+      {
+      <div class="col-12 col-sm-4 col-md-12 col-lg-4 ps-sm-1 pe-sm-1 pe-md-0 pe-lg-1 mb-3 mb-sm-0 mb-md-3 mb-lg-0">
+        <button class="btn btn-primary d-flex justify-content-center align-items-center gap-2"
+          (click)="performSubmit()">
+          <span>
+            <i class="bi bi-floppy-fill"></i>
+          </span>
+          <span>Salva</span>
+        </button>
+      </div>
+
+      <div class="col-12 col-sm-4 col-md-12 col-lg-4 ps-sm-1 pe-sm-1 pe-md-0 pe-lg-1 mb-3 mb-sm-0 mb-md-3 mb-lg-0">
+        <button class="btn btn-danger d-flex justify-content-center align-items-center gap-2" (click)="delete()">
+          <span>
+            <i class="bi bi-trash"></i>
+          </span>
+          <span>Elimina</span>
+        </button>
+      </div>
+
+      <div class="col-12 col-sm-4 col-md-12 col-lg-4 ps-sm-1 mb-3 mb-sm-0 mb-md-3 mb-lg-0">
+        <button class="btn btn-secondary d-flex justify-content-center align-items-center gap-2" (click)="viewRemove()">
+          <span>
+            <i class="bi bi-x-circle-fill"></i>
+          </span>
+          <span>Annulla</span>
+        </button>
+      </div>
+
+    } @else if (type === 'ADD') {
+      <div class="col-12 col-sm-6 col-md-12 col-lg-6 ps-sm-1 pe-sm-1 pe-md-0 pe-lg-1 mb-3 mb-sm-0 mb-md-3 mb-lg-0">
+        <button class="btn btn-primary d-flex justify-content-center align-items-center gap-2"
+          (click)="performSubmit()">
+          <span>
+            <i class="bi bi-floppy-fill"></i>
+          </span>
+          <span>Salva</span>
+        </button>
+      </div>
+
+      <div class="col-12 col-sm-6 col-md-12 col-lg-6 ps-sm-1 mb-3 mb-sm-0 mb-md-3 mb-lg-0">
+        <button class="btn btn-secondary d-flex justify-content-center align-items-center gap-2" (click)="viewRemove()">
+          <span>
+            <i class="bi bi-x-circle-fill"></i>
+          </span>
+          <span>Annulla</span>
+        </button>
+      </div>
+
+    }
+
+
+
   </div>
 </div>

@@ -1,8 +1,9 @@
 import { Component, Inject, PLATFORM_ID, afterNextRender } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { ProductService } from '../../../services/product.service';
-import { Topping, ToppingRes } from '../../../Models/i-product';
+import { OnToppingCreate, OnToppingUpdate, Topping, ToppingRes, _Toppings } from '../../../Models/i-product';
 import { isPlatformBrowser } from '@angular/common';
+import { OnViewRemove } from '../../../Models/i-product-dto';
 
 @Component({
   selector: 'app-ingredienti',
@@ -36,26 +37,72 @@ export class IngredientiComponent {
 
   protected isLoading: boolean = true
 
-  protected toppings: Topping[] = []
+  protected toppings: _Toppings[] = []
 
   protected toppingNames: string[] = []
 
-  protected get useClient() {
+  protected edit: boolean[] = []
+
+  protected viewRemoved: number[] = []
+
+  protected get useClient(): boolean {
     return isPlatformBrowser(this.platformId)
   }
+
+  protected updateManage(e: OnToppingUpdate): void {
+    this.edit[e.i] = false
+    this.toppings[e.i] = e.topping
+  }
+
+  protected deleteManage(e: number): void {
+    this.edit[e] = false
+    this.toppings.splice(e, 1)
+  }
+
+  protected outsideDeleteManage(i: number) {
+    this.isLoading = true
+    const topping = this.toppings[i]
+    let name: string = ''
+    if (topping != true && topping != false) name = topping.name
+    this.productSvc.deleteToppingByName(name).subscribe(res => {
+      this.toppings.splice(i, 1)
+      this.isLoading = false
+    })
+  }
+
+  protected createStartManage(): void {
+    this.toppings.push(true)
+  }
+
+  protected createManage(e: OnToppingCreate) {
+    this.toppings[e.i] = e.topping
+  }
+
+  protected viewRemoveManage(e: OnViewRemove): void {
+    switch(e.type) {
+      case 'UPDATE':
+        this.edit[e.i] = false
+        break
+      case 'ADD':
+        this.viewRemoved.push(e.i)
+    }
+  }
+
+
 
   ngOnInit() {
 
   }
 
   ngDoCheck() {
-    if (this.isAdmin && this.onlyOnce) {
+    if (this.isAdmin === true && this.onlyOnce) {
+      this.productSvc.getToppings().subscribe(res => {
+        this.toppings = res.toppings
+        this.toppingNames = res.toppings.map(t => t.name)
+        this.isLoading = false
         this.onlyOnce = false
-        this.productSvc.getToppings().subscribe(res => {
-          this.toppings = res.toppings
-          this.toppingNames = this.toppings.map(t => t.name)
-          this.isLoading = false
-        })
+        this.toppings.forEach(t => this.edit.push(false))
+      })
     }
-}
+  }
 }

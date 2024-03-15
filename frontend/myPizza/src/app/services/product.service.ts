@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { Observable } from 'rxjs';
-import { CategoriesRes, Product, ProductNamesRes, ToppingRes } from '../Models/i-product';
+import { CategoriesRes, Product, ProductNamesRes, Topping, ToppingDTO, ToppingRes } from '../Models/i-product';
 import { HttpClient } from '@angular/common/http';
 import { ManyProductsPostDTO, ProductDTO } from '../Models/i-product-dto';
 import { Page } from '../Models/i-page';
@@ -16,9 +16,27 @@ export class ProductService {
 
   private backendUrl: string = environment.backendUrl
 
+  // -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
+  // Toppings CRUD
+
   public getToppings(): Observable<ToppingRes> {
     return this.http.get<ToppingRes>(`${this.backendUrl}/api/toppings`, { withCredentials: true })
   }
+
+  public addTopping(toppingDTO: ToppingDTO): Observable<Topping> {
+    return this.http.post<Topping>(`${this.backendUrl}/api/toppings`, toppingDTO, { withCredentials: true })
+  }
+
+  public updateToppingByName(name: string, toppingDTO: ToppingDTO): Observable<Topping> {
+    return this.http.put<Topping>(`${this.backendUrl}/api/toppings/${name}`, toppingDTO, { withCredentials: true })
+  }
+
+  public deleteToppingByName(name: string): Observable<ConfirmRes> {
+    return this.http.delete<ConfirmRes>(`${this.backendUrl}/api/toppings/${name}`, { withCredentials: true })
+  }
+
+  // -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
+  // Products CRUD and features
 
   public getProductNames(): Observable<ProductNamesRes> {
     return this.http.get<ProductNamesRes>(`${this.backendUrl}/api/products/product-names`, { withCredentials: true })

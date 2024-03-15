@@ -7,6 +7,8 @@ export interface Topping {
   createdAt: Date
 }
 
+export type ToppingDTO = Omit<Topping, 'createdAt' | 'description'>
+
 export interface ToppingRes {
   toppings: Topping[]
 }

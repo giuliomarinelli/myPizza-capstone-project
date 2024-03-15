@@ -45,7 +45,7 @@ export class AggiungiProdottiComponent {
 
     private onlyOnce: boolean = true
 
-    private isAdmin: boolean = false
+    protected isAdmin: boolean = false
 
     public isLoading = true
 

@@ -33,9 +33,9 @@ export class ProdottiComponent {
         })
     }
 
-    @ViewChild('element') private element!: ElementRef
 
-    private isAdmin = false
+
+    protected isAdmin = false
 
     private _onlyOnce = true
 

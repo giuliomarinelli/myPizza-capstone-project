@@ -1,0 +1,12 @@
+@if(topping != undefined) {
+<div class="row g-1">
+  <div class="col-12 col-mb-6 my-3 my-mb-2 ps-mb-3 nanum-gothic-coding-bold moderate-yellow d-flex justify-content-center justify-content-mb-start flex-wrap gap-2">
+    <span class="fs-item-title">Nome:</span>
+    <span class="nanum-gothic-coding-normal fs-item">{{topping.name}}</span>
+  </div>
+  <div class="col-12 col-mb-6 mb-3 my-mb-2 ps-mb-3 nanum-gothic-coding-bold moderate-green d-flex justify-content-center justify-content-mb-start flex-wrap gap-2">
+    <span class="fs-item-title">Prezzo:</span>
+    <span class="nanum-gothic-coding-normal fs-item">{{topping.price.toFixed(2)}}€</span>
+  </div>
+</div>
+}

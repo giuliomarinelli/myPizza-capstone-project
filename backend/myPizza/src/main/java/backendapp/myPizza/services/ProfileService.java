@@ -5,8 +5,10 @@ import backendapp.myPizza.Models.entities.Order;
 import backendapp.myPizza.Models.entities.User;
 import backendapp.myPizza.Models.enums.UserScope;
 import backendapp.myPizza.Models.reqDTO.UserPutDTO;
+import backendapp.myPizza.Models.resDTO.AdminUserIdRes;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.exceptions.BadRequestException;
+import backendapp.myPizza.exceptions.NotFoundException;
 import backendapp.myPizza.exceptions.UnauthorizedException;
 import backendapp.myPizza.repositories.AddressRepository;
 import backendapp.myPizza.repositories.CityRepository;
@@ -91,6 +93,8 @@ public class ProfileService {
         return u;
     }
 
+
+
     public List<Address> getAddresses() throws UnauthorizedException {
         UUID userId = jwtUtils.extractUserIdFromReq();
         User u = userRp.findById(userId).orElseThrow(
@@ -107,16 +111,27 @@ public class ProfileService {
         return u.getOrders();
     }
 
-    public ConfirmRes delete() throws UnauthorizedException {
+    public ConfirmRes delete() throws UnauthorizedException, BadRequestException {
         UUID userId = jwtUtils.extractUserIdFromReq();
         User u = userRp.findById(userId).orElseThrow(
                 () -> new UnauthorizedException("Invalid access token and refresh token")
         );
+        if (u.getScope().contains(UserScope.ADMIN)) {
+            throw new BadRequestException("It's impossible to delete an admin user. One and only one admin user can exist");
+        }
         for (Address address : u.getAddresses()) {
             addressRp.delete(address);
         }
         userRp.delete(u);
         return new ConfirmRes("User successfully deleted", HttpStatus.NO_CONTENT);
+    }
+
+    public AdminUserIdRes getAdminUserId() throws NotFoundException {
+        User admin = userRp.findAll().stream().filter(u -> u.getScope().contains(UserScope.ADMIN)).findFirst()
+                .orElseThrow(
+                        () -> new NotFoundException("user admin not found")
+                );
+        return new AdminUserIdRes(admin.getId());
     }
 
 

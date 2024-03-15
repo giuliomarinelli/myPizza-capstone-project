@@ -17,4 +17,8 @@ export interface ManyProductsPostDTO {
   products: ProductDTO[]
 }
 
+export interface OnViewRemove {
+  type: string
+  i: number
+}
 

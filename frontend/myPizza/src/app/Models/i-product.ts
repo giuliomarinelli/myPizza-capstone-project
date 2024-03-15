@@ -7,6 +7,17 @@ export interface Topping {
   createdAt: Date
 }
 
+export type _Toppings = Topping | boolean
+
+export type ToppingDTO = Omit<Topping, 'createdAt' | 'description'>
+
+export interface OnToppingUpdate {
+  topping: Topping
+  i: number
+}
+
+export type OnToppingCreate = OnToppingUpdate
+
 export interface ToppingRes {
   toppings: Topping[]
 }

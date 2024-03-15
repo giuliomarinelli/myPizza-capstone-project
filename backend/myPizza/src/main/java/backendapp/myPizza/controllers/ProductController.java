@@ -5,6 +5,7 @@ import backendapp.myPizza.Models.entities.Topping;
 import backendapp.myPizza.Models.reqDTO.AddToppingsDTO;
 import backendapp.myPizza.Models.reqDTO.ManyProductsPostDTO;
 import backendapp.myPizza.Models.reqDTO.ProductDTO;
+import backendapp.myPizza.Models.reqDTO.ToppingDTO;
 import backendapp.myPizza.Models.resDTO.CategoriesRes;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.Models.resDTO.ProductNamesRes;
@@ -27,19 +28,35 @@ public class ProductController {
     @Autowired
     private ProductService productSvc;
 
+    // -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
+    // Toppings
+
     @GetMapping("/toppings")
     public ToppingsRes getAllToppings() {
         return new ToppingsRes(productSvc.findAllToppings());
     }
 
     @PostMapping("/toppings")
-    public ToppingsRes addToppings(@RequestBody AddToppingsDTO addToppingsDTO) throws BadRequestException {
-        return new ToppingsRes(productSvc.addToppings(addToppingsDTO.toppings()));
+    public Topping addTopping(@RequestBody ToppingDTO toppingDTO) throws BadRequestException {
+        return productSvc.addTopping(toppingDTO);
     }
 
-    @PostMapping("/products")
-    public Product addProduct(@RequestBody ProductDTO productDTO) throws BadRequestException {
-        return productSvc.addProduct(productDTO);
+    @PutMapping("/toppings/{name}")
+    public Topping updateToppingByName(@PathVariable String name, @RequestBody ToppingDTO toppingDTO) throws BadRequestException {
+        return productSvc.updateToppingByName(name, toppingDTO);
+    }
+
+    @DeleteMapping("/toppings/{name}")
+    public ConfirmRes deleteToppingByName(@PathVariable String name) throws BadRequestException {
+        return productSvc.deleteToppingByName(name);
+    }
+
+    // -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
+    // Products
+
+    @GetMapping("/products")
+    public Page<Product> getAllProducts(Pageable pageable) {
+        return productSvc.getAllProducts(pageable);
     }
 
     @GetMapping("/products/product-names")
@@ -47,24 +64,19 @@ public class ProductController {
         return new ProductNamesRes(productSvc.getProductNames());
     }
 
-    @PostMapping("/products/add-many")
-    public List<Product> addManyProducts(@RequestBody ManyProductsPostDTO manyProductsPostDTO) throws BadRequestException {
-        return productSvc.addManyProducts(manyProductsPostDTO);
-    }
-
     @GetMapping("/products/categories")
     public CategoriesRes getCategories() {
         return new CategoriesRes(productSvc.getAllCategories());
     }
 
-    @GetMapping("/products")
-    public Page<Product> getAllProducts(Pageable pageable) {
-        return productSvc.getAllProducts(pageable);
+    @PostMapping("/products")
+    public Product addProduct(@RequestBody ProductDTO productDTO) throws BadRequestException {
+        return productSvc.addProduct(productDTO);
     }
 
-    @DeleteMapping("/products/{name}")
-    public ConfirmRes deleteProduct(@PathVariable String name) throws BadRequestException {
-        return productSvc.deleteProductByName(name);
+    @PostMapping("/products/add-many")
+    public List<Product> addManyProducts(@RequestBody ManyProductsPostDTO manyProductsPostDTO) throws BadRequestException {
+        return productSvc.addManyProducts(manyProductsPostDTO);
     }
 
     @PutMapping("/products/{name}")
@@ -72,4 +84,11 @@ public class ProductController {
         System.out.println("ciao");
         return productSvc.updateProductByName(name, productDTO);
     }
+
+    @DeleteMapping("/products/{name}")
+    public ConfirmRes deleteProduct(@PathVariable String name) throws BadRequestException {
+        return productSvc.deleteProductByName(name);
+    }
+
+
 }

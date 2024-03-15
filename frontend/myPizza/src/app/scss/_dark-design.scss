@@ -5,6 +5,15 @@ $secondary-btn-color: $gray-700;
 
 .dark-design {
 
+
+  .topping-bg {
+    background-color: lighten(#1e2833, 5%)
+  }
+
+  .topping-save-bg {
+    background-color: lighten(#1e2833, 10%)
+  }
+
   display: flex;
   justify-content: center;
 

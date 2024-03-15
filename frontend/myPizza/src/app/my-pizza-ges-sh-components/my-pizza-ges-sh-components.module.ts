@@ -8,13 +8,19 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { ProductCardComponent } from './product-card/product-card.component';
 import { ProductsComponent } from './products/products.component';
+import { ToppingCardComponent } from './topping-card/topping-card.component';
+import { AccessDeniedComponent } from './access-denied/access-denied.component';
+import { ToppingSaveComponent } from './topping-save/topping-save.component';
 
 
 @NgModule({
   declarations: [
     ProductSaveComponent,
     ProductCardComponent,
-    ProductsComponent
+    ProductsComponent,
+    ToppingCardComponent,
+    AccessDeniedComponent,
+    ToppingSaveComponent
   ],
   imports: [
     CommonModule,
@@ -27,7 +33,10 @@ import { ProductsComponent } from './products/products.component';
   exports: [
     ProductSaveComponent,
     ProductCardComponent,
-    ProductsComponent
+    ProductsComponent,
+    AccessDeniedComponent,
+    ToppingCardComponent,
+    ToppingSaveComponent
   ]
 })
 export class MyPizzaGesShComponentsModule { }

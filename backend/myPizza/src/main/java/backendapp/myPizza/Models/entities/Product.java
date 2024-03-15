@@ -37,6 +37,10 @@ public class Product {
 
     private LocalDateTime createdAt;
 
+    @JsonIgnore
+    @OneToOne(mappedBy = "product")
+    private Task task;
+
     @Transient
     private double price;
 

@@ -1,2 +1,14 @@
-package backendapp.myPizza.Models.resDTO;public class AdminUserIdRes {
+package backendapp.myPizza.Models.resDTO;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.UUID;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class AdminUserIdRes {
+    private UUID adminUserId;
 }

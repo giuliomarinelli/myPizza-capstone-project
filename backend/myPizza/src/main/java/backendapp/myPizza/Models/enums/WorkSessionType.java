@@ -1,2 +1,5 @@
-package backendapp.myPizza.Models.enums;public class WorkSessionType {
+package backendapp.myPizza.Models.enums;
+
+public enum WorkSessionType {
+    LUNCH, DINNER
 }

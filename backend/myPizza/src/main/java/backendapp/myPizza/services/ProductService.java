@@ -4,12 +4,12 @@ import backendapp.myPizza.Models.entities.Product;
 import backendapp.myPizza.Models.entities.Topping;
 import backendapp.myPizza.Models.reqDTO.ManyProductsPostDTO;
 import backendapp.myPizza.Models.reqDTO.ProductDTO;
+import backendapp.myPizza.Models.reqDTO.ToppingDTO;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.repositories.ProductRepository;
 import backendapp.myPizza.repositories.ToppingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -37,32 +37,40 @@ public class ProductService {
                 .peek(t -> t.setDescription(t.getName() + " (" + df.format(t.getPrice()) + "€)")).toList();
     }
 
-    public List<Topping> addToppings(List<Topping> toppings) throws BadRequestException {
-        try {
-            toppingRp.saveAll(toppings);
-        } catch (DataIntegrityViolationException e) {
-            throw new BadRequestException("You entered a topping already existing");
-        }
-        return findAllToppings();
+    public Topping addTopping(ToppingDTO t) throws BadRequestException {
+        List<String> existingToppingNames = toppingRp.findAllToppingNames();
+        // Duplicate exception handling
+        if (existingToppingNames.contains(t.name()))
+            throw new BadRequestException("Topping with name '" + t.name() + "' already exists");
+        Topping topping = new Topping(t.name(), t.price());
+        toppingRp.save(topping);
+        topping.setDescription(topping.getName() + " (" + df.format(topping.getPrice()) + "€)");
+        return topping;
     }
 
-//    public Topping updateToppingByName(String name, Topping newTopping) throws BadRequestException {
-//        Topping topping = toppingRp.findByName(name).orElseThrow(
-//                () -> new BadRequestException("Topping you're trying to update doesn't exist")
-//        );
-//        topping.setName(newTopping.getName());
-//        topping.setPrice(newTopping.getPrice());
-//        return toppingRp.save(topping);
-//    }
+    public Topping updateToppingByName(String oldName, ToppingDTO toppingDTO) throws BadRequestException {
+        Topping oldTopping = toppingRp.findByName(oldName).orElseThrow(
+                () -> new BadRequestException("Topping you're trying to update doesn't exist")
+        );
+        toppingRp.delete(oldTopping);
+        Topping topping = new Topping(toppingDTO.name(), toppingDTO.price());
+        toppingRp.save(topping);
+        topping.setDescription(topping.getName() + " (" + df.format(topping.getPrice()) + "€)");
+        return topping;
+    }
 
 
-//    public ConfirmRes deleteToppingByName(String name) throws BadRequestException {
-//        Topping topping = toppingRp.findByName(name).orElseThrow(
-//                () -> new BadRequestException("Topping you're trying to delete doesn't exist")
-//        );
-//        toppingRp.delete(topping);
-//        return new ConfirmRes("Topping '" + name + "' has been successfully deleted", HttpStatus.OK);
-//    }
+    public ConfirmRes deleteToppingByName(String name) throws BadRequestException {
+        Topping topping = toppingRp.findByName(name).orElseThrow(
+                () -> new BadRequestException("Topping you're trying to delete doesn't exist")
+        );
+        for (Product p : topping.getProducts()) {
+            p.getToppings().remove(topping);
+            productRp.save(p);
+        }
+        toppingRp.delete(topping);
+        return new ConfirmRes("Topping '" + name + "' has been successfully deleted", HttpStatus.OK);
+    }
 
     public Page<Product> getAllProducts(Pageable pageable) {
         return productRp.findAll(pageable).map(p -> {

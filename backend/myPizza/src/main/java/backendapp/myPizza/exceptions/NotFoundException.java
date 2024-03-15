@@ -1,7 +1,7 @@
 package backendapp.myPizza.exceptions;
 
-public class BadRequestException extends Exception {
-    public BadRequestException(String message) {
+public class NotFoundException extends Exception {
+    public NotFoundException(String message) {
         super(message);
     }
 }

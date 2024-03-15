@@ -5,10 +5,12 @@ import backendapp.myPizza.Models.entities.Order;
 import backendapp.myPizza.Models.entities.User;
 import backendapp.myPizza.Models.reqDTO.ChangePasswordDTO;
 import backendapp.myPizza.Models.reqDTO.UserPutDTO;
+import backendapp.myPizza.Models.resDTO.AdminUserIdRes;
 import backendapp.myPizza.Models.resDTO.AuthoritiesRes;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.Models.resDTO.IsLoggedInRes;
 import backendapp.myPizza.exceptions.BadRequestException;
+import backendapp.myPizza.exceptions.NotFoundException;
 import backendapp.myPizza.exceptions.UnauthorizedException;
 import backendapp.myPizza.services.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +36,7 @@ public class ProfileController {
     }
 
     @DeleteMapping("")
-    public ConfirmRes delete() throws UnauthorizedException {
+    public ConfirmRes delete() throws UnauthorizedException, BadRequestException {
         return profileSvc.delete();
     }
 
@@ -61,5 +63,10 @@ public class ProfileController {
     @GetMapping("get-authorities")
     public AuthoritiesRes getAuthorities() throws UnauthorizedException {
         return new AuthoritiesRes(profileSvc.getAuthorities());
+    }
+
+    @GetMapping("get-admin-userid")
+    public AdminUserIdRes getAdminUserId() throws NotFoundException {
+        return profileSvc.getAdminUserId();
     }
 }

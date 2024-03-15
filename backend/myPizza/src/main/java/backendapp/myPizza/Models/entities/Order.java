@@ -57,5 +57,8 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @OneToOne(mappedBy = "order")
+    private Command command;
+
 
 }

@@ -1,4 +1,6 @@
 <app-full-screen-loader [isLoading]="isLoading" *ngIf="useClient"></app-full-screen-loader>
+<app-access-denied *ngIf="!isAdmin && useClient"></app-access-denied>
+@if(isAdmin) {
 <div class="footer-bottom py-2">
   <div class="container-md">
     <h1 class="h1 text-center mb-4">Aggiungi prodotti</h1>
@@ -32,3 +34,4 @@
     </div>
   </div>
 </div>
+}

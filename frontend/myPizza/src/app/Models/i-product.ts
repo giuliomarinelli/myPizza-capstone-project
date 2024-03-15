@@ -9,6 +9,11 @@ export interface Topping {
 
 export type ToppingDTO = Omit<Topping, 'createdAt' | 'description'>
 
+export interface OnToppingUpdate {
+  topping: Topping
+  i: number
+}
+
 export interface ToppingRes {
   toppings: Topping[]
 }

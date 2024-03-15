@@ -38,6 +38,8 @@ export class IngredientiComponent {
 
   protected toppings: Topping[] = []
 
+  protected toppingNames: string[] = []
+
   protected get useClient() {
     return isPlatformBrowser(this.platformId)
   }
@@ -51,8 +53,8 @@ export class IngredientiComponent {
         this.onlyOnce = false
         this.productSvc.getToppings().subscribe(res => {
           this.toppings = res.toppings
+          this.toppingNames = this.toppings.map(t => t.name)
           this.isLoading = false
-          console.log(this.toppings)
         })
     }
 }

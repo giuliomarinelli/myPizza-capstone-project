@@ -1,1 +1,28 @@
-<p>topping-save works!</p>
+<div [formGroup]="toppingForm">
+  <div class="col-12 col-sm-6">
+    <div class="form-group mb-1">
+      <input [ngClass]="{'form-control': true, 'is-valid': isValid('name'), 'is-invalid': isInvalid('name')}"
+        type="text" formControlName="name" placeholder="Nome">
+    </div>
+    <div class="feedback">
+      @if(isInvalid('name')) {
+      <p class="m-0 mb-2 invalid feedback-h">Errore</p>
+      }
+      @else {
+      <p class="m-0 mb-2 feedback-h"></p>
+      }
+    </div>
+    <div class="form-group mb-1">
+      <input [ngClass]="{'form-control': true, 'is-valid': isValid('price'), 'is-invalid': isInvalid('price')}"
+        type="text" formControlName="price" placeholder="Prezzo">
+    </div>
+    <div class="feedback">
+      @if(isInvalid('price')) {
+      <p class="m-0 mb-2 invalid feedback-h">Errore</p>
+      }
+      @else {
+      <p class="m-0 mb-2 feedback-h"></p>
+      }
+    </div>
+  </div>
+</div>

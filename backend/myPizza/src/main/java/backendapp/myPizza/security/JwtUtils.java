@@ -122,6 +122,16 @@ public class JwtUtils {
         }
     }
 
+    public boolean verifyWsRefreshToken(String wsRefreshToken) {
+        try {
+            Jwts.parser().verifyWith(Keys.hmacShaKeyFor(wsRefreshSecret.getBytes())).build()
+                    .parseSignedClaims(wsRefreshToken).getPayload();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public String generateToken(User u, TokenType type) {
         long exp = 1;
         String secret = accessSecret;
@@ -194,6 +204,19 @@ public class JwtUtils {
                     .verifyWith(Keys.hmacShaKeyFor(wsAccessSecret.getBytes()))
                     .build()
                     .parseSignedClaims(wsAccessToken)
+                    .getPayload()
+                    .getSubject());
+        } catch (Exception e) {
+            throw new UnauthorizedException("Invalid ws_access token");
+        }
+    }
+
+    public UUID extractUserIdFromWsRefreshToken(String wsRefreshToken) throws UnauthorizedException {
+        try {
+            return UUID.fromString(Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(wsRefreshSecret.getBytes()))
+                    .build()
+                    .parseSignedClaims(wsRefreshToken)
                     .getPayload()
                     .getSubject());
         } catch (Exception e) {

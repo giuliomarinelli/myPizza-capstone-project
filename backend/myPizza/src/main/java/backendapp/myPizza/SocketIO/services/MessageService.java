@@ -1,6 +1,7 @@
 package backendapp.myPizza.SocketIO.services;
 
-import backendapp.myPizza.SocketIO.Message;
+import backendapp.myPizza.SocketIO.ClientNotification;
+import backendapp.myPizza.SocketIO.entities.Message;
 import com.corundumstudio.socketio.SocketIOClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class MessageService {
     public void sendMessageToClient(Message message) {
 
 
-        Set<UUID> clientIds = sessionSvc.getClientIdsFromUserId(message.getRecipientUserId());
+        Set<UUID> clientIds = sessionSvc.getClientIdsFromUserId(message.getRecipientUser().getId());
 
         for (UUID clientId : clientIds) {
             SocketIOClient client = clientSvc.getClient(clientId);
@@ -30,7 +31,16 @@ public class MessageService {
             }
 
         }
+    }
 
+    public void onConnectNotification(UUID userId){
+        Set<UUID> clientIds = sessionSvc.getClientIdsFromUserId(userId);
+        for (UUID clientId : clientIds) {
+            SocketIOClient client = clientSvc.getClient(clientId);
+            if (client != null) {
+                client.sendEvent("connect", new ClientNotification("websocket connected successfully, userId=" + userId + ", clientId=" + clientId));
+            }
 
+        }
     }
 }

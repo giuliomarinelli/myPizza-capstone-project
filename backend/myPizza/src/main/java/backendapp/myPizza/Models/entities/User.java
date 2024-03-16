@@ -3,6 +3,7 @@ package backendapp.myPizza.Models.entities;
 import backendapp.myPizza.Models.enums.Gender;
 import backendapp.myPizza.Models.enums.UserScope;
 import backendapp.myPizza.Models.enums._2FAStrategy;
+import backendapp.myPizza.SocketIO.entities.Message;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,7 +21,8 @@ import java.util.*;
 @Table(name = "users")
 public class User implements UserDetails {
 
-    @Id @GeneratedValue(strategy = GenerationType.UUID)
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Setter(AccessLevel.NONE)
     private UUID id;
 
@@ -57,6 +59,12 @@ public class User implements UserDetails {
 
     private _2FAStrategy _2FA;
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "senderUser")
+    List<Message> sentMessages;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "recipientUser")
+    List<Message> receivedMessages;
+
     @JsonIgnore
     private List<UserScope> scope;
 
@@ -79,7 +87,6 @@ public class User implements UserDetails {
     }
 
 
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         HashSet<GrantedAuthority> authorities = new HashSet<GrantedAuthority>(scope.size());
@@ -88,7 +95,6 @@ public class User implements UserDetails {
             authorities.add(new SimpleGrantedAuthority(s.name()));
         return authorities;
     }
-
 
 
     @JsonIgnore

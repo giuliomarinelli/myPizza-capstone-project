@@ -3,10 +3,7 @@ package backendapp.myPizza.controllers;
 import backendapp.myPizza.Models.entities.Menu;
 import backendapp.myPizza.Models.entities.Product;
 import backendapp.myPizza.Models.entities.Topping;
-import backendapp.myPizza.Models.reqDTO.AddToppingsDTO;
-import backendapp.myPizza.Models.reqDTO.ManyProductsPostDTO;
-import backendapp.myPizza.Models.reqDTO.ProductDTO;
-import backendapp.myPizza.Models.reqDTO.ToppingDTO;
+import backendapp.myPizza.Models.reqDTO.*;
 import backendapp.myPizza.Models.resDTO.CategoriesRes;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.Models.resDTO.ProductNamesRes;
@@ -97,9 +94,9 @@ public class ProductController {
     }
 
     @PostMapping("/set-menu")
-    public Page<Menu> setMenu(Pageable pageable, @RequestBody List<Menu> menu) {
-        return menuSvc.saveMenu(menu, pageable);
+    public ConfirmRes setMenu(@RequestBody MenuDTO menuDTO) throws BadRequestException {
+        return menuSvc.saveMenu(menuDTO.menuIds());
     }
-    
+
 
 }

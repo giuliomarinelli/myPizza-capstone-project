@@ -22,4 +22,7 @@ public interface ProductRepository extends JpaRepository<Product, String>, Pagin
     public @NonNull Page<Product> findAll(@NonNull Pageable pageable);
 
     public Optional<Product> findByName(String name);
+
+    @Query("SELECT DISTINCT(p.category.name) FROM Product p")
+    public List<String> getAllCategoryNames();
 }

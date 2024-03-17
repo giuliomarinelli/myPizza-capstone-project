@@ -1,5 +1,6 @@
 package backendapp.myPizza.Models.entities;
 
+import backendapp.myPizza.Models.enums.ItemType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @Data
+@Table(name = "categories")
 public class Category extends MenuItem {
 
     @Column(unique = true)
@@ -20,6 +22,8 @@ public class Category extends MenuItem {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "category")
     @JsonIgnore
     private List<Product> products = new ArrayList<>();
+
+    ItemType type = ItemType.CATEGORY;
 
     public Category(String name) {
         this.name = name;

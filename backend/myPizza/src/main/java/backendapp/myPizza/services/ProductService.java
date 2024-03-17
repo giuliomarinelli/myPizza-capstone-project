@@ -1,14 +1,14 @@
 package backendapp.myPizza.services;
 
-import backendapp.myPizza.Models.entities.Category;
-import backendapp.myPizza.Models.entities.Product;
-import backendapp.myPizza.Models.entities.Topping;
+import backendapp.myPizza.Models.entities.*;
 import backendapp.myPizza.Models.reqDTO.ManyProductsPostDTO;
 import backendapp.myPizza.Models.reqDTO.ProductDTO;
 import backendapp.myPizza.Models.reqDTO.ToppingDTO;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.exceptions.BadRequestException;
+import backendapp.myPizza.exceptions.NotFoundException;
 import backendapp.myPizza.repositories.CategoryRepository;
+import backendapp.myPizza.repositories.MenuRepository;
 import backendapp.myPizza.repositories.ProductRepository;
 import backendapp.myPizza.repositories.ToppingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +34,9 @@ public class ProductService {
 
     @Autowired
     private CategoryRepository categoryRp;
+
+    @Autowired
+    private MenuRepository menuRp;
 
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
@@ -90,17 +93,34 @@ public class ProductService {
         });
     }
 
-    public Product updateProductByName(String oldName, ProductDTO productDTO) throws BadRequestException {
+    public Product updateProductByName(String oldName, ProductDTO productDTO) throws BadRequestException, NotFoundException {
 
         Product oldProduct = productRp.findByName(oldName).orElseThrow(
                 () -> new BadRequestException("The product you're trying to update (name: '" + oldName + "') doesn't exist")
         );
+        assert menuRp.findByItemId(oldProduct.getId()).isPresent();
+        Menu menu = menuRp.findByItemId(oldProduct.getId()).get();
+        menuRp.delete(menu);
         oldProduct.setName(productDTO.name());
         oldProduct.setBasePrice(productDTO.basePrice());
-        Category newCategory = new Category(productDTO.category());
-        if (!oldProduct.getCategory().equals(newCategory)) {
-            categoryRp.save(newCategory);
-            oldProduct.setCategory(new Category());
+        Optional<Category> sentCategory = categoryRp.findByName(productDTO.category());
+        Category oldCategory = oldProduct.getCategory();
+        if (sentCategory.isPresent() && !sentCategory.get().equals(oldCategory)) {
+            oldProduct.setCategory(sentCategory.get());
+            productRp.save(oldProduct);
+        } else if (sentCategory.isEmpty()) {
+            Category newCategory = new Category(productDTO.category());
+            categoryRp.save(newCategory);;
+            menuRp.save(new Menu(newCategory));
+            oldProduct.setCategory(newCategory);
+            productRp.save(oldProduct);
+        }
+
+        if (productsHaveNotCategory(oldCategory)) {
+            categoryRp.delete(oldCategory);
+            assert menuRp.findByItemId(oldCategory.getId()).isPresent();
+            Menu oldMenu = menuRp.findByItemId(oldCategory.getId()).get();
+            menuRp.delete(oldMenu);
         }
 
 
@@ -119,6 +139,7 @@ public class ProductService {
         }
 
         productRp.save(oldProduct);
+        menuRp.save(new Menu(oldProduct));
         oldProduct.setProductTotalAmount();
         return oldProduct;
     }
@@ -127,12 +148,23 @@ public class ProductService {
         Product product = productRp.findByName(name).orElseThrow(
                 () -> new BadRequestException("The product you're trying to delete doesn't exist")
         );
+        Category category = product.getCategory();
+
+        assert menuRp.findByItemId(product.getId()).isPresent();
+        menuRp.delete(menuRp.findByItemId(product.getId()).get());
+
         productRp.delete(product);
+        if (productsHaveNotCategory(category)) {
+            assert menuRp.findByItemId(category.getId()).isPresent();
+            menuRp.delete(menuRp.findByItemId(category.getId()).get());
+            categoryRp.delete(category);
+        }
+
         return new ConfirmRes("Product with name '" + name + "' deleted successfully", HttpStatus.OK);
     }
 
-    public List<String> getAllCategories() {
-        List<String> categories = categoryRp.findAll().stream().map(Category::getName).toList();
+    public List<String> getAllCategoryNames() {
+        List<String> categories = productRp.getAllCategoryNames();
         categories.addFirst("(seleziona una categoria)");
         categories.addLast("- Inserisci nuova -");
         return categories;
@@ -140,6 +172,10 @@ public class ProductService {
 
     public boolean isPresentCategory(String name) {
         return categoryRp.findByName(name).isPresent();
+    }
+
+    public boolean productsHaveNotCategory(Category category) {
+        return productRp.findAll().stream().noneMatch(p -> p.getCategory().equals(category));
     }
 
     public List<String> getProductNames() {
@@ -167,8 +203,13 @@ public class ProductService {
             if (isPresentCategory(p.category())) {
                 assert categoryRp.findByName(p.category()).isPresent();
                 category = categoryRp.findByName(p.category()).get();
+
             } else {
                 category = new Category(p.category());
+                categoryRp.save(category);
+                Menu menu = new Menu();
+                menu.setItem(category);
+                menuRp.save(menu);
             }
 
             Product newProduct = new Product(p.name(), p.basePrice(), category);
@@ -181,6 +222,11 @@ public class ProductService {
             addedProducts.add(newProduct);
         }
         productRp.saveAll(addedProducts);
+        List<Menu> menuProducts = new ArrayList<>();
+        for (Product p : addedProducts) {
+            menuProducts.add(new Menu(p));
+        }
+        menuRp.saveAll(menuProducts);
         return addedProducts.stream()
                 .peek(p -> p.setToppings(p.getToppings().stream()
                         .peek(t -> t.setDescription(t.getName() + " (" + df.format(t.getPrice()) + "€)"))

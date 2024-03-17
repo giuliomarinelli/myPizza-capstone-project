@@ -1,2 +1,5 @@
-package backendapp.myPizza.Models.enums;public enum ItemType {
+package backendapp.myPizza.Models.enums;
+
+public enum ItemType {
+    CATEGORY, PRODUCT
 }

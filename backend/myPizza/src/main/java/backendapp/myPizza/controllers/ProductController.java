@@ -11,6 +11,7 @@ import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.Models.resDTO.ProductNamesRes;
 import backendapp.myPizza.Models.resDTO.ToppingsRes;
 import backendapp.myPizza.exceptions.BadRequestException;
+import backendapp.myPizza.exceptions.NotFoundException;
 import backendapp.myPizza.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -66,7 +67,7 @@ public class ProductController {
 
     @GetMapping("/products/categories")
     public CategoriesRes getCategories() {
-        return new CategoriesRes(productSvc.getAllCategories());
+        return new CategoriesRes(productSvc.getAllCategoryNames());
     }
 
     @PostMapping("/products")
@@ -80,7 +81,7 @@ public class ProductController {
     }
 
     @PutMapping("/products/{name}")
-    public Product updateProduct(@PathVariable String name, @RequestBody ProductDTO productDTO) throws BadRequestException {
+    public Product updateProduct(@PathVariable String name, @RequestBody ProductDTO productDTO) throws BadRequestException, NotFoundException {
         System.out.println("ciao");
         return productSvc.updateProductByName(name, productDTO);
     }

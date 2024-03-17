@@ -1,5 +1,6 @@
 package backendapp.myPizza.Models.entities;
 
+import backendapp.myPizza.Models.enums.ItemType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,6 +27,8 @@ public class Topping {
     private double price;
 
     private long createdAt;
+
+    ItemType type = ItemType.PRODUCT;
 
     @Transient
     private String description;

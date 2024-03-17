@@ -27,9 +27,9 @@
     <div class="row align-items-stretch">
 
       @for(product of products; track product; let i = $index) {
-      <div [ngClass]="{'my-3 col-12 dark-design': true, 'col-md-6': products.length > 1}">
+      <div [ngClass]="{'my-3 col-12 dark-design': true, 'col-md-6': products.length > 1, 'disappear': onDisappear, 'delete': onDelete}">
         @if (edit[i] === false) {
-        <div class="my-pizza-card d-flex flex-column justify-content-between">
+        <div class="my-pizza-card d-flex flex-column justify-content-between animated">
           <app-product-card *ngIf="useClient" [name]="products[i].name" [category]="products[i].category.name"
             [price]="products[i].price" [toppingDescriptions]="getToppinsDescriptions(i)"
             class="align-self-stretch"></app-product-card>
@@ -56,7 +56,7 @@
 
         </div>} @else {
 
-        <div class="formset">
+        <div [ngClass]="{'formset animated': true, 'disappear': onDisappear, 'delete': onDelete}">
           <app-product-save *ngIf="useClient" [type]="'UPDATE'" [categories]="categories" [i]="i"
             [toppingDescriptions]="toppingDescriptions" [toppings]="toppings" [productNames]="productNames"
             [nonDeleted]="true" [mark]="true" [productToUpdate]="products[i]" (onCancel)="edit[i] = $event"

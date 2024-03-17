@@ -4,3 +4,7 @@ export interface Menu {
   id: string
   item: Product | Category
 }
+
+export interface MenuDTO {
+  menu: Menu[]
+}

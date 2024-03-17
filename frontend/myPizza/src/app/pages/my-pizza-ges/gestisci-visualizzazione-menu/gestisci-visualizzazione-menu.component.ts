@@ -37,13 +37,14 @@ export class GestisciVisualizzazioneMenuComponent {
 
   protected count: number = 0
 
-  protected noEdit: boolean = false
+  protected noEdit: boolean = true
 
   protected isAdmin: boolean = false
 
   private _onlyOnce: boolean = true
 
   protected onlyOnce: boolean[] = []
+
 
   protected menu: Menu[] = []
 
@@ -52,8 +53,21 @@ export class GestisciVisualizzazioneMenuComponent {
   }
 
   protected save(): void {
-    this.menuSvc.setMenu(this.menu).subscribe(res => {
+    this.isLoading = true
+    this.menuSvc.setMenu(this.menu.map(m => m.id)).subscribe(res => {
+      this.noEdit = true
+      this.menu = []
+      this.menuSvc.getMenu(25).subscribe(res => {
 
+        res.content.forEach(m => {
+          this.menu.push(m)
+          this.onlyOnce.push(true)
+        })
+
+        this.isLoading = false
+
+
+      })
     })
   }
 
@@ -77,7 +91,7 @@ export class GestisciVisualizzazioneMenuComponent {
 
   protected drop(event: CdkDragDrop<Menu[]>) {
     moveItemInArray(this.menu, event.previousIndex, event.currentIndex)
-    this.noEdit = true
+    this.noEdit = false
   }
 
   protected onScroll() {

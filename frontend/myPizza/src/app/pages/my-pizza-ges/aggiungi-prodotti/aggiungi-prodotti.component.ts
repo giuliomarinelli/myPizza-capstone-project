@@ -43,6 +43,10 @@ export class AggiungiProdottiComponent {
     });
   }
 
+
+
+  protected onlyOnceAnimated = true
+
   private onlyOnce: boolean = true
 
   protected isAdmin: boolean = false
@@ -57,14 +61,6 @@ export class AggiungiProdottiComponent {
 
   public toppingDescriptions!: string[]
 
-  private emptyAddProduct = {
-    name: null,
-    basePrice: null,
-    category: null,
-    newCategory: null,
-    toppings: [],
-    i: null
-  }
 
   ngDoCheck() {
     if (this.isAdmin && this.onlyOnce) {
@@ -75,10 +71,15 @@ export class AggiungiProdottiComponent {
         this.toppings = res
         this.toppingDescriptions = this.toppings.toppings.map(t => t.description)
         this.isLoading = false
+        setTimeout(() => this.onlyOnceAnimated = false, 500)
       })
 
     }
   }
+
+  protected onDelete: number = -1
+
+  protected onAdd: boolean = false
 
   protected validation: ProductValidation[] = []
 
@@ -106,13 +107,22 @@ export class AggiungiProdottiComponent {
   }
 
   protected addForm(): void {
-    this.addProductForms.push(true)
+    this.onAdd = true
+    setTimeout(() => {
+      this.addProductForms.push(true)
+      this.onAdd = false
+    }, 50)
   }
 
   protected delete(e: number): void {
-    this.addProductForms[e] = false
-    this.addProductData[e].deleted = true
-    console.log(this.addProductData)
+    this.onDelete = e
+    setTimeout(() => {
+      this.addProductForms[e] = false
+      this.addProductData[e].deleted = true
+      this.onDelete = -1
+    }, 500)
+
+
   }
 
   protected saveValidation(e: ProductValidation) {

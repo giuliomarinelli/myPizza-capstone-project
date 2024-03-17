@@ -18,11 +18,11 @@
         </div>
         }
       </div>
-      <div class="w-450 p-3 btn-set">
-        <button routerLink="/my-pizza-ges/aggiungi-prodotti"
-          [ngClass]="{'mb-3 mb-sm-0 w-100 btn btn-primary d-flex justify-content-center align-items-center gap-2': true}">
-          <i class="bi bi-plus-circle-fill"></i>
-          <span>Aggiungi prodotti</span>
+      <div class="w-450 p-3 btn-set btn-set-center">
+        <button [ngClass]="{'mb-3 mb-sm-0 w-100 btn btn-primary d-flex justify-content-center align-items-center gap-2': true,
+           'disabled': noEdit}" (click)="save()">
+          <i class="bi bi-floppy-fill"></i>
+          <span>Salva modifiche</span>
         </button>
       </div>
     </div>

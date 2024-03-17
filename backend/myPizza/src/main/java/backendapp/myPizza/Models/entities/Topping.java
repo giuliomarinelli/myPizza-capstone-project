@@ -15,8 +15,12 @@ import java.util.UUID;
 @Data
 @Table(name = "toppings")
 public class Topping {
-
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Setter(AccessLevel.NONE)
+    private UUID id;
+
+    @Column(unique = true)
     private String name;
 
     private double price;

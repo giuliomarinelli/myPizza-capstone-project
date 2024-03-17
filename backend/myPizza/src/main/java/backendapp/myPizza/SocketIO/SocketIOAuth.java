@@ -5,6 +5,7 @@ import backendapp.myPizza.security.JwtUtils;
 import com.corundumstudio.socketio.AuthorizationListener;
 import com.corundumstudio.socketio.HandshakeData;
 import jakarta.servlet.http.Cookie;
+import lombok.extern.log4j.Log4j2;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,12 +18,14 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 @Component
+@Log4j2
 public class SocketIOAuth implements AuthorizationListener {
 
     @Autowired
     private JwtUtils jwtUtils;
 
     public static List<Cookie> cookieParser(String reqCookieHeader) {
+
         String[] cookies = reqCookieHeader.split(";");
         List<Cookie> parsedCookies = new ArrayList<>();
         for (String c: cookies) {
@@ -34,8 +37,9 @@ public class SocketIOAuth implements AuthorizationListener {
 
     @Override
     public boolean isAuthorized(HandshakeData data) {
-
+        log.info("auth socket");
         String cookies = data.getHttpHeaders().get("Cookie");
+        log.info(cookies);
         if (cookies == null) return false;
         if (cookies.isBlank()) return false;
         List<Cookie> parsedCookies = cookieParser(cookies);
@@ -46,8 +50,10 @@ public class SocketIOAuth implements AuthorizationListener {
         } catch (Exception e) {
             return false;
         }
-        return jwtUtils.verifyWsAccessToken(accessToken.getValue());
+        boolean isValid = jwtUtils.verifyWsAccessToken(accessToken.getValue());
+        if (isValid) log.info("access token valido"); else log.info("access token non valido");
 
+        return isValid;
 
     }
 

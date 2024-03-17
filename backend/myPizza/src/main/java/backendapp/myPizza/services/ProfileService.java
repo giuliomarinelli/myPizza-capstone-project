@@ -77,7 +77,7 @@ public class ProfileService {
         User u = userRp.findById(userId).orElseThrow(
                 () -> new UnauthorizedException("Invalid access token and refresh token")
         );
-        u.setLastUpdate(LocalDateTime.now());
+        u.setLastUpdate(System.currentTimeMillis());
         u.setFirstName(userPutDTO.firstName());
         u.setLastName(userPutDTO.lastName());
         u.setEmail(userPutDTO.email());

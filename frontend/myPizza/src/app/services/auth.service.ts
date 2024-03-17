@@ -6,6 +6,7 @@ import { IsLoggedIn } from '../Models/is-logged-in';
 import { UserLogin, UserPostDTO } from '../Models/user-dto';
 import { ConfirmRes } from '../Models/confirm-res';
 import { AuthoritiesRes, User } from '../Models/i-user';
+import { IsWsAuthValid } from '../Models/i-IsWsAuthValid';
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +48,10 @@ export class AuthService {
       if (res.authorities.includes('ADMIN')) return true
       return false
     }))
+  }
+
+  public isWsAuthValidOrRefresh(): Observable<IsWsAuthValid> {
+    return this.http.get<IsWsAuthValid>(`${this.backendUrl}/ws/is-ws-auth-valid-or-refresh`, { withCredentials: true })
   }
 
 }

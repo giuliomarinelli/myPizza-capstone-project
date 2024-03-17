@@ -35,7 +35,7 @@ public class Product {
 
     private String category;
 
-    private LocalDateTime createdAt;
+    private long createdAt;
 
     @JsonIgnore
     @OneToOne(mappedBy = "product")
@@ -48,7 +48,7 @@ public class Product {
         this.name = name;
         this.basePrice = basePrice;
         this.category = category;
-        createdAt = LocalDateTime.now();
+        createdAt = System.currentTimeMillis();
     }
 
     public void setProductTotalAmount() {

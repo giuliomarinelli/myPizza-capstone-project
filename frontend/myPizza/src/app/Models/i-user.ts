@@ -5,8 +5,8 @@ export interface User {
   email: string
   phoneNumber: string
   profileImage: string
-  createdAt: Date
-  lastUpdate: Date
+  createdAt: number
+  lastUpdate: number
   messagingUsername: string
   _2FA: string | null
   authorities: Autority[]

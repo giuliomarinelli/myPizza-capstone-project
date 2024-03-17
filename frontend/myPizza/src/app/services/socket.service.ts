@@ -1,5 +1,19 @@
 import { Injectable } from '@angular/core';
-import { Socket } from 'ngx-socket-io';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Socket, io } from 'socket.io-client'
+import { AuthService } from './auth.service';
+import { Message } from '../Models/i-message';
+
+
+
+const socket: Socket = io('http://localhost:8085', {
+  withCredentials: true,
+  transports: ['websocket'],
+  reconnection: false,
+  autoConnect: false
+})
+
+
 
 
 @Injectable({
@@ -7,15 +21,54 @@ import { Socket } from 'ngx-socket-io';
 })
 export class SocketService {
 
-  constructor(private socket: Socket) { }
+  constructor(private authSvc: AuthService) { }
 
-  public connect() {
-    this.socket.connect()
+  private socket!: Socket
+
+  public connectSbj = new BehaviorSubject<boolean>(false)
+  public isConnected$ = this.connectSbj.asObservable()
+
+
+  public connect(): void {
+    socket.connect()
+    socket.on('connect_error', (err) => {
+      console.log('errore di connessione, verifico l\'autorizzazione e se l\'access token è scaduto, faccio il refresh e ritento la connessione')
+      this.authSvc.isWsAuthValidOrRefresh().subscribe(res => {
+        console.log(res)
+        if (res.valid === false) {
+          console.log('refresh impossibile, bisogna rifare il login')
+        } else {
+          console.log('refresh fatto, ritento la connessione')
+          socket.connect()
+        }
+      })
+    })
   }
 
-  public disconnect() {
-    this.socket.disconnect();
+  public onConnect(): Observable<string> {
+    return new Observable<string>(observer => {
+      socket.on('connection_ok', (data: string) => {
+        observer.next(data);
+      })
+      console.log('connesso')
+    })
+
   }
+
+  public onReceiveMessage(): Observable<Message> {
+    return new Observable<Message>(observer => {
+      socket.on('message', (data: Message) => {
+        observer.next(data);
+      })
+    })
+
+
+
+  }
+
+
+
+
 
 
 

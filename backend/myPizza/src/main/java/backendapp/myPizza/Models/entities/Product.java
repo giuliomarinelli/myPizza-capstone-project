@@ -1,5 +1,6 @@
 package backendapp.myPizza.Models.entities;
 
+import backendapp.myPizza.Models.enums.ItemType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,6 +18,8 @@ public class Product extends MenuItem {
 
     @Column(unique = true)
     private String name;
+
+    ItemType type = ItemType.PRODUCT;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

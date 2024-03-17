@@ -51,6 +51,11 @@ export class GestisciVisualizzazioneMenuComponent {
     return isPlatformBrowser(this.platformId)
   }
 
+  protected save(): void {
+    this.menuSvc.setMenu(this.menu).subscribe(res => {
+
+    })
+  }
 
   ngDoCheck() {
     if (this.isAdmin && this._onlyOnce) {

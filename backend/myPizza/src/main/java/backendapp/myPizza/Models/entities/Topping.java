@@ -28,7 +28,6 @@ public class Topping {
 
     private long createdAt;
 
-    ItemType type = ItemType.PRODUCT;
 
     @Transient
     private String description;

@@ -1,5 +1,6 @@
 package backendapp.myPizza.controllers;
 
+import backendapp.myPizza.Models.entities.Menu;
 import backendapp.myPizza.Models.entities.Product;
 import backendapp.myPizza.Models.entities.Topping;
 import backendapp.myPizza.Models.reqDTO.AddToppingsDTO;
@@ -12,6 +13,7 @@ import backendapp.myPizza.Models.resDTO.ProductNamesRes;
 import backendapp.myPizza.Models.resDTO.ToppingsRes;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.exceptions.NotFoundException;
+import backendapp.myPizza.services.MenuService;
 import backendapp.myPizza.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,6 +30,9 @@ public class ProductController {
 
     @Autowired
     private ProductService productSvc;
+
+    @Autowired
+    private MenuService menuSvc;
 
     // -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
     // Toppings
@@ -91,5 +96,10 @@ public class ProductController {
         return productSvc.deleteProductByName(name);
     }
 
+    @PostMapping("/set-menu")
+    public Page<Menu> setMenu(Pageable pageable, @RequestBody List<Menu> menu) {
+        return menuSvc.saveMenu(menu, pageable);
+    }
+    
 
 }

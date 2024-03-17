@@ -25,9 +25,9 @@ public class WorkSession {
     @Enumerated(EnumType.STRING)
     private WorkSessionType type;
 
-    private LocalDateTime openTime;
+    private long openTime;
 
-    private LocalDateTime closeTime;
+    private long closeTime;
 
     private int cookCount;
 

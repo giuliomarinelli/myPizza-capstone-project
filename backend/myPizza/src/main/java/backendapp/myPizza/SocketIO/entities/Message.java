@@ -31,13 +31,14 @@ public class Message {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    private String from;
+    private String _from;
 
-    private String to;
+    private String _to;
 
+    @Column(length = 10000)
     private String message;
 
-    private LocalDateTime sentAt;
+    private long sentAt;
 
     private boolean wasUserOnLine;
 
@@ -49,10 +50,12 @@ public class Message {
         this.order = order;
         this.message = message;
         this.wasUserOnLine = wasUserOnLine;
-        from = senderUser.getMessagingUsername();
-        to = recipientUser.getMessagingUsername();
-        sentAt = LocalDateTime.now();
+        _from = senderUser.getMessagingUsername();
+        _to = recipientUser.getMessagingUsername();
+        sentAt = System.currentTimeMillis();
         read = false;
 
     }
+
+
 }

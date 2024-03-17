@@ -94,7 +94,21 @@ public class SocketIOController {
             clientSvc.addClient(client.getSessionId(), client);
             sessionSvc.addSession(userId, client.getSessionId());
             log.info(sessionSvc.getSessionTracker());
-            client.sendEvent("connection_ok", "Connected to Socket.IO server.");
+            assert userRp.findById(userId).isPresent();
+            User u = userRp.findById(userId).get();
+            List<Message> offLineReceivedMessages = u.getReceivedMessages()
+                            .stream().filter(m -> !m.isWasUserOnLine()).toList();
+            String msg = "";
+            if (!offLineReceivedMessages.isEmpty()) {
+                msg = " Notified messages received when offline";
+                for (Message m : offLineReceivedMessages) {
+                    m.setWasUserOnLine(true);
+                    messageSvc.sendMessageToClient(m);
+                    messageRp.save(m);
+                }
+            }
+
+            client.sendEvent("connection_ok", "Connected to Socket.IO server." + msg);
         }
     };
 
@@ -125,15 +139,26 @@ public class SocketIOController {
                     () -> new Exception("recipient user not found")
             );
 
+
             boolean isRecipientUserOnLine = sessionSvc.isOnLine(recipientUser.getId());
+            log.info(isRecipientUserOnLine);
+
+            log.info(senderUser.getId() + " " + recipientUser.getId());
 
             Message message = new Message(senderUser, recipientUser, messageDTO.order(), messageDTO.message(), isRecipientUserOnLine);
 
+            client.sendEvent("auto_message", "ciao");
+
+
             messageRp.save(message);
+
+            if (isRecipientUserOnLine) {
+                messageSvc.sendMessageToClient(message);
+            }
 
 
             log.info(message.getSenderUser().getId() + " user sent message to user " + message.getRecipientUser().getId() + " and message is " + message.getMessage());
-            messageSvc.sendMessageToClient(message);
+
 
 
             /**

@@ -31,11 +31,11 @@ public class Order {
 
     private List<Product> products = new ArrayList<>();
 
-    private LocalDateTime orderTime;
+    private long orderTime;
 
-    private LocalDateTime expectedDeliveryTime;
+    private long expectedDeliveryTime;
 
-    private LocalDateTime deliveryTime;
+    private long deliveryTime;
 
     private boolean asap;
 

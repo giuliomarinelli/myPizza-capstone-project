@@ -19,7 +19,7 @@ public class Command {
     @Setter(AccessLevel.NONE)
     private UUID id;
 
-    private LocalDateTime createdAt;
+    private long createdAt;
 
     private String customerCompleteName;
 

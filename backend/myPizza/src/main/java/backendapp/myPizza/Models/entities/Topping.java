@@ -21,7 +21,7 @@ public class Topping {
 
     private double price;
 
-    private LocalDateTime createdAt;
+    private long createdAt;
 
     @Transient
     private String description;
@@ -33,6 +33,6 @@ public class Topping {
     public Topping(String name, double price) {
         this.name = name;
         this.price = price;
-        createdAt = LocalDateTime.now();
+        createdAt = System.currentTimeMillis();
     }
 }

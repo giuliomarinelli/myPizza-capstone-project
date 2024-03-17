@@ -9,12 +9,12 @@ import com.corundumstudio.socketio.listener.DisconnectListener;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-@CrossOrigin
+
+@CrossOrigin(origins = "http://localhost:4200")
 @Component
 @Log4j2
 public class SocketIOConfig {
@@ -39,7 +39,6 @@ public class SocketIOConfig {
         server.addConnectListener(new ConnectListener() {
             @Override
             public void onConnect(SocketIOClient client) {
-
                 log.info("new user connected with socket " + client.getSessionId());
             }
         });

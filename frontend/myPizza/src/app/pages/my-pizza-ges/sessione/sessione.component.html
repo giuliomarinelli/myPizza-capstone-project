@@ -1,0 +1,37 @@
+<div>
+
+  <div class="row">
+    <div class="col-12 bg-my-pizza-blue py-3 text-center">
+    <h1 class="h1">Sessione lavorativa</h1>
+  </div>
+    <div class="col-12 bg-dark py-2 d-flex justify-content-center align-items-center">
+      <h3 class="h3">Nuovi ordini</h3>
+    </div>
+    @if (realTimeMessages.length === 0) {
+    <div class="col bg-moderate-yellow h d-flex justify-content-center align-items-center fs-3">
+
+      <p>Non ci sono messaggi</p>
+
+    </div>
+    } @else {
+    <div class="col bg-moderate-yellow h d-flex justify-content-center flex-wrap align-items-center p-4">
+      @for(message of realTimeMessages; track message; let i = $index) {
+
+      <div
+        [ngClass]="{'alert alert-dismissible w-100 transition': true, 'alert-primary': i % 2 === 0, 'alert-success': i % 2 !== 0}"
+        role="alert">
+        <div [ngClass]="{'add': true, 'delete': message.delete === true}">
+          <div>Da <strong>{{message.message._from}}</strong></div>
+          <div>A <strong>{{message.message._to}}</strong></div>
+          <div>{{message.message.sentAt | date : 'dd/MM/y ore HH:mm:ss' }}</div>
+          <div>{{message.message.message}}</div>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+            (click)="removeMessage(i)"></button>
+        </div>
+      </div>
+      }
+    </div>
+    }
+
+  </div>
+</div>

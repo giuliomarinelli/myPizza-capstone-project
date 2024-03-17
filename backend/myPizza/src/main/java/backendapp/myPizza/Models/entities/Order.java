@@ -1,6 +1,7 @@
 package backendapp.myPizza.Models.entities;
 
 import backendapp.myPizza.Models.enums.OrderStatus;
+import backendapp.myPizza.SocketIO.entities.Message;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,13 +31,16 @@ public class Order {
 
     private List<Product> products = new ArrayList<>();
 
-    private LocalDateTime orderTime;
+    private long orderTime;
 
-    private LocalDateTime expectedDeliveryTime;
+    private long expectedDeliveryTime;
 
-    private LocalDateTime deliveryTime;
+    private long deliveryTime;
 
     private boolean asap;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "order")
+    private List<Message> messages;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;

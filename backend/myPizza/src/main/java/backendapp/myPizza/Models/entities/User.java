@@ -3,6 +3,7 @@ package backendapp.myPizza.Models.entities;
 import backendapp.myPizza.Models.enums.Gender;
 import backendapp.myPizza.Models.enums.UserScope;
 import backendapp.myPizza.Models.enums._2FAStrategy;
+import backendapp.myPizza.SocketIO.entities.Message;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,7 +21,8 @@ import java.util.*;
 @Table(name = "users")
 public class User implements UserDetails {
 
-    @Id @GeneratedValue(strategy = GenerationType.UUID)
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Setter(AccessLevel.NONE)
     private UUID id;
 
@@ -41,9 +43,9 @@ public class User implements UserDetails {
 
     private String profileImage;
 
-    private LocalDateTime createdAt;
+    private long createdAt;
 
-    private LocalDateTime lastUpdate;
+    private long lastUpdate;
 
     private String messagingUsername;
 
@@ -56,6 +58,12 @@ public class User implements UserDetails {
     private List<Address> addresses = new ArrayList<>();
 
     private _2FAStrategy _2FA;
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "senderUser")
+    List<Message> sentMessages;
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "recipientUser")
+    List<Message> receivedMessages;
 
     @JsonIgnore
     private List<UserScope> scope;
@@ -68,8 +76,8 @@ public class User implements UserDetails {
         this.phoneNumber = phoneNumber;
         this.gender = gender;
         scope = List.of(UserScope.USER);
-        createdAt = LocalDateTime.now();
-        lastUpdate = LocalDateTime.now();
+        createdAt = System.currentTimeMillis();
+        lastUpdate = System.currentTimeMillis();
         messagingUsername = firstName + " " + lastName;
         profileImage = generateAvatar();
     }
@@ -77,7 +85,6 @@ public class User implements UserDetails {
     public String generateAvatar() {
         return "https://ui-avatars.com/api/?name=" + firstName + "+" + lastName;
     }
-
 
 
     @Override
@@ -88,7 +95,6 @@ public class User implements UserDetails {
             authorities.add(new SimpleGrantedAuthority(s.name()));
         return authorities;
     }
-
 
 
     @JsonIgnore

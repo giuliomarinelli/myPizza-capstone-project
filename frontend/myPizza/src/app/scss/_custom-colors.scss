@@ -2,12 +2,20 @@
   color: $yellow-500;
 }
 
+.bg-moderate-yellow {
+  background-color: $yellow-600;
+}
+
 .carminium-red {
   color: $red-600;
 }
 
 .my-pizza-blue {
   color: #2980ef;
+}
+
+.bg-my-pizza-blue {
+  background-color: darken(#2980ef, 12%);
 }
 
 .moderate-green {

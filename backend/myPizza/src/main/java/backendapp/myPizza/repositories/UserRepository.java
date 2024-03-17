@@ -1,6 +1,7 @@
 package backendapp.myPizza.repositories;
 
 import backendapp.myPizza.Models.entities.User;
+import backendapp.myPizza.SocketIO.entities.Message;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -16,6 +17,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("SELECT u.phoneNumber FROM User u")
     public List<String> findAllPhoneNumbers();
+
 
 
 }

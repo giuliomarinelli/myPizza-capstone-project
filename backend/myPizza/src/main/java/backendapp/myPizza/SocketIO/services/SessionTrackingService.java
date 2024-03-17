@@ -12,6 +12,10 @@ public class SessionTrackingService {
 
     private final Set<SessionManager> sessionTracker = new HashSet<>();
 
+    public boolean isOnLine(UUID userId) {
+        return sessionTracker.stream().anyMatch(sm -> sm.getUserId().equals(userId));
+    }
+
     public void addSession(UUID userId, UUID sessionId) {
         Optional<SessionManager> userSession =
                 sessionTracker.stream().filter(sm -> sm.getUserId().equals(userId)).findFirst();

@@ -18,7 +18,7 @@ export class ProdottiComponent {
 
         afterNextRender(() => {
             this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
-                if (isLoggedIn && this.onlyOnce) {
+                if (isLoggedIn && this._onlyOnce) {
                     this.authSvc.isAdmin$.subscribe(isAdmin => {
                         if (isAdmin) {
                             console.log('accesso admin concesso')

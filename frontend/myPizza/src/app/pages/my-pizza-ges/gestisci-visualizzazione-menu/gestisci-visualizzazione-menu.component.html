@@ -1,0 +1,30 @@
+<app-access-denied *ngIf="!isAdmin && useClient"></app-access-denied>
+<app-full-screen-loader [isLoading]="isLoading && isAdmin"></app-full-screen-loader>
+<ng-container *ngIf="isAdmin && useClient">
+  <div class="dark-design w-max">
+
+
+    <div class="container-lg" infiniteScroll [infiniteScrollDistance]="0.8" [fromRoot]="true"
+      [infiniteScrollThrottle]="1000" (scrolled)="onScroll()">
+      <div cdkDropList class="list border-dark bg-dark" (cdkDropListDropped)="drop($event)">
+        @for (m of menu; track menu) {
+        <div [ngClass]="{'drag-box position-relative': true, 'bg-success fs-1': m.item.type === 'CATEGORY',
+        'bg-my-pizza-blue fs-0': m.item.type === 'PRODUCT'
+        }" cdkDrag>
+          {{m.item.name}}
+          <div class="text-gray fs-icon drag-icon">
+            <mat-icon [inline]="true">dehaze</mat-icon>
+          </div>
+        </div>
+        }
+      </div>
+      <div class="w-450 p-3 btn-set">
+        <button routerLink="/my-pizza-ges/aggiungi-prodotti"
+          [ngClass]="{'mb-3 mb-sm-0 w-100 btn btn-primary d-flex justify-content-center align-items-center gap-2': true}">
+          <i class="bi bi-plus-circle-fill"></i>
+          <span>Aggiungi prodotti</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-container>

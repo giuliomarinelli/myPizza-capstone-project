@@ -22,3 +22,9 @@ export interface Message {
 
   read: boolean
 }
+
+export interface MessageMng {
+  message: Message
+  add: boolean
+  delete: boolean
+}

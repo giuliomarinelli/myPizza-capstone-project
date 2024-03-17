@@ -6,7 +6,7 @@
     <h1 class="h1 text-center mb-4">Aggiungi prodotti</h1>
     @for(form of addProductForms; track form; let i = $index) {
     <div class="dark-design mb-4" [ngClass]="{'d-none': isproductDeleted(i)}">
-      <div class="formset">
+      <div [ngClass]="{'formset  animated': true, 'delete': onDelete === i}">
         <app-product-save *ngIf="useClient" [type]="'ADD'" [categories]="categories" [i]="i" [mark]="mark"
           [toppingDescriptions]="toppingDescriptions" [toppings]="toppings" [productNames]="productNames"
           [nonDeleted]="form" (onFormInput)="act($event)" (onDelete)="delete($event)"

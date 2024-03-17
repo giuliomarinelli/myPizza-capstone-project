@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { CategoriesRes, OnProductUpdate, Product, ProductNamesRes, ProductValidation, Topping, ToppingRes } from '../../Models/i-product';
+import { CategoriesRes, Category, OnProductUpdate, Product, ProductNamesRes, ProductValidation, Topping, ToppingRes } from '../../Models/i-product';
 import { ProductErrorMessage } from '../../classes/product-error-message';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { Observable, map, startWith } from 'rxjs';
@@ -32,7 +32,7 @@ export class ProductSaveComponent {
 
   @Input() public toppingDescriptions!: string[]
 
-  @Input() public categories: CategoriesRes | undefined
+  @Input() public categories: string[] | undefined
 
   @Input() public i!: number
 
@@ -163,7 +163,7 @@ export class ProductSaveComponent {
     if (this.productToUpdate && this.onlyOnce) {
       this.productForm.controls['name']?.setValue(this.productToUpdate.name)
       this.productForm.controls['basePrice']?.setValue(this.productToUpdate.basePrice)
-      this.productForm.controls['category']?.setValue(this.productToUpdate.category)
+      this.productForm.controls['category']?.setValue(this.productToUpdate.category.name)
       this.productToUpdate.toppings.forEach(t => this.addedToppingDescriptions.push(t.description))
       const i = this.productNames?.productNames.findIndex(n => n === this.productToUpdate?.name)
       if (i != undefined) this.productNames?.productNames.splice(i, 1)

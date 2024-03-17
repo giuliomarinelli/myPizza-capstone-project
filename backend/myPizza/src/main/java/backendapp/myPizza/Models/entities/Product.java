@@ -1,29 +1,31 @@
 package backendapp.myPizza.Models.entities;
 
+import backendapp.myPizza.Models.enums.ItemType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Table(name = "products")
-public class Product {
-    @Id
+public class Product extends MenuItem {
+
+    @Column(unique = true)
     private String name;
+
+    ItemType type = ItemType.PRODUCT;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "products_toppings",
-            joinColumns = @JoinColumn(name = "product_name"),
-            inverseJoinColumns = @JoinColumn(name = "topping_name")
+            joinColumns = @JoinColumn(name = "product_id"),
+            inverseJoinColumns = @JoinColumn(name = "topping_id")
     )
     private List<Topping> toppings = new ArrayList<>();
 
@@ -33,7 +35,9 @@ public class Product {
 
     private double basePrice;
 
-    private String category;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     private long createdAt;
 
@@ -44,7 +48,7 @@ public class Product {
     @Transient
     private double price;
 
-    public Product(String name, double basePrice, String category) {
+    public Product(String name, double basePrice, Category category) {
         this.name = name;
         this.basePrice = basePrice;
         this.category = category;

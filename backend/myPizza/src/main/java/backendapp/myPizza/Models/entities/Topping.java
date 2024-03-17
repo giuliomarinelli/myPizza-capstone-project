@@ -1,5 +1,6 @@
 package backendapp.myPizza.Models.entities;
 
+import backendapp.myPizza.Models.enums.ItemType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,13 +16,18 @@ import java.util.UUID;
 @Data
 @Table(name = "toppings")
 public class Topping {
-
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Setter(AccessLevel.NONE)
+    private UUID id;
+
+    @Column(unique = true)
     private String name;
 
     private double price;
 
     private long createdAt;
+
 
     @Transient
     private String description;

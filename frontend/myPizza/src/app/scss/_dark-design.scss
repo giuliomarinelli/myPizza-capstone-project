@@ -5,6 +5,10 @@ $secondary-btn-color: $gray-700;
 
 .dark-design {
 
+  .border-dark {
+    border-color: #1e2833;
+  }
+
 
   .topping-bg {
     background-color: lighten(#1e2833, 5%)

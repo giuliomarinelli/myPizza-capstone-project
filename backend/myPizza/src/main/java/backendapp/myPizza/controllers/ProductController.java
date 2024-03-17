@@ -1,16 +1,16 @@
 package backendapp.myPizza.controllers;
 
+import backendapp.myPizza.Models.entities.Menu;
 import backendapp.myPizza.Models.entities.Product;
 import backendapp.myPizza.Models.entities.Topping;
-import backendapp.myPizza.Models.reqDTO.AddToppingsDTO;
-import backendapp.myPizza.Models.reqDTO.ManyProductsPostDTO;
-import backendapp.myPizza.Models.reqDTO.ProductDTO;
-import backendapp.myPizza.Models.reqDTO.ToppingDTO;
+import backendapp.myPizza.Models.reqDTO.*;
 import backendapp.myPizza.Models.resDTO.CategoriesRes;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.Models.resDTO.ProductNamesRes;
 import backendapp.myPizza.Models.resDTO.ToppingsRes;
 import backendapp.myPizza.exceptions.BadRequestException;
+import backendapp.myPizza.exceptions.NotFoundException;
+import backendapp.myPizza.services.MenuService;
 import backendapp.myPizza.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -27,6 +27,9 @@ public class ProductController {
 
     @Autowired
     private ProductService productSvc;
+
+    @Autowired
+    private MenuService menuSvc;
 
     // -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
     // Toppings
@@ -66,7 +69,7 @@ public class ProductController {
 
     @GetMapping("/products/categories")
     public CategoriesRes getCategories() {
-        return new CategoriesRes(productSvc.getAllCategories());
+        return new CategoriesRes(productSvc.getAllCategoryNames());
     }
 
     @PostMapping("/products")
@@ -80,7 +83,7 @@ public class ProductController {
     }
 
     @PutMapping("/products/{name}")
-    public Product updateProduct(@PathVariable String name, @RequestBody ProductDTO productDTO) throws BadRequestException {
+    public Product updateProduct(@PathVariable String name, @RequestBody ProductDTO productDTO) throws BadRequestException, NotFoundException {
         System.out.println("ciao");
         return productSvc.updateProductByName(name, productDTO);
     }
@@ -88,6 +91,11 @@ public class ProductController {
     @DeleteMapping("/products/{name}")
     public ConfirmRes deleteProduct(@PathVariable String name) throws BadRequestException {
         return productSvc.deleteProductByName(name);
+    }
+
+    @PostMapping("/set-menu")
+    public ConfirmRes setMenu(@RequestBody MenuDTO menuDTO) throws BadRequestException {
+        return menuSvc.saveMenu(menuDTO.menuIds());
     }
 
 

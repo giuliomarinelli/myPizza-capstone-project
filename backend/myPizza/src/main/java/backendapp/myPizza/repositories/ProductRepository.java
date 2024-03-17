@@ -16,8 +16,6 @@ import java.util.UUID;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, String>, PagingAndSortingRepository<Product, String> {
-    @Query("SELECT DISTINCT(p.category) FROM Product p ORDER BY p.category ASC")
-    public List<String> getAllCategories();
 
     @Override
     @Query("SELECT p FROM Product p ORDER BY createdAt DESC")

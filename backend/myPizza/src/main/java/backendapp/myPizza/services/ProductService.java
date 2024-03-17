@@ -1,5 +1,6 @@
 package backendapp.myPizza.services;
 
+import backendapp.myPizza.Models.entities.Category;
 import backendapp.myPizza.Models.entities.Product;
 import backendapp.myPizza.Models.entities.Topping;
 import backendapp.myPizza.Models.reqDTO.ManyProductsPostDTO;
@@ -7,6 +8,7 @@ import backendapp.myPizza.Models.reqDTO.ProductDTO;
 import backendapp.myPizza.Models.reqDTO.ToppingDTO;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.exceptions.BadRequestException;
+import backendapp.myPizza.repositories.CategoryRepository;
 import backendapp.myPizza.repositories.ProductRepository;
 import backendapp.myPizza.repositories.ToppingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,9 @@ public class ProductService {
 
     @Autowired
     private ProductRepository productRp;
+
+    @Autowired
+    private CategoryRepository categoryRp;
 
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
@@ -56,11 +61,11 @@ public class ProductService {
             p.getToppings().remove(oldTopping);
             productRp.save(p);
         }
-        toppingRp.delete(oldTopping);
-        Topping topping = new Topping(toppingDTO.name(), toppingDTO.price());
-        toppingRp.save(topping);
-        topping.setDescription(topping.getName() + " (" + df.format(topping.getPrice()) + "€)");
-        return topping;
+        oldTopping.setName(toppingDTO.name());
+        oldTopping.setPrice(toppingDTO.price());
+        toppingRp.save(oldTopping);
+        oldTopping.setDescription(oldTopping.getName() + " (" + df.format(oldTopping.getPrice()) + "€)");
+        return oldTopping;
     }
 
 
@@ -90,9 +95,14 @@ public class ProductService {
         Product oldProduct = productRp.findByName(oldName).orElseThrow(
                 () -> new BadRequestException("The product you're trying to update (name: '" + oldName + "') doesn't exist")
         );
-        productRp.delete(oldProduct);
+        oldProduct.setName(productDTO.name());
+        oldProduct.setBasePrice(productDTO.basePrice());
+        Category newCategory = new Category(productDTO.category());
+        if (!oldProduct.getCategory().equals(newCategory)) {
+            categoryRp.save(newCategory);
+            oldProduct.setCategory(new Category());
+        }
 
-        Product product = new Product(productDTO.name(), productDTO.basePrice(), productDTO.category());
 
         List<Topping> toppings = new ArrayList<>();
 
@@ -105,12 +115,12 @@ public class ProductService {
         }
 
         for (Topping t : toppings) {
-            product.getToppings().add(t);
+            oldProduct.getToppings().add(t);
         }
 
-        product.setProductTotalAmount();
-        productRp.save(product);
-        return product;
+        productRp.save(oldProduct);
+        oldProduct.setProductTotalAmount();
+        return oldProduct;
     }
 
     public ConfirmRes deleteProductByName(String name) throws BadRequestException {
@@ -122,10 +132,14 @@ public class ProductService {
     }
 
     public List<String> getAllCategories() {
-        List<String> categories = productRp.getAllCategories();
+        List<String> categories = categoryRp.findAll().stream().map(Category::getName).toList();
         categories.addFirst("(seleziona una categoria)");
         categories.addLast("- Inserisci nuova -");
         return categories;
+    }
+
+    public boolean isPresentCategory(String name) {
+        return categoryRp.findByName(name).isPresent();
     }
 
     public List<String> getProductNames() {
@@ -149,7 +163,15 @@ public class ProductService {
         // Handling exception finish
         List<Product> addedProducts = new ArrayList<>();
         for (ProductDTO p : products) {
-            Product newProduct = new Product(p.name(), p.basePrice(), p.category());
+            Category category;
+            if (isPresentCategory(p.category())) {
+                assert categoryRp.findByName(p.category()).isPresent();
+                category = categoryRp.findByName(p.category()).get();
+            } else {
+                category = new Category(p.category());
+            }
+
+            Product newProduct = new Product(p.name(), p.basePrice(), category);
 
 
             for (String name : p.toppings()) {
@@ -180,7 +202,16 @@ public class ProductService {
             Topping topping = toppingRp.findByName(toppingName).get();
             p.getToppings().add(topping);
         }
-        p.setCategory(productDTO.category());
+
+        Category category;
+
+        if (isPresentCategory(productDTO.category())) {
+            assert categoryRp.findByName(productDTO.category()).isPresent();
+            category = categoryRp.findByName(productDTO.category()).get();
+        } else {
+            category = new Category(productDTO.category());
+        }
+        p.setCategory(category);
         p.setProductTotalAmount();
         p.setToppings(p.getToppings().stream()
                 .peek(t -> t.setDescription(t.getName() + " (" + df.format(t.getPrice()) + "€)")).toList());

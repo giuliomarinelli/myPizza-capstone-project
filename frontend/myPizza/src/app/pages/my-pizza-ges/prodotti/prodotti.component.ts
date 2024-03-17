@@ -2,7 +2,7 @@ import { Component, ElementRef, HostListener, Inject, PLATFORM_ID, ViewChild, af
 import { AuthService } from '../../../services/auth.service';
 import { ProductService } from '../../../services/product.service';
 import { ViewportRuler } from '@angular/cdk/scrolling';
-import { CategoriesRes, OnProductUpdate, Product, ProductNamesRes, ToppingRes } from '../../../Models/i-product';
+import { CategoriesRes, Category, OnProductUpdate, Product, ProductNamesRes, ToppingRes } from '../../../Models/i-product';
 import { Breakpoint } from '../../../Models/i-breakpoint';
 import { isPlatformBrowser } from '@angular/common';
 import { Platform } from '@angular/cdk/platform';
@@ -41,7 +41,7 @@ export class ProdottiComponent {
 
     protected onlyOne = false
 
-    public categories!: CategoriesRes
+    public categories!: string[]
 
     public productNames!: ProductNamesRes
 
@@ -70,7 +70,7 @@ export class ProdottiComponent {
     ngDoCheck() {
         if (this.isAdmin && this._onlyOnce) {
             this._onlyOnce = false
-            this.productSvc.getCategories().subscribe(res => this.categories = res)
+            this.productSvc.getCategories().subscribe(res => this.categories = res.categories)
             this.productSvc.getProductNames().subscribe(res => this.productNames = res)
             this.productSvc.getToppings().subscribe(res => {
                 this.toppings = res
@@ -99,6 +99,7 @@ export class ProdottiComponent {
             this.products.splice(i, 1)
             this.isLoading = false
         })
+        this.productSvc.getCategories().subscribe(res => this.categories = res.categories)
     }
 
     protected updateProduct(e: OnProductUpdate): void {
@@ -110,6 +111,8 @@ export class ProdottiComponent {
             console.log(this.products[e.i])
             this.edit[e.i] = false
             this.isLoading = false
+            this.productSvc.getCategories().subscribe(res => this.categories = res.categories)
+            console.log(res)
         })
     }
 

@@ -49,7 +49,7 @@ export class AggiungiProdottiComponent {
 
     public isLoading = true
 
-    public categories!: CategoriesRes
+    public categories!: string[]
 
     public productNames!: ProductNamesRes
 
@@ -69,7 +69,7 @@ export class AggiungiProdottiComponent {
     ngDoCheck() {
         if (this.isAdmin && this.onlyOnce) {
             this.onlyOnce = false
-            this.productSvc.getCategories().subscribe(res => this.categories = res)
+            this.productSvc.getCategories().subscribe(res => this.categories = res.categories)
             this.productSvc.getProductNames().subscribe(res => this.productNames = res)
             this.productSvc.getToppings().subscribe(res => {
                 this.toppings = res

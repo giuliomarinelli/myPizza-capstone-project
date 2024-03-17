@@ -46,7 +46,7 @@
         <div class="col-12 col-sm-6">
           <select class="form-select" data-bs-theme="dark" aria-label="Default select example" style="size: 8"
             formControlName="category" (change)="onFormInputEmit()">
-            @for(category of categories?.categories; track category) {
+            @for(category of categories; track category) {
             <option [value]="category">{{category}}</option>
             }
           </select>

@@ -37,6 +37,10 @@ export class IngredientiComponent {
 
   protected isLoading: boolean = true
 
+  protected disappear: boolean = false
+
+  protected deleting: boolean = false
+
   protected toppings: _Toppings[] = []
 
   protected toppingNames: string[] = []
@@ -49,25 +53,44 @@ export class IngredientiComponent {
     return isPlatformBrowser(this.platformId)
   }
 
+  protected allViewRemoved(): boolean {
+    return this.toppings.filter((t, i) => {
+      if (this.viewRemoved.includes(i)) return false
+      return true
+    }).length === 0
+  }
+
   protected updateManage(e: OnToppingUpdate): void {
-    this.edit[e.i] = false
-    this.toppings[e.i] = e.topping
+    this.disappear = true
+    setTimeout(() => {
+      this.edit[e.i] = false
+      this.toppings[e.i] = e.topping
+      this.disappear = false
+    }, 500)
   }
 
   protected deleteManage(e: number): void {
-    this.edit[e] = false
-    this.toppings.splice(e, 1)
+    this.deleting = true
+    setTimeout(() => {
+      this.edit[e] = false
+      this.toppings.splice(e, 1)
+      this.deleting = false
+    }, 500)
   }
 
   protected outsideDeleteManage(i: number) {
-    this.isLoading = true
-    const topping = this.toppings[i]
-    let name: string = ''
-    if (topping != true && topping != false) name = topping.name
-    this.productSvc.deleteToppingByName(name).subscribe(res => {
+    this.deleting = true
+    setTimeout(() => {
+      this.isLoading = true
+      const topping = this.toppings[i]
+      let name: string = ''
+      if (topping != true && topping != false) name = topping.name
+      this.productSvc.deleteToppingByName(name).subscribe(res => {
+      })
       this.toppings.splice(i, 1)
       this.isLoading = false
-    })
+      this.deleting = false
+    }, 500)
   }
 
   protected createStartManage(): void {
@@ -75,17 +98,25 @@ export class IngredientiComponent {
   }
 
   protected createManage(e: OnToppingCreate) {
-    this.toppings[e.i] = e.topping
+    this.disappear = true
+    setTimeout(() => {
+      this.toppings[e.i] = e.topping
+      this.disappear = false
+    }, 500)
   }
 
   protected viewRemoveManage(e: OnViewRemove): void {
-    switch(e.type) {
-      case 'UPDATE':
-        this.edit[e.i] = false
-        break
-      case 'ADD':
-        this.viewRemoved.push(e.i)
-    }
+    this.disappear = true
+    setTimeout(() => {
+      switch (e.type) {
+        case 'UPDATE':
+          this.edit[e.i] = false
+          break
+        case 'ADD':
+          this.viewRemoved.push(e.i)
+      }
+      this.disappear = false
+    }, 500)
   }
 
 

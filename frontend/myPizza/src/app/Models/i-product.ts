@@ -22,11 +22,19 @@ export interface ToppingRes {
   toppings: Topping[]
 }
 
+export interface Category {
+  id: string
+  name: string
+  type: string
+
+}
+
 export interface Product {
   name: string
   toppings: Topping[]
+  type: string
   basePrice: number
-  category: string
+  category: Category
   price: number
   createdAt: number
 }

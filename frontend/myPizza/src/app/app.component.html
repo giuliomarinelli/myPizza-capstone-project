@@ -30,7 +30,7 @@
   </mat-sidenav>
 
   <mat-sidenav-content class="dark stretch">
-    <nav>
+    <header>
       <mat-toolbar class="bg-dark main-nav px-2">
         <div class="container-md d-flex">
           <a routerLink="/" title="MyPizza - Pizzeria" class="ms-2 me-4 d-flex gap-3 align-items-center">
@@ -39,14 +39,14 @@
             </div>
             <p class="text-white m-0 nanum-gothic-coding-bold">{{brand}}</p>
           </a>
-          <div ngClass="d-none d-md-block" mat-tab-nav-bar [backgroundColor]="background" [tabPanel]="tabPanel"
+          <nav ngClass="d-none d-md-block" mat-tab-nav-bar [backgroundColor]="background" [tabPanel]="tabPanel"
             mat-stretch-tabs="false" class="fit-content">
             @for (link of links; track link) {
             <a mat-tab-link [routerLink]="link.path" [active]="activeLink === link"> {{link.name}} </a>
             }
             <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
 
-          </div>
+          </nav>
           <div ngClass="d-none d-sm-block d-md-none" mat-tab-nav-bar [backgroundColor]="background"
             [tabPanel]="tabPanel1" mat-stretch-tabs="false" class="fit-content">
             @for (link of smMdLinks; track link) {
@@ -78,7 +78,7 @@
           </button>
         </div>
       </mat-toolbar>
-    </nav>
+    </header>
     <router-outlet></router-outlet>
     <footer id="footer" class="bg-dark py-3 px-2">
       <div class="container-md text-center text-white">

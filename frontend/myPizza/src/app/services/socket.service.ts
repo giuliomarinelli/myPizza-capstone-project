@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Socket, io } from 'socket.io-client'
 import { AuthService } from './auth.service';
+import { Message } from '../Models/i-message';
 
 
 
@@ -27,6 +28,7 @@ export class SocketService {
   public connectSbj = new BehaviorSubject<boolean>(false)
   public isConnected$ = this.connectSbj.asObservable()
 
+
   public connect(): void {
     socket.connect()
     socket.on('connect_error', (err) => {
@@ -50,6 +52,17 @@ export class SocketService {
       })
       console.log('connesso')
     })
+
+  }
+
+  public onReceiveMessage(): Observable<Message> {
+    return new Observable<Message>(observer => {
+      socket.on('message', (data: Message) => {
+        observer.next(data);
+      })
+    })
+
+
 
   }
 

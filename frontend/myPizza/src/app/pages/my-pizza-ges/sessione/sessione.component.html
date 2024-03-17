@@ -1,1 +1,23 @@
-<p>{{message}}</p>
+<div>
+
+    <div class="row">
+      @if (realTimeMessages.length === 0) {
+      <div class="col bg-moderate-yellow h d-flex justify-content-center align-items-center fs-3">
+
+          <p>Non ci sono messaggi</p>
+
+      </div>
+      } @else {
+        <div class="col bg-moderate-yellow h d-flex justify-content-center align-items-center p-4">
+        @for(message of realTimeMessages; track message; let i = $index) {
+
+          <div class="bd-callout bd-callout-info">
+            <p>Da <strong>{{message._from}}</strong></p>
+            <p>Messaggio: {{message.message}}</p>
+          </div>
+        }
+      </div>
+      }
+
+  </div>
+</div>

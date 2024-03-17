@@ -4,7 +4,7 @@ export interface Topping {
   name: string
   price: number
   description: string
-  createdAt: Date
+  createdAt: number
 }
 
 export type _Toppings = Topping | boolean
@@ -28,7 +28,7 @@ export interface Product {
   basePrice: number
   category: string
   price: number
-  createdAt: Date
+  createdAt: number
 }
 
 export interface ProductNamesRes {

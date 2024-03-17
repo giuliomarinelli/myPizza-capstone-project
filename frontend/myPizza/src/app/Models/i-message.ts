@@ -16,7 +16,7 @@ export interface Message {
 
   message: string
 
-  sentAt: Date
+  sentAt: number
 
   wasUserOnLine: boolean
 

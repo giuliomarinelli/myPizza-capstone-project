@@ -1,6 +1,7 @@
 package backendapp.myPizza.Models.entities;
 
 import backendapp.myPizza.Models.enums.ItemType;
+import backendapp.myPizza.Models.enums.ToppingType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,6 +29,8 @@ public class Topping {
 
     private long createdAt;
 
+    private ToppingType type;
+
 
     @Transient
     private String description;
@@ -36,9 +39,10 @@ public class Topping {
     @ManyToMany(mappedBy = "toppings", fetch = FetchType.EAGER)
     private List<Product> products = new ArrayList<>();
 
-    public Topping(String name, double price) {
+    public Topping(String name, double price, ToppingType type) {
         this.name = name;
         this.price = price;
+        this.type = type;
         createdAt = System.currentTimeMillis();
     }
 }

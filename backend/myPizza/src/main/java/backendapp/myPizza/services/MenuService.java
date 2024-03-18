@@ -1,6 +1,7 @@
 package backendapp.myPizza.services;
 
 import backendapp.myPizza.Models.entities.Menu;
+import backendapp.myPizza.Models.entities.Product;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.repositories.MenuRepository;
@@ -21,7 +22,10 @@ public class MenuService {
     private MenuRepository menuRp;
 
     public Page<Menu> getMenu(Pageable pageable) {
-        return menuRp.findAll(pageable);
+        return menuRp.findAll(pageable).map(m -> {
+            if (m.getItem() instanceof Product) ((Product) m.getItem()).setProductTotalAmount();
+            return m;
+        });
     }
 
     public ConfirmRes saveMenu(List<UUID> menuIds) throws BadRequestException {

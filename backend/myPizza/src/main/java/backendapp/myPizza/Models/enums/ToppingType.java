@@ -1,2 +1,5 @@
-package backendapp.myPizza.Models.enums;public class ToppingType {
+package backendapp.myPizza.Models.enums;
+
+public enum ToppingType {
+    TOPPING, EXTRA
 }

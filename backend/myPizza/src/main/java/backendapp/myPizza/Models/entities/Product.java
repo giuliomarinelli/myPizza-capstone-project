@@ -30,8 +30,8 @@ public class Product extends MenuItem {
     private List<Topping> toppings = new ArrayList<>();
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "products")
-    private List<Order> orders = new ArrayList<>();
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "product")
+    private List<OrderSet> orderSets = new ArrayList<>();
 
     private double basePrice;
 

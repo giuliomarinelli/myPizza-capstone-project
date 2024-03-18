@@ -1,6 +1,7 @@
 package backendapp.myPizza.services;
 
 import backendapp.myPizza.Models.entities.*;
+import backendapp.myPizza.Models.enums.ToppingType;
 import backendapp.myPizza.Models.reqDTO.ManyProductsPostDTO;
 import backendapp.myPizza.Models.reqDTO.ProductDTO;
 import backendapp.myPizza.Models.reqDTO.ToppingDTO;
@@ -40,6 +41,19 @@ public class ProductService {
 
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
+    // Tutti i topping di tipo TOPPING
+    public List<Topping> findAllToppingToppings() {
+        return toppingRp.findAll().stream().filter(t -> t.getType().equals(ToppingType.TOPPING))
+                .peek(t -> t.setDescription(t.getName() + " (" + df.format(t.getPrice()) + "€)")).toList();
+    }
+
+    // Tutti i topping di tipo EXTRA
+    public List<Topping> findAllExtras() {
+        return toppingRp.findAll().stream().filter(t -> t.getType().equals(ToppingType.EXTRA))
+                .peek(t -> t.setDescription(t.getName() + " (" + df.format(t.getPrice()) + "€)")).toList();
+    }
+
+    // Tutti i topping
     public List<Topping> findAllToppings() {
         return toppingRp.findAll().stream()
                 .peek(t -> t.setDescription(t.getName() + " (" + df.format(t.getPrice()) + "€)")).toList();
@@ -50,7 +64,7 @@ public class ProductService {
         // Duplicate exception handling
         if (existingToppingNames.contains(t.name()))
             throw new BadRequestException("Topping with name '" + t.name() + "' already exists");
-        Topping topping = new Topping(t.name(), t.price());
+        Topping topping = new Topping(t.name(), t.price(), t.type());
         toppingRp.save(topping);
         topping.setDescription(topping.getName() + " (" + df.format(topping.getPrice()) + "€)");
         return topping;
@@ -66,6 +80,7 @@ public class ProductService {
         }
         oldTopping.setName(toppingDTO.name());
         oldTopping.setPrice(toppingDTO.price());
+        oldTopping.setType(toppingDTO.type());
         toppingRp.save(oldTopping);
         oldTopping.setDescription(oldTopping.getName() + " (" + df.format(oldTopping.getPrice()) + "€)");
         return oldTopping;
@@ -133,7 +148,7 @@ public class ProductService {
             t.setDescription(t.getName() + " (" + df.format(t.getPrice()) + "€)");
             toppings.add(t);
         }
-
+        oldProduct.getToppings().clear();
         for (Topping t : toppings) {
             oldProduct.getToppings().add(t);
         }

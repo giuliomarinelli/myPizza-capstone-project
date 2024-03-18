@@ -3,19 +3,19 @@
     <mat-icon [inline]="true">restaurant</mat-icon>
   </div>
   <h2 class="h2 fs-title text-center mb-4 nanum-gothic-coding-bold margin-fix capitalize text-accent">{{name}}</h2>
-  <div class="d-flex justify-content-center">
+  <div class="d-flex justify-content-center text-mp-primary">
     <div>
-      <p class="nanum-gothic-coding-bold moderate-yellow d-flex align-items-baseline gap-2">
+      <p class="nanum-gothic-coding-bold d-flex align-items-baseline gap-2">
         <span class="fs-item-title">Categoria:</span>
         <span class="nanum-gothic-coding-normal fs-item">{{category}}</span>
       </p>
-      <p class="nanum-gothic-coding-bold moderate-green d-flex align-items-baseline gap-2">
+      <p class="nanum-gothic-coding-bold d-flex align-items-baseline gap-2">
         <span class="fs-item-title">Prezzo:</span>
         <span class="nanum-gothic-coding-normal fs-item">{{_price.toFixed(2)}}€</span>
       </p>
       @if (_toppingDescriptions.length)
       {
-      <p class="nanum-gothic-coding-bold my-pizza-blue fs-item-title">Ingredienti:</p>
+      <p class="nanum-gothic-coding-bold fs-item-title">Ingredienti:</p>
       <ul class="mb-5">
         @for (t of _toppingDescriptions; track t) {
         <li class="nanum-gothic-coding-normal fs-item">{{t}}</li>

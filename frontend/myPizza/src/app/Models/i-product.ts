@@ -31,6 +31,7 @@ export interface Category {
 }
 
 export interface Product {
+  id: string
   name: string
   toppings: Topping[]
   type: string

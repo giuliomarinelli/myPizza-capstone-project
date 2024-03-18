@@ -1,1 +1,71 @@
-<p class="footer-bottom">ordina-a-domicilio works!</p>
+<div class="container-lg">
+  <main class="footer-bottom">
+    <h1 class="h1 text-center text-accent mt-4 d-block">
+      Ordina a domicilio
+    </h1>
+    <hr class="hr text-secondary">
+
+    <div infiniteScroll [infiniteScrollDistance]="0.75" [fromRoot]="true" [infiniteScrollThrottle]="500"
+      (scrolled)="onScroll()" class="dark-design card-container">
+      @for(item of menuItems; track item; let i = $index) {
+      @if(item.item.type === 'PRODUCT') {
+      <section class="row my-pizza-card m-0-auto mb-3 nanum-gothic-coding-normal">
+        <div class="col-12">
+          <h4 class="h4 text-accent text-center mb-4 nanum-gothic-coding-bold"
+            [innerHTML]="castItemToProduct(item.item).name"></h4>
+        </div>
+        <div class="col-12 col-mb-9">
+          @if(castItemToProduct(item.item).toppings.length > 0) {
+          <p class="m-0 mb-2 text-mp-primary">@for(t of castItemToProduct(item.item).toppings; track t; let i = $index)
+            {
+            <span>{{t.name}}@if(i < castItemToProduct(item.item).toppings.length - 1){, }</span>
+                }
+          </p>
+          }
+          <p class="m-0 text-sm-primary fs-1">
+            {{castItemToProduct(item.item).price.toFixed(2)}}€
+          </p>
+        </div>
+        <div class="col-12 col-mb-3 mt-3 mt-sm-0 d-flex flex-column justify-content-end align-items-start text-end">
+          <div class="form-check">
+
+            <input class="form-check-input" type="checkbox" value="" [id]="castItemToProduct(item.item).id"
+              [(ngModel)]="findOrderModelByProductId(castItemToProduct(item.item).id).isChecked">
+            <label class="form-check-label" [for]="castItemToProduct(item.item).id">
+              @if(findOrderModelByProductId(castItemToProduct(item.item).id).isChecked) {
+              <span>Rimuovi</span>
+              } @else {
+              <span>Aggiungi</span>
+              }
+            </label>
+          </div>
+          @if(findOrderModelByProductId(castItemToProduct(item.item).id).isChecked) {
+          <div class="h-20 mt-2">
+            <input type="number" placeholder="Quantità" class="form-control w-quantity"
+              [(ngModel)]="findOrderModelByProductId(castItemToProduct(item.item).id).quantity" />
+          </div>
+          }
+        </div>
+
+
+      </section>
+      } @else if(item.item.type === 'CATEGORY') {
+      <div class="btn-set d-flex justify-content-center pt-3">
+        <button class="btn-primary d-flex justify-content-center align-items-center btn-w gap-2" (click)="setOrder()">
+          <i class="bi bi-cart-check-fill"></i>
+          <span>Procedi con l'ordine</span>
+        </button>
+      </div>
+      <h2 class="text-center my-4 text-accent" [innerHTML]="castItemToCategory(item.item).name"></h2>
+      }
+      }
+      <div class="btn-set d-flex justify-content-center pt-3 pb-5">
+        <button class="btn-primary d-flex justify-content-center align-items-center btn-w gap-2" (click)="setOrder()">
+          <i class="bi bi-cart-check-fill"></i>
+          <span>Procedi con l'ordine</span>
+        </button>
+      </div>
+    </div>
+  </main>
+</div>
+<app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>

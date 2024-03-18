@@ -24,14 +24,17 @@ export class AppComponent {
           this.authSvc.isAdmin().subscribe(isAdmin => {
             this.authSvc.adminSbj.next(isAdmin)
             this.isAdmin = true
-          })
+          },
+          err => this.accessDenied = true
+          )
         } else {
           this.authSvc.isLoggedInQuery().subscribe(res => {
             this.isLoggedIn = res.loggedIn
             this.authSvc.loggedInSbj.next(res.loggedIn)
             this.authSvc.isAdmin().subscribe(isAdmin => this.authSvc.adminSbj.next(isAdmin))
             this.getProfile()
-          })
+          },
+          err => this.showLogIn = true)
         }
       })
     })
@@ -39,12 +42,20 @@ export class AppComponent {
 
   protected brand: string = 'MyPizza'
 
+  isLoginPath = false
+
+  protected showLogIn = false
+
   protected isLoggedIn = false
 
   protected userProfile!: User
   protected userSuffix!: string
 
-  private isAdmin = false
+  protected accessDenied = false
+
+  protected isAdminPath = false
+
+  protected isAdmin = false
 
   protected logout(): void {
     this.authSvc.logout().subscribe(res => this.isLoggedIn = false)
@@ -72,6 +83,8 @@ export class AppComponent {
     this.reason = reason;
     this.sidenav.close();
   }
+
+
 
 
   protected links: iLink[] = [
@@ -114,6 +127,11 @@ export class AppComponent {
         } else {
           this.isHome = true
         }
+        if (path.includes('my-pizza-ges')) this.isAdminPath = true
+        if (path.includes('my-pizza')) this.isLoginPath = true
+        console.log('path', path)
+        console.log('path', this.isAdminPath)
+        console.log('access denied', this.accessDenied)
         console.log(this.isHome)
       }
 

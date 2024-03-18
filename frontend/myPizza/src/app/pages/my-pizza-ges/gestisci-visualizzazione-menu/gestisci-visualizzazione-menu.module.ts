@@ -8,6 +8,7 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { CdkDrag, CdkDropList } from '@angular/cdk/drag-drop';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatIconModule } from '@angular/material/icon';
+import { MyPizzaGesModule } from '../my-pizza-ges.module';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { MatIconModule } from '@angular/material/icon';
     CdkDropList,
     CdkDrag,
     DragDropModule,
-    MatIconModule
+    MatIconModule,
+    MyPizzaGesModule
   ]
 })
 export class GestisciVisualizzazioneMenuModule { }

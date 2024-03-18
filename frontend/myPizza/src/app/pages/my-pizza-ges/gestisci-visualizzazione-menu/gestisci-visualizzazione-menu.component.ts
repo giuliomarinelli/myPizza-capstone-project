@@ -24,7 +24,7 @@ export class GestisciVisualizzazioneMenuComponent {
               console.log('accesso admin concesso')
               this.isAdmin = true
             } else {
-              console.log('accesso negato, miss permissions')
+              isAdmin = false
             }
           })
         } else (console.log('accesso negato: non loggato'))
@@ -39,7 +39,7 @@ export class GestisciVisualizzazioneMenuComponent {
 
   protected noEdit: boolean = true
 
-  protected isAdmin: boolean = false
+  protected isAdmin: boolean | undefined = undefined
 
   private _onlyOnce: boolean = true
 

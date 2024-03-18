@@ -22,7 +22,7 @@ export class IngredientiComponent {
               console.log('accesso admin concesso')
               this.isAdmin = true
             } else {
-              console.log('accesso negato, miss permissions')
+              this.isAdmin = false
             }
           })
         } else (console.log('accesso negato: non loggato'))
@@ -31,7 +31,7 @@ export class IngredientiComponent {
     })
   }
 
-  protected isAdmin: boolean = false
+  protected isAdmin: boolean | undefined = undefined
 
   private onlyOnce: boolean = true
 

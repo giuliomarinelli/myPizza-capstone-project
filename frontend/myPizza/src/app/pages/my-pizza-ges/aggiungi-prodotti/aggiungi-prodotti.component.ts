@@ -25,7 +25,7 @@ export class AggiungiProdottiComponent {
               console.log('accesso admin concesso')
               this.isAdmin = true
             } else {
-              console.log('accesso negato, miss permissions')
+              this.isAdmin = false
             }
           })
         } else (console.log('accesso negato: non loggato'))
@@ -49,7 +49,7 @@ export class AggiungiProdottiComponent {
 
   private onlyOnce: boolean = true
 
-  protected isAdmin: boolean = false
+  protected isAdmin: boolean | undefined = undefined
 
   public isLoading = true
 

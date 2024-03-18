@@ -5,6 +5,7 @@ export interface Topping {
   price: number
   description: string
   createdAt: number
+  type: string
 }
 
 export type _Toppings = Topping | boolean

@@ -24,7 +24,7 @@ export class ProdottiComponent {
               console.log('accesso admin concesso')
               this.isAdmin = true
             } else {
-              console.log('accesso negato, miss permissions')
+              this.isAdmin = false
             }
           })
         } else (console.log('accesso negato: non loggato'))
@@ -37,7 +37,7 @@ export class ProdottiComponent {
 
   protected onDelete: boolean = false
 
-  protected isAdmin = false
+  protected isAdmin: boolean | undefined = undefined
 
   private _onlyOnce = true
 

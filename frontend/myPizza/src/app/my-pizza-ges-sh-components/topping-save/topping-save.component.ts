@@ -45,6 +45,7 @@ export class ToppingSaveComponent {
   protected toppingForm: FormGroup = this.fb.group({
     name: this.fb.control(null, [Validators.required, this.nameAlreadyExists]),
     price: this.fb.control(null, [Validators.required, Validators.pattern(/^[0-9]+\.?[0-9]*$/)]),
+    type: this.fb.control('TOPPING')
   })
 
 
@@ -59,6 +60,7 @@ export class ToppingSaveComponent {
     if (this.type === 'UPDATE' && this.topping != undefined) {
       this.toppingForm.controls['name']?.setValue(this.topping.name)
       this.toppingForm.controls['price']?.setValue(this.topping.price)
+      this.toppingForm.controls['type']?.setValue(this.topping.type)
       const ind: number | undefined = this.toppingNames.findIndex(tn => tn === this.topping.name)
       if (ind) this.toppingNames.splice(ind, 1)
       this.markAll()
@@ -95,9 +97,12 @@ export class ToppingSaveComponent {
       this.onLoading.emit(true)
       const name: string = this.toppingForm.get('name')?.value
       const price: number = Number(this.toppingForm.get('price')?.value)
+      const type: string = this.toppingForm.get('type')?.value
+
       const toppingDTO: ToppingDTO = {
         name,
-        price
+        price,
+        type
       }
       switch (this.type) {
         case 'ADD':

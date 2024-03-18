@@ -12,3 +12,8 @@ export interface OrderSetDTO {
 export interface OrderInitDTO {
   orderSetsDTO: OrderSetDTO[]
 }
+
+export interface OrderInitRes {
+  orderId: string
+  status: string
+}

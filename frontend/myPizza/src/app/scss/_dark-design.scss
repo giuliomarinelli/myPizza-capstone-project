@@ -45,6 +45,10 @@ $secondary-btn-color: $gray-700;
         background: #214a80;
         outline: none;
       }
+      &:disabled {
+        background-color: darken($primary-btn-color, 10%);
+        cursor: not-allowed;
+      }
     }
 
     .btn-danger {
@@ -93,6 +97,7 @@ $secondary-btn-color: $gray-700;
 
       opacity: 1 !important;
       display: block !important;
+      color: transparent !important
 
     }
 

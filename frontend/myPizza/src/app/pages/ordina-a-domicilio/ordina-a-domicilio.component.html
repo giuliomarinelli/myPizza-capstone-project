@@ -51,7 +51,8 @@
       </section>
       } @else if(item.item.type === 'CATEGORY') {
       <div class="btn-set d-flex justify-content-center pt-3">
-        <button class="btn-primary d-flex justify-content-center align-items-center btn-w gap-2" (click)="setOrder()">
+        <button class="btn-primary d-flex justify-content-center align-items-center btn-w gap-2" (click)="setOrder()"
+        [disabled]="isOrderSetEmpty()">
           <i class="bi bi-cart-check-fill"></i>
           <span>Procedi con l'ordine</span>
         </button>
@@ -60,7 +61,8 @@
       }
       }
       <div class="btn-set d-flex justify-content-center pt-3 pb-5">
-        <button class="btn-primary d-flex justify-content-center align-items-center btn-w gap-2" (click)="setOrder()">
+        <button class="btn-primary d-flex justify-content-center align-items-center btn-w gap-2" (click)="setOrder()"
+        [disabled]="isOrderSetEmpty()">
           <i class="bi bi-cart-check-fill"></i>
           <span>Procedi con l'ordine</span>
         </button>

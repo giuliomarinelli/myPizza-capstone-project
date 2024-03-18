@@ -7,6 +7,8 @@ import backendapp.myPizza.Models.resDTO.CityAutocomplete;
 import backendapp.myPizza.Models.resDTO.OrderInitRes;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.services.*;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -50,8 +52,14 @@ public class PublicController {
     // -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
     // ORDER INIT
     @PostMapping("/order-init")
-    public OrderInitRes orderInit(@RequestBody OrderInitDTO orderInitDTO) throws BadRequestException {
-        return orderSvc.orderInit(orderInitDTO);
+    public OrderInitRes orderInit(@RequestBody OrderInitDTO orderInitDTO, HttpServletResponse res) throws BadRequestException {
+        OrderInitRes _res = orderSvc.orderInit(orderInitDTO);
+        Cookie cookie = new Cookie("__order_id", _res.getOrderId().toString());
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setDomain("localhost");
+        res.addCookie(cookie);
+        return _res;
     }
 
 }

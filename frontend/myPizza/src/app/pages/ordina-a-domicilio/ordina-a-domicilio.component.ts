@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { MenuService } from '../../services/menu.service';
 import { Menu } from '../../Models/i-menu';
 import { Category, Product } from '../../Models/i-product';
-import { OrderCheckModel } from '../../Models/i-order';
+import { OrderCheckModel, OrderInitDTO } from '../../Models/i-order';
+import { OrderService } from '../../services/order.service';
 
 @Component({
   selector: 'main#ordina-a-domicilio',
@@ -11,7 +12,7 @@ import { OrderCheckModel } from '../../Models/i-order';
 })
 export class OrdinaADomicilioComponent {
 
-  constructor(private menuSvc: MenuService) { }
+  constructor(private menuSvc: MenuService, private orderSvc: OrderService) { }
 
   protected isLoading = false
 
@@ -22,6 +23,9 @@ export class OrdinaADomicilioComponent {
   private lastPage: number = 0
 
   private page: number = 0
+
+
+
 
   ngOnInit() {
     this.menuSvc.getMenu(6).subscribe(res => {
@@ -38,8 +42,11 @@ export class OrdinaADomicilioComponent {
   }
 
   private findProductById(id: string): Product {
-    const foundItem = this.menuItems.find(mi => mi.item.id === id) as unknown
-    return foundItem as Product
+    return this.menuItems.find(mi => mi.item.id === id)?.item as Product
+  }
+
+  protected isOrderSetEmpty() {
+    return this.orderCheckModels.filter(ocm => ocm.isChecked).length === 0
   }
 
   protected setOrder() {
@@ -49,14 +56,33 @@ export class OrdinaADomicilioComponent {
     orderInit.forEach(ocm => {
       if (ocm.quantity == null) {
         isValid = false
-        isNotValidMessages.push(`Non è stata settata la quantità per il prodotto "${this.findProductById(ocm.productId)}".`)
+        isNotValidMessages.push(`Non è stata settata la quantità per il prodotto "${this.findProductById(ocm.productId).name}".`)
       }
-      const regex = new RegExp(/[1-9][0-9]*/)
+      const regex = new RegExp(/^[1-9][0-9]*$/)
+      console.log(String(ocm.quantity))
+      console.log('regex valid', regex.test(String(ocm.quantity)))
       if (ocm.quantity != null && !regex.test(String(ocm.quantity))) {
         isValid = false
-        isNotValidMessages.push(`Si è verificato un errore nella compilazione della quantità per il prodotto "${this.findProductById(ocm.productId)}": sono ammessi soltanto numeri interi positivi e superiori a 0.`)
+        isNotValidMessages.push(`Si è verificato un errore nella compilazione della quantità per il prodotto "${this.findProductById(ocm.productId).name}": sono ammessi soltanto numeri interi positivi e superiori a 0.`)
       }
     })
+    if (!isValid) {
+      // gestisci con un messaggio i problemi di validazione
+      console.log(isNotValidMessages.join('\n'))
+    } else {
+      const orderInitDTO: OrderInitDTO = {
+        orderSetsDTO: orderInit.map(ocm => {
+          return {
+            productId: ocm.productId,
+            quantity: <number> ocm.quantity
+          }
+        })
+      }
+      console.log('order', orderInitDTO)
+      this.orderSvc.orderInit(orderInitDTO).subscribe(res => {
+        console.log(res)
+      })
+    }
 
   }
 

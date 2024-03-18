@@ -78,6 +78,10 @@ a {
   align-items: center
 }
 
+.form-check-input, .form-check-label {
+  cursor: pointer;
+}
+
 .fade-in-ani {
   animation: 0.5s ease-in-out forwards fade-in;
 }

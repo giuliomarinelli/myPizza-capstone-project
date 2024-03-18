@@ -13,7 +13,7 @@ export class OrdinaADomicilioComponent {
 
   constructor(private menuSvc: MenuService) { }
 
-  protected isLoading = false;
+  protected isLoading = false
 
   protected menuItems: Menu[] = []
 
@@ -37,7 +37,28 @@ export class OrdinaADomicilioComponent {
     })
   }
 
-  protected setOrder() {}
+  private findProductById(id: string): Product {
+    const foundItem = this.menuItems.find(mi => mi.item.id === id) as unknown
+    return foundItem as Product
+  }
+
+  protected setOrder() {
+    const orderInit: OrderCheckModel[] = this.orderCheckModels.filter(ocm => ocm.isChecked)
+    let isValid: boolean = true
+    const isNotValidMessages: string[] = []
+    orderInit.forEach(ocm => {
+      if (ocm.quantity == null) {
+        isValid = false
+        isNotValidMessages.push(`Non è stata settata la quantità per il prodotto "${this.findProductById(ocm.productId)}".`)
+      }
+      const regex = new RegExp(/[1-9][0-9]*/)
+      if (ocm.quantity != null && !regex.test(String(ocm.quantity))) {
+        isValid = false
+        isNotValidMessages.push(`Si è verificato un errore nella compilazione della quantità per il prodotto "${this.findProductById(ocm.productId)}": sono ammessi soltanto numeri interi positivi e superiori a 0.`)
+      }
+    })
+
+  }
 
   protected findOrderModelByProductId(productId: string): OrderCheckModel {
     return this.orderCheckModels.find(ocm => ocm.productId === productId) as OrderCheckModel

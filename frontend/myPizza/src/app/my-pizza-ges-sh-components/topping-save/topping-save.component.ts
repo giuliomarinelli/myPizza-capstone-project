@@ -36,7 +36,7 @@ export class ToppingSaveComponent {
 
   protected nameAlreadyExists: ValidatorFn = (formField: AbstractControl): ValidationErrors | null => {
     if (formField.value) {
-      if (this.toppingNames.includes(formField.value) && this.topping.name !== formField.value)
+      if (this.toppingNames.includes(formField.value) && this.topping?.name !== formField.value)
         return { nameAlreadyExists: true }
     }
     return null

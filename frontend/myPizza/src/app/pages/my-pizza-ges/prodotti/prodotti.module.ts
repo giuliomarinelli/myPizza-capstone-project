@@ -5,7 +5,6 @@ import { CommonModule } from '@angular/common';
 import { ProdottiRoutingModule } from './prodotti-routing.module';
 import { ProdottiComponent } from './prodotti.component';
 import { InfiniteScrollModule } from "ngx-infinite-scroll";
-import { ProductManagerNavComponent } from '../product-manager-nav/product-manager-nav.component';
 import { MyPizzaGesModule } from '../my-pizza-ges.module';
 
 @NgModule({

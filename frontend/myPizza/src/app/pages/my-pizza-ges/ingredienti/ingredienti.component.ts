@@ -72,6 +72,9 @@ export class IngredientiComponent {
   protected deleteManage(e: number): void {
     this.deleting = true
     setTimeout(() => {
+      const topping = this.toppings[e] as Topping
+      const ind = this.toppingNames.findIndex(tn => tn === topping.name)
+      this.toppingNames.splice(ind, 1)
       this.edit[e] = false
       this.toppings.splice(e, 1)
       this.deleting = false
@@ -80,17 +83,22 @@ export class IngredientiComponent {
 
   protected outsideDeleteManage(i: number) {
     this.deleting = true
-    setTimeout(() => {
-      this.isLoading = true
-      const topping = this.toppings[i]
-      let name: string = ''
-      if (topping != true && topping != false) name = topping.name
-      this.productSvc.deleteToppingByName(name).subscribe(res => {
-      })
-      this.toppings.splice(i, 1)
-      this.isLoading = false
-      this.deleting = false
-    }, 500)
+    this.isLoading = true
+    const topping = this.toppings[i]
+    let name: string = ''
+    if (topping != true && topping != false) name = topping.name
+    this.productSvc.deleteToppingByName(name).subscribe(res => {
+      setTimeout(() => {
+        const topping = this.toppings[i] as Topping
+        const ind = this.toppingNames.findIndex(tn => tn === topping.name)
+        this.toppingNames.splice(ind, 1)
+        this.toppings.splice(i, 1)
+        this.isLoading = false
+        this.deleting = false
+      }, 100)
+    })
+
+
   }
 
   protected createStartManage(): void {
@@ -102,8 +110,12 @@ export class IngredientiComponent {
     setTimeout(() => {
       this.toppings[e.i] = e.topping
       this.disappear = false
+      const topping = this.toppings[e.i] as Topping
+      this.toppingNames.push(topping.name)
+
     }, 500)
   }
+
 
   protected viewRemoveManage(e: OnViewRemove): void {
     this.disappear = true
@@ -130,6 +142,7 @@ export class IngredientiComponent {
       this.productSvc.getToppings().subscribe(res => {
         this.toppings = res.toppings
         this.toppingNames = res.toppings.map(t => t.name)
+        console.log(this.toppingNames)
         this.isLoading = false
         this.onlyOnce = false
         this.toppings.forEach(t => this.edit.push(false))

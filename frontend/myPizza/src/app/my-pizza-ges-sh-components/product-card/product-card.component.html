@@ -2,7 +2,7 @@
   <div class="illustration">
     <mat-icon [inline]="true">restaurant</mat-icon>
   </div>
-  <h2 class="h2 fs-title text-center mb-4 nanum-gothic-coding-bold margin-fix capitalize carminium-red">{{name}}</h2>
+  <h2 class="h2 fs-title text-center mb-4 nanum-gothic-coding-bold margin-fix capitalize text-accent">{{name}}</h2>
   <div class="d-flex justify-content-center">
     <div>
       <p class="nanum-gothic-coding-bold moderate-yellow d-flex align-items-baseline gap-2">
@@ -21,7 +21,9 @@
         <li class="nanum-gothic-coding-normal fs-item">{{t}}</li>
         }
       </ul>
-      }
+      } @else {
+      <div class="mb-5"></div>
+     }
     </div>
   </div>
 </div>

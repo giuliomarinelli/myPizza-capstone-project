@@ -20,13 +20,9 @@ export class LoginComponent {
 
   protected validLogin: boolean = true
 
-  private path: string = ''
+  private path: string = this.router.url
 
-  ngOnInit() {
-    this.router.events.subscribe((event) => {
-      if (event instanceof RoutesRecognized) this.path = event.url
-    })
-  }
+
 
   ngDoCheck() {
     this.errorMsg = `${this.setInvalidMessages('email')}${this.setInvalidMessages('password')}`
@@ -66,14 +62,15 @@ export class LoginComponent {
         res => {
 
           this.authSvc.loggedInSbj.next(true)
+
           this.authSvc.isAdmin().subscribe(res => {
-            this.authSvc.adminSbj.next(true)
-            if (this.path === '/login') this.router.navigate(['/my-pizza-ges'])
-            location.reload()
-          },
-        err =>this.authSvc.adminSbj.next(false) )
-          if (this.path === '/login') this.router.navigate(['/my-pizza'])
-          location.reload()
+            if (res) {
+              this.path === '/login' ? this.router.navigate(['/my-pizza-ges/prodotti']) : location.href = location.href
+            } else {
+              this.path === '/login' ? this.router.navigate(['/my-pizza']) : location.href = location.href
+            }
+          })
+
         },
         err => {
           this.validLogin = false

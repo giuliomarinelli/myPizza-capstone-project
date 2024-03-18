@@ -19,8 +19,9 @@ export class ProductService {
   // -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
   // Toppings CRUD
 
-  public getToppings(): Observable<ToppingRes> {
-    return this.http.get<ToppingRes>(`${this.backendUrl}/api/toppings`, { withCredentials: true })
+  public getToppings(type?: string): Observable<ToppingRes> {
+    const _type: string = type ? `?type=${type}` : ''
+    return this.http.get<ToppingRes>(`${this.backendUrl}/api/toppings${_type}`, { withCredentials: true })
   }
 
   public addTopping(toppingDTO: ToppingDTO): Observable<Topping> {

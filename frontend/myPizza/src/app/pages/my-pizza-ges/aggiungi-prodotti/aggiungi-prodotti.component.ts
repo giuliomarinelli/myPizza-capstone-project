@@ -67,7 +67,7 @@ export class AggiungiProdottiComponent {
       this.onlyOnce = false
       this.productSvc.getCategories().subscribe(res => this.categories = res.categories)
       this.productSvc.getProductNames().subscribe(res => this.productNames = res)
-      this.productSvc.getToppings().subscribe(res => {
+      this.productSvc.getToppings('TOPPING').subscribe(res => {
         this.toppings = res
         this.toppingDescriptions = this.toppings.toppings.map(t => t.description)
         this.isLoading = false

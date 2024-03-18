@@ -10,25 +10,29 @@
           <p>Non sono presenti ingredienti</p>
         </div>
         } @else {
+
         @for (topping of toppings; track topping; let i = $index) {
         @if(edit[i] === true && topping != true && topping != false) {
         <div
-          [ngClass]="{'col-12 col-md-6 my-2 py-2 topping-bg animated': true, 'disappear': disappear, 'delete': deleting}">
+          class="col-12 col-md-6 my-2 py-2 topping-bg">
           <app-topping-save [topping]="topping" [type]="'UPDATE'" [toppingNames]="toppingNames" [i]="i"
             (onUpdate)="updateManage($event)" (onDelete)="deleteManage($event)"
-            (onViewRemove)="viewRemoveManage($event)" (onLoading)="isLoading = $event"></app-topping-save>
+            (onViewRemove)="viewRemoveManage($event)" (onLoading)="isLoading = $event"
+            [ngClass]="{'animated': true, 'disappear': disappear, 'delete': deleting}"></app-topping-save>
         </div>
         } @else if(topping === true && !viewRemoved.includes(i)) {
         <div
-          [ngClass]="{'col-12 col-md-6 my-2 py-2 topping-bg animated': true, 'disappear': disappear, 'delete': deleting}">
+          class="col-12 col-md-6 my-2 py-2 topping-bg">
           <app-topping-save [type]="'ADD'" [toppingNames]="toppingNames" [i]="i" (onCreate)="createManage($event)"
             (onDelete)="deleteManage($event)" (onViewRemove)="viewRemoveManage($event)"
-            (onLoading)="isLoading = $event"></app-topping-save>
+            (onLoading)="isLoading = $event"
+            [ngClass]="{'animated': true, 'disappear': false, 'delete': false}"></app-topping-save>
         </div>
         } @else if (topping != false && topping != true) {
         <div class="col-12 col-md-6 my-2 py-2 topping-bg">
           <div class="mb-2">
-            <app-topping-card [topping]="topping"></app-topping-card>
+            <app-topping-card [topping]="topping"
+            [ngClass]="{'animated': true, 'disappear': false, 'delete': false}"></app-topping-card>
           </div>
           <div class="btn-set row g-0 mb-2 d-flex justify-content-center">
             <div

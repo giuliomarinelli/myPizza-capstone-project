@@ -6,6 +6,7 @@ import { CategoriesRes, Category, OnProductUpdate, Product, ProductNamesRes, Top
 import { Breakpoint } from '../../../Models/i-breakpoint';
 import { isPlatformBrowser } from '@angular/common';
 import { Platform } from '@angular/cdk/platform';
+import { count } from 'console';
 
 @Component({
   selector: 'app-prodotti',
@@ -33,11 +34,13 @@ export class ProdottiComponent {
     })
   }
 
+  private page: number = 0
+
   protected onDisappear: boolean = false
 
   protected onDelete: boolean = false
 
-  protected isAdmin: boolean | undefined = undefined
+  protected isAdmin = false
 
   private _onlyOnce = true
 
@@ -59,8 +62,6 @@ export class ProdottiComponent {
 
   private onlyOnce: boolean[] = []
 
-  protected count: number = 0
-
   private lastPage: number = 0
 
   private height = 0
@@ -74,12 +75,12 @@ export class ProdottiComponent {
       this._onlyOnce = false
       this.productSvc.getCategories().subscribe(res => this.categories = res.categories)
       this.productSvc.getProductNames().subscribe(res => this.productNames = res)
-      this.productSvc.getToppings().subscribe(res => {
+      this.productSvc.getToppings('TOPPING').subscribe(res => {
         this.toppings = res
         this.toppingDescriptions = this.toppings.toppings.map(t => t.description)
       })
-      this.productSvc.getProducts(2).subscribe(res => {
-        if (res.totalElements === 1) this.onlyOne = true
+      this.productSvc.getProducts(6).subscribe(res => {
+        this.lastPage = res.totalPages - 1
         res.content.forEach(p => {
           this.products.push(p)
           this.edit.push(false)
@@ -113,8 +114,10 @@ export class ProdottiComponent {
     this.onDisappear = true
     this.isLoading = true
     const product = this.products[e.i]
+    console.log(e)
     this.productSvc.updateProductByName(product.name, e.product).subscribe(res => {
       setTimeout(() => {
+        console.log(res)
         this.products.splice(e.i, 1, res)
         console.log(this.products[e.i])
         this.edit[e.i] = false
@@ -127,31 +130,33 @@ export class ProdottiComponent {
   }
 
   protected onScroll() {
-
-    if (this.onlyOnce[this.count]) {
-
-      this.isLoading = true
-      this.onlyOnce[this.count] = false
+    this.isLoading = true
+    console.log('scroll')
+    if (this.page <= this.lastPage) {
+      this.page++
       setTimeout(() => {
-        this.productSvc.getProducts(2, this.count).subscribe(res => {
+        this.productSvc.getProducts(6, this.page).subscribe(res => {
           res.content.forEach(el => {
             this.products.push(el)
             this.edit.push(false)
           })
           this.isLoading = false
         })
-      }, 800)
-
-      this.count++
-      console.log(this.products)
-
-      console.log('scroll')
+      }, 200)
+    } else {
+      this.isLoading = false
     }
 
 
+    console.log(this.products)
+
+    console.log('scroll')
   }
 
 
-
-
 }
+
+
+
+
+

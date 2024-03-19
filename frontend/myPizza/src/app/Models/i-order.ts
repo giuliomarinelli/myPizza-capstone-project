@@ -17,3 +17,5 @@ export interface OrderInitRes {
   orderId: string
   status: string
 }
+
+export type GetOrderIdRes =  Omit<OrderInitRes, 'status'>

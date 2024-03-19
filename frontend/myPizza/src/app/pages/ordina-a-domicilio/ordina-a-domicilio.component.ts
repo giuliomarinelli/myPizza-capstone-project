@@ -80,14 +80,15 @@ export class OrdinaADomicilioComponent {
       }
       console.log('order', orderInitDTO)
       this.orderSvc.orderInit(orderInitDTO).subscribe(res => {
-        console.log(res)
+        console.log(res) // se loggato => checkout, se non loggato form con i dati e chiede se vuole registrarsi o ordinare come ospite o loggarsi
+        //per ora gestisco il caso in cui l'utente è registrato
       })
     }
 
   }
 
   protected findOrderModelByProductId(productId: string): OrderCheckModel {
-    return this.orderCheckModels.find(ocm => ocm.productId === productId) as OrderCheckModel
+    return <OrderCheckModel> this.orderCheckModels.find(ocm => ocm.productId === productId)
   }
 
   protected castItemToProduct(item: Category | Product): Product {

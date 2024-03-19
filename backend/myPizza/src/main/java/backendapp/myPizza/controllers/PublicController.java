@@ -3,13 +3,14 @@ package backendapp.myPizza.controllers;
 import backendapp.myPizza.Models.entities.InternationalPrefix;
 import backendapp.myPizza.Models.entities.Menu;
 import backendapp.myPizza.Models.entities.Order;
+import backendapp.myPizza.Models.entities.User;
+import backendapp.myPizza.Models.enums.TokenType;
 import backendapp.myPizza.Models.reqDTO.OrderInitDTO;
-import backendapp.myPizza.Models.resDTO.CityAutocomplete;
-import backendapp.myPizza.Models.resDTO.GetOrderIdRes;
-import backendapp.myPizza.Models.resDTO.OrderInitRes;
+import backendapp.myPizza.Models.resDTO.*;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.exceptions.UnauthorizedException;
 import backendapp.myPizza.repositories.OrderRepository;
+import backendapp.myPizza.security.JwtUtils;
 import backendapp.myPizza.services.*;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -42,6 +44,12 @@ public class PublicController {
 
     @Autowired
     private OrderRepository orderRp;
+
+    @Autowired
+    private AuthService authSvc;
+
+    @Autowired
+    private JwtUtils jwtUtils;
 
     @GetMapping("/menu")
     public Page<Menu> getMenu(Pageable pageable) {
@@ -93,7 +101,7 @@ public class PublicController {
     }
 
     @GetMapping("/get-client-order-init")
-    public Object getClientOrderInit(@RequestParam(required = false) Boolean guest, HttpServletRequest req) throws BadRequestException, UnauthorizedException {
+    public OrderCheckoutInfo getClientOrderInit(@RequestParam(required = false) Boolean guest, HttpServletRequest req) throws BadRequestException, UnauthorizedException {
         boolean _guest;
 
         _guest = Objects.requireNonNullElse(guest, false);
@@ -110,9 +118,21 @@ public class PublicController {
             throw new BadRequestException("Invalid UUID format from __order_id cookie");
         }
         Order order = orderRp.findById(orderId).orElseThrow(
-                () -> new BadRequestException("orderId from __order_id cookie reffers to an order that doesn't exist")
+                () -> new BadRequestException("orderId from __order_id cookie refers to an order that doesn't exist")
         );
         return orderSvc.getClientOrderInit(false, order);
+    }
+
+    @GetMapping("/get-guest-ws-auth")
+    public ConfirmRes getGuestWsAuth(HttpServletResponse res) {
+        String wsAccessToken = jwtUtils.generateGuestWsAccessToken();
+        Cookie cookie = new Cookie("__ws_access_tkn", wsAccessToken);
+        cookie.setDomain("localhost");
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        res.addCookie(cookie);
+        return new ConfirmRes("As a guest, you can remain connected for not more than 1 hour" +
+                " to notification system", HttpStatus.OK);
     }
 
 }

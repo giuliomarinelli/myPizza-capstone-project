@@ -5,6 +5,8 @@ import backendapp.myPizza.Models.entities.City;
 import backendapp.myPizza.Models.entities.User;
 import backendapp.myPizza.Models.enums.TokenPairType;
 import backendapp.myPizza.Models.enums.TokenType;
+import backendapp.myPizza.Models.enums.UserScope;
+import backendapp.myPizza.Models.reqDTO.GuestUserDTO;
 import backendapp.myPizza.Models.reqDTO.UserPostDTO;
 import backendapp.myPizza.Models.resDTO.TokenPair;
 import backendapp.myPizza.exceptions.BadRequestException;
@@ -71,6 +73,7 @@ public class AuthService {
         User u = userRp.findByEmail(email).orElseThrow(
                 () -> new UnauthorizedException("Email and/or password are incorrect")
         );
+
         if (!encoder.matches(password, u.getHashPassword()))
             throw new UnauthorizedException("Email and/or password are incorrect");
         Map<TokenPairType, TokenPair> tokenMap = new HashMap<>();

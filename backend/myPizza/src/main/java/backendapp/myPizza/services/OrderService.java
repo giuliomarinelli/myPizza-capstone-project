@@ -51,7 +51,9 @@ public class OrderService {
             );
             if (o.quantity() <= 0)
                 throw new BadRequestException("Product with id=' + o.productId() + ': quantity must be an integer number major than 0");
-            orderSets.add(new OrderSet(p, o.quantity()));
+            OrderSet orderSet = new OrderSet(p, o.quantity());
+            orderSet.setOrder(order);
+            orderSets.add(orderSet);
         }
         orderSetRp.saveAll(orderSets);
         orderRp.save(order);
@@ -71,11 +73,14 @@ public class OrderService {
                             () -> new BadRequestException("Cannot find default address, please set a default address before retrying")
                     );
             OrderStatus status = order.getStatus();
-            List<OrderSet> orderSets = order.getOrderSets();
+            List<OrderSet> orderSets = order.getOrderSets().stream().peek(os -> os.getProduct().setProductTotalAmount()).toList();
             double deliveryCost = order.getDeliveryCost();
-            double totalAmount = deliveryCost + orderSets
-                    .stream().mapToDouble(os -> os.getQuantity() * ( os.getProduct().getBasePrice()
-                            + os.getProduct().getToppings().stream().mapToDouble(Topping::getPrice).sum())).sum();
+            double totalAmount = 0;
+            for (OrderSet os : orderSets) {
+                totalAmount += os.getQuantity() * os.getProduct().getPrice();
+            }
+            totalAmount += deliveryCost;
+
             return new OrderCheckoutInfo(order.getId(), address, orderSets, status, deliveryCost, totalAmount);
         }
 

@@ -28,7 +28,7 @@ public class SocketIOAuth implements AuthorizationListener {
 
         String[] cookies = reqCookieHeader.split(";");
         List<Cookie> parsedCookies = new ArrayList<>();
-        for (String c: cookies) {
+        for (String c : cookies) {
             String[] keyAndValue = c.trim().split("=");
             parsedCookies.add(new Cookie(keyAndValue[0].trim(), keyAndValue[1].trim()));
         }
@@ -51,7 +51,8 @@ public class SocketIOAuth implements AuthorizationListener {
             return false;
         }
         boolean isValid = jwtUtils.verifyWsAccessToken(accessToken.getValue());
-        if (isValid) log.info("access token valido"); else log.info("access token non valido");
+        if (isValid) log.info("access token valido");
+        else log.info("access token non valido");
 
         return isValid;
 

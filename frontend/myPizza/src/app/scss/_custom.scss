@@ -6,7 +6,9 @@ a {
   color: $cyan-400;
   transition: color .35s;
   text-decoration: none;
-  &:hover, &:active {
+
+  &:hover,
+  &:active {
     color: rgba($cyan-400, .85)
   }
 }
@@ -76,6 +78,18 @@ a {
   align-items: center
 }
 
+.form-check-input, .form-check-label {
+  cursor: pointer;
+}
+
+.fade-in-ani {
+  animation: 0.5s ease-in-out forwards fade-in;
+}
+
+.fade-out-ani {
+  animation: 0.5s ease-in-out forwards fade-out;
+}
+
 .animated {
   animation: .5s ease-in-out forwards go-up;
 }
@@ -93,7 +107,9 @@ a {
     opacity: 0;
     max-height: 0;
     max-width: 0;
-  } to {
+  }
+
+  to {
     opacity: 1;
     max-height: 1000px;
     max-width: 1000px;
@@ -105,7 +121,9 @@ a {
     opacity: 1;
     max-height: 1000px;
     max-width: 1000px;
-  } to {
+  }
+
+  to {
     opacity: 0;
     max-height: 0;
     max-width: 0;
@@ -117,11 +135,17 @@ a {
     opacity: 1;
     max-height: 1000px;
     max-width: 1000px;
-  } to {
+  }
+
+  to {
     opacity: 0;
     max-height: 0;
     max-width: 0;
   }
+}
+
+.hr-spacer {
+  border-bottom: 1px solid $mp-primary;
 }
 
 

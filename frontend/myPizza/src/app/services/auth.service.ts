@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { IsLoggedIn } from '../Models/is-logged-in';
 import { UserLogin, UserPostDTO } from '../Models/user-dto';
 import { ConfirmRes } from '../Models/confirm-res';
-import { AuthoritiesRes, User } from '../Models/i-user';
+import { AddressesRes, AuthoritiesRes, User } from '../Models/i-user';
 import { IsWsAuthValid } from '../Models/i-IsWsAuthValid';
 
 @Injectable({
@@ -52,6 +52,10 @@ export class AuthService {
 
   public isWsAuthValidOrRefresh(): Observable<IsWsAuthValid> {
     return this.http.get<IsWsAuthValid>(`${this.backendUrl}/ws/is-ws-auth-valid-or-refresh`, { withCredentials: true })
+  }
+
+  public getAddresses(): Observable<AddressesRes> {
+    return this.http.get<AddressesRes>(`${this.backendUrl}/api/user-profile/addresses`, { withCredentials: true })
   }
 
 }

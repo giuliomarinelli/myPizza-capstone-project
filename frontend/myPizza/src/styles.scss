@@ -48,9 +48,11 @@ $myPizza-theme: mat.define-light-theme((color: (primary: $myPizza-primary,
   color: $white !important;
   text-transform: uppercase !important;
   transition: color .2s;
-
+  a:hover {
+    color: rgba($white, .5) !important;
+  }
   &:hover {
-    color: rgba($white, .8) !important;
+    color: rgba($white, .5) !important;
   }
 }
 

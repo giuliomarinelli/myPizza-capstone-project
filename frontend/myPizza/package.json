@@ -29,6 +29,7 @@
     "bootstrap-icons": "^1.11.3",
     "express": "^4.18.2",
     "ngx-infinite-scroll": "^17.0.0",
+    "ngx-rerender": "^1.4.0",
     "rxjs": "~7.8.0",
     "socket.io-client": "^4.7.5",
     "systemjs": "^6.14.3",

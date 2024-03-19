@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product, String>, PagingAndSortingRepository<Product, String> {
+public interface ProductRepository extends JpaRepository<Product, UUID>, PagingAndSortingRepository<Product, UUID> {
 
     @Override
     @Query("SELECT p FROM Product p ORDER BY createdAt DESC")

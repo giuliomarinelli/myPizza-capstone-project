@@ -1,15 +1,18 @@
-<app-access-denied *ngIf="!isAdmin && useClient"></app-access-denied>
-<app-full-screen-loader [isLoading]="isLoading && isAdmin"></app-full-screen-loader>
+<app-access-denied *ngIf="isAdmin === false && useClient"></app-access-denied>
+<app-full-screen-loader [isLoading]="isLoading && isAdmin === true"></app-full-screen-loader>
 <ng-container *ngIf="isAdmin && useClient">
+  <app-product-manager-nav></app-product-manager-nav>
   <div class="dark-design w-max">
-
 
     <div class="container-lg" infiniteScroll [infiniteScrollDistance]="0.8" [fromRoot]="true"
       [infiniteScrollThrottle]="1000" (scrolled)="onScroll()">
       <div cdkDropList class="list border-dark bg-dark" (cdkDropListDropped)="drop($event)">
+        @if (menu.length === 0) {
+          <p class="fs-5">Non ci sono elementi nel menu</p>
+        }
         @for (m of menu; track menu) {
-        <div [ngClass]="{'drag-box position-relative': true, 'bg-success fs-1': m.item.type === 'CATEGORY',
-        'bg-my-pizza-blue fs-0': m.item.type === 'PRODUCT'
+        <div [ngClass]="{'drag-box position-relative': true, 'bg-accent-drop fs-1': m.item.type === 'CATEGORY',
+        'bg-mp-primary-drop fs-0': m.item.type === 'PRODUCT'
         }" cdkDrag>
           {{m.item.name}}
           <div class="text-gray fs-icon drag-icon">

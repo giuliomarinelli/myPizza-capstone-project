@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import { NgxRerenderModule } from 'ngx-rerender'
 import { SessioneRoutingModule } from './sessione-routing.module';
 import { SessioneComponent } from './sessione.component';
 
@@ -11,7 +11,8 @@ import { SessioneComponent } from './sessione.component';
   ],
   imports: [
     CommonModule,
-    SessioneRoutingModule
+    SessioneRoutingModule,
+    NgxRerenderModule
   ]
 })
 export class SessioneModule { }

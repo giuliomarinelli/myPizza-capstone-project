@@ -25,7 +25,7 @@ export class AggiungiProdottiComponent {
               console.log('accesso admin concesso')
               this.isAdmin = true
             } else {
-              console.log('accesso negato, miss permissions')
+              this.isAdmin = false
             }
           })
         } else (console.log('accesso negato: non loggato'))
@@ -49,7 +49,7 @@ export class AggiungiProdottiComponent {
 
   private onlyOnce: boolean = true
 
-  protected isAdmin: boolean = false
+  protected isAdmin: boolean | undefined = undefined
 
   public isLoading = true
 
@@ -67,7 +67,7 @@ export class AggiungiProdottiComponent {
       this.onlyOnce = false
       this.productSvc.getCategories().subscribe(res => this.categories = res.categories)
       this.productSvc.getProductNames().subscribe(res => this.productNames = res)
-      this.productSvc.getToppings().subscribe(res => {
+      this.productSvc.getToppings('TOPPING').subscribe(res => {
         this.toppings = res
         this.toppingDescriptions = this.toppings.toppings.map(t => t.description)
         this.isLoading = false

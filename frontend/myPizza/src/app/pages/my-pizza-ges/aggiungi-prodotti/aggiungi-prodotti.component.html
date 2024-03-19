@@ -1,6 +1,7 @@
-<app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>
-<app-access-denied *ngIf="!isAdmin && useClient"></app-access-denied>
+<app-full-screen-loader [isLoading]="isLoading && isAdmin === true"></app-full-screen-loader>
+<app-access-denied *ngIf="isAdmin === false && useClient"></app-access-denied>
 @if(isAdmin) {
+<app-product-manager-nav></app-product-manager-nav>
 <div class="footer-bottom py-2">
   <div class="container-md">
     <h1 class="h1 text-center mb-4">Aggiungi prodotti</h1>

@@ -10,7 +10,16 @@ const socket: Socket = io('http://localhost:8085', {
   withCredentials: true,
   transports: ['websocket'],
   reconnection: false,
-  autoConnect: false
+  autoConnect: false,
+  query: {'guest': false}
+})
+
+const socketGuest = io('http://localhost:8085', {
+  withCredentials: true,
+  transports: ['websocket'],
+  reconnection: false,
+  autoConnect: false,
+  query: {'guest': true}
 })
 
 
@@ -28,6 +37,9 @@ export class SocketService {
   public connectSbj = new BehaviorSubject<boolean>(false)
   public isConnected$ = this.connectSbj.asObservable()
 
+  public get connected(): boolean {
+    return socket.connected
+  }
 
   public connect(): void {
     socket.connect()
@@ -45,6 +57,8 @@ export class SocketService {
     })
   }
 
+
+
   public onConnect(): Observable<string> {
     return new Observable<string>(observer => {
       socket.on('connection_ok', (data: string) => {
@@ -61,15 +75,25 @@ export class SocketService {
         observer.next(data);
       })
     })
+  }
 
-
-
+  public sendMessage(): void {
+    socket.emit('messageSendToUser', {
+      recipientUserId: "b46bf3ca-9a56-4cfa-aeee-5e8b5eb67efc",
+      message: "ciao"
+    }, function (ack: any) {
+      console.log(ack)
+    })
   }
 
 
 
-
-
-
-
 }
+
+
+
+
+
+
+
+

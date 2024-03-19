@@ -1,9 +1,23 @@
+.bg-accent-drop {
+  background-color: rgba($accent, .4);
+  backdrop-filter: blur(12px);
+}
+
+.bg-mp-primary-drop {
+  background-color: rgba($mp-primary, .4);
+  backdrop-filter: blur(12px);
+}
+
 .moderate-yellow {
   color: $yellow-500;
 }
 
 .bg-moderate-yellow {
   background-color: $yellow-600;
+}
+
+.bg-light-dark {
+  background-color: $gray-700;
 }
 
 .carminium-red {

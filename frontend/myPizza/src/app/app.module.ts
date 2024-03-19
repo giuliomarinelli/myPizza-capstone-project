@@ -1,3 +1,4 @@
+import { MyPizzaGesShComponentsModule } from './my-pizza-ges-sh-components/my-pizza-ges-sh-components.module';
 import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { MatIconModule } from '@angular/material/icon'
@@ -10,6 +11,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { HomeModule } from './pages/home/home.module'
 import { HttpClientModule } from '@angular/common/http';
+import { AuthComponentsModule } from './auth-components/auth-components.module';
+
 
 
 
@@ -30,7 +33,9 @@ import { HttpClientModule } from '@angular/common/http';
     FormsModule,
     MatTabsModule,
     HomeModule,
-    HttpClientModule
+    HttpClientModule,
+    MyPizzaGesShComponentsModule,
+    AuthComponentsModule
   ],
   providers: [
     provideClientHydration(),

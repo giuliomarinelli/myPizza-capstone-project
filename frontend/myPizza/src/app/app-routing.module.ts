@@ -18,6 +18,9 @@ const routes: Routes = [
   { path: 'my-pizza-ges/ingredienti', loadChildren: () => import('./pages/my-pizza-ges/ingredienti/ingredienti.module').then(m => m.IngredientiModule) },
   { path: 'my-pizza-ges/sessione', loadChildren: () => import('./pages/my-pizza-ges/sessione/sessione.module').then(m => m.SessioneModule) },
   { path: 'my-pizza-ges/gestisci-visualizzazione-menu', loadChildren: () => import('./pages/my-pizza-ges/gestisci-visualizzazione-menu/gestisci-visualizzazione-menu.module').then(m => m.GestisciVisualizzazioneMenuModule) },
+  { path: 'ordina-a-domicilio/checkout', loadChildren: () => import('./pages/ordina-a-domicilio/checkout/checkout.module').then(m => m.CheckoutModule) },
+  { path: 'my-pizza-ges/sessione-lavorativa', loadChildren: () => import('./pages/my-pizza-ges/sessione-lavorativa/sessione-lavorativa.module').then(m => m.SessioneLavorativaModule) },
+
 
 ]
 @NgModule({

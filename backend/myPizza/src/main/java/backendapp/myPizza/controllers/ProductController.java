@@ -3,6 +3,7 @@ package backendapp.myPizza.controllers;
 import backendapp.myPizza.Models.entities.Menu;
 import backendapp.myPizza.Models.entities.Product;
 import backendapp.myPizza.Models.entities.Topping;
+import backendapp.myPizza.Models.enums.ToppingType;
 import backendapp.myPizza.Models.reqDTO.*;
 import backendapp.myPizza.Models.resDTO.CategoriesRes;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
@@ -35,8 +36,19 @@ public class ProductController {
     // Toppings
 
     @GetMapping("/toppings")
-    public ToppingsRes getAllToppings() {
-        return new ToppingsRes(productSvc.findAllToppings());
+    public ToppingsRes getAllToppings(@RequestParam(required = false) ToppingType type) {
+        switch (type) {
+            case ToppingType.EXTRA -> {
+                return new ToppingsRes(productSvc.findAllExtras());
+            }
+            case ToppingType.TOPPING -> {
+                return new ToppingsRes(productSvc.findAllToppingToppings());
+            }
+            case null -> {
+                return new ToppingsRes(productSvc.findAllToppings());
+            }
+        }
+
     }
 
     @PostMapping("/toppings")

@@ -169,12 +169,12 @@ public class JwtUtils {
                 .compact();
     }
 
-    public String generateGuestWsAccessToken() {
+    public String generateGuestWsAccessToken(UUID guestUserId) {
 
         return Jwts.builder()
                 .issuer("MyPizza")
                 .claim("typ", "JWT WS_ACCESS TOKEN")
-                .subject(UUID.randomUUID().toString())
+                .subject(guestUserId.toString())
                 .claim("scope", "GUEST")
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + wsAccessExp))

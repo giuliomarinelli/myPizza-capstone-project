@@ -55,12 +55,6 @@ public class Order {
 
     private boolean guest;
 
-    private String guestFirstName;
 
-    private String guestLastName;
-
-    private String guestPhoneNumber;
-
-    private String guestEmail;
 
 }

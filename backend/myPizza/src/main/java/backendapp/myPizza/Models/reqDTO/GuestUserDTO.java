@@ -8,5 +8,5 @@ public record GuestUserDTO(String firstName,
 
                            String email,
 
-                           AddressDTO address) {
+                           String phoneNumber) {
 }

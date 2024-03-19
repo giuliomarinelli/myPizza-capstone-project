@@ -1,4 +1,4 @@
-import { Component, Inject, PLATFORM_ID, ViewChild, afterNextRender } from '@angular/core';
+import { ApplicationRef, Component, Inject, PLATFORM_ID, ViewChild, afterNextRender } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { iLink } from './Models/i-link';
 import { ThemePalette } from '@angular/material/core';
@@ -15,7 +15,8 @@ import { SocketService } from './services/socket.service';
 })
 export class AppComponent {
 
-  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: string, private authSvc: AuthService, private socket: SocketService) {
+  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: string,
+   private authSvc: AuthService, private socket: SocketService, private appRef: ApplicationRef) {
 
     afterNextRender(() => {
 
@@ -25,9 +26,14 @@ export class AppComponent {
             this.authSvc.isWsAuthValidOrRefresh().subscribe(res => {
               socket.connect()
             })
-          } this.isLoggedIn = true
+          }
+
+          this.isLoggedIn = true
+          this.showLogIn = false
           this.getProfile()
           this.authSvc.isAdmin().subscribe(isAdmin => {
+
+            appRef.tick()
             this.authSvc.adminSbj.next(isAdmin)
             this.isAdmin = true
           },
@@ -40,12 +46,17 @@ export class AppComponent {
                 socket.connect()
               })
             }
+            this.showLogIn = false
             this.isLoggedIn = res.loggedIn
             this.authSvc.loggedInSbj.next(res.loggedIn)
             this.authSvc.isAdmin().subscribe(isAdmin => this.authSvc.adminSbj.next(isAdmin))
             this.getProfile()
+            appRef.tick()
           },
-            err => this.showLogIn = true)
+            err => {
+              appRef.tick()
+
+            })
         }
       })
     })
@@ -55,7 +66,7 @@ export class AppComponent {
 
   isLoginPath = false
 
-  protected showLogIn = false
+  protected showLogIn = true
 
   protected isLoggedIn = false
 

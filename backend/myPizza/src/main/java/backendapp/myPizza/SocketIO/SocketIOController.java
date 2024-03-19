@@ -2,6 +2,7 @@ package backendapp.myPizza.SocketIO;
 
 import backendapp.myPizza.Models.entities.User;
 import backendapp.myPizza.SocketIO.DTO.MessageDTO;
+import backendapp.myPizza.SocketIO.DTO.RestoreMessageDTO;
 import backendapp.myPizza.SocketIO.entities.Message;
 import backendapp.myPizza.SocketIO.repositories.MessageRepository;
 import backendapp.myPizza.SocketIO.services.MessageService;
@@ -62,6 +63,7 @@ public class SocketIOController {
          * messageSendToUser is socket end point after socket connection user have to send message payload on messageSendToUser event
          */
         this.socketServer.addEventListener("messageSendToUser", MessageDTO.class, onSendMessage);
+        this.socketServer.addEventListener("restore_messages", RestoreMessageDTO.class, onRestoreMessage);
     }
 
     private UUID getUserId(SocketIOClient client) {
@@ -96,19 +98,9 @@ public class SocketIOController {
             log.info(sessionSvc.getSessionTracker());
             assert userRp.findById(userId).isPresent();
             User u = userRp.findById(userId).get();
-            List<Message> offLineReceivedMessages = u.getReceivedMessages()
-                            .stream().filter(m -> !m.isWasUserOnLine()).toList();
-            String msg = "";
-            if (!offLineReceivedMessages.isEmpty()) {
-                msg = " Notified messages received when offline";
-                for (Message m : offLineReceivedMessages) {
-                    m.setWasUserOnLine(true);
-                    messageSvc.sendMessageToClient(m);
-                    messageRp.save(m);
-                }
-            }
 
-            client.sendEvent("connection_ok", "Connected to Socket.IO server." + msg);
+
+            client.sendEvent("connection_ok", "Connected to Socket.IO server.");
         }
     };
 
@@ -122,6 +114,8 @@ public class SocketIOController {
             log.info(sessionSvc.getSessionTracker());
         }
     };
+
+    public void()
 
     public DataListener<MessageDTO> onSendMessage = new DataListener<>() {
         @Override
@@ -160,6 +154,47 @@ public class SocketIOController {
             log.info(message.getSenderUser().getId() + " user sent message to user " + message.getRecipientUser().getId() + " and message is " + message.getMessage());
 
 
+
+            /**
+             * After sending message to target user we can send acknowledge to sender
+             */
+            acknowledge.sendAckData("Message sent to target user successfully");
+        }
+    };
+
+
+    public DataListener<RestoreMessageDTO> onRestoreMessage = new DataListener<>() {
+        @Override
+        public void onData(SocketIOClient client, RestoreMessageDTO rest, AckRequest acknowledge) throws Exception {
+
+
+            assert userRp.findById(getUserId(client)).isPresent();
+            User senderUser = userRp.findById(getUserId(client)).get();
+
+//            User recipientUser = userRp.findById(messageDTO.recipientUserId()).orElseThrow(
+//                    () -> new Exception("recipient user not found")
+//            );
+
+
+//            boolean isRecipientUserOnLine = sessionSvc.isOnLine(recipientUser.getId());
+//            log.info(isRecipientUserOnLine);
+//
+//            log.info(senderUser.getId() + " " + recipientUser.getId());
+//
+//            Message message = new Message(senderUser, recipientUser, messageDTO.order(), messageDTO.message(), isRecipientUserOnLine);
+//
+//            client.sendEvent("auto_message", "ciao");
+//
+//
+//            messageRp.save(message);
+//
+//            if (isRecipientUserOnLine) {
+//                messageSvc.sendMessageToClient(message);
+//            }
+//
+//
+//            log.info(message.getSenderUser().getId() + " user sent message to user " + message.getRecipientUser().getId() + " and message is " + message.getMessage());
+//
 
             /**
              * After sending message to target user we can send acknowledge to sender

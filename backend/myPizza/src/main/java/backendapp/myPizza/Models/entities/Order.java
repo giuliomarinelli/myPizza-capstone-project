@@ -43,10 +43,6 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-    private String messageFromCustomer;
-
-    private String messageToCustomer;
-
     private double deliveryCost = 1.5;
 
 

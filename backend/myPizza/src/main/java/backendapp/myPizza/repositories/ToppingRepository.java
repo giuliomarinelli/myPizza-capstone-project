@@ -8,9 +8,10 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface ToppingRepository extends JpaRepository<Topping, String> {
+public interface ToppingRepository extends JpaRepository<Topping, UUID> {
     public Optional<Topping> findByName(String name);
 
     @Query("SELECT t.name FROM Topping t")

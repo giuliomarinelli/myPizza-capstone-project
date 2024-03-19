@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 
 import { IngredientiRoutingModule } from './ingredienti-routing.module';
 import { IngredientiComponent } from './ingredienti.component';
+import { MyPizzaGesModule } from '../my-pizza-ges.module';
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import { IngredientiComponent } from './ingredienti.component';
     CommonModule,
     IngredientiRoutingModule,
     MyPizzaGesShComponentsModule,
-    SharedComponentsModule
+    SharedComponentsModule,
+    MyPizzaGesModule
   ]
 })
 export class IngredientiModule { }

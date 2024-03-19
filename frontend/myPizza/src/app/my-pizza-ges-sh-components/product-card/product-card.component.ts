@@ -23,7 +23,6 @@ export class ProductCardComponent {
   ngDoCheck() {
     this._price = this.price
     this._toppingDescriptions = this.toppingDescriptions
-    console.log(this.name, this.category, this.price, this.toppingDescriptions)
   }
 
 }

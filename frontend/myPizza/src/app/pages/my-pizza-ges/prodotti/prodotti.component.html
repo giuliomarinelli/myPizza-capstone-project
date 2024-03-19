@@ -1,12 +1,13 @@
 <ng-container *ngIf="isAdmin">
+  <app-product-manager-nav></app-product-manager-nav>
   @if(products.length === 0) {
   <div class="container-lg footer-bottom d-flex justify-content-center align-items-center text-white">
     <h3 class="h3">Non ci sono prodotti! <a routerLink="/my-pizza-ges/aggiungi-prodotti">Clicca qui</a> per aggiungerne.
     </h3>
   </div>
   } @else {
-  <div class="container-lg" infiniteScroll [infiniteScrollDistance]="0.8" [fromRoot]="true"
-    [infiniteScrollThrottle]="1000" (scrolled)="onScroll()">
+  <div class="container-lg" infiniteScroll [infiniteScrollDistance]="0.75" [fromRoot]="true"
+    [infiniteScrollThrottle]="500" (scrolled)="onScroll()">
     <div class="btn-set p-2 mb-1 mt-4 row g-1 add-products">
       <div class="col-12 col-mb-6">
         <a routerLink="/my-pizza-ges/aggiungi-prodotti"
@@ -24,12 +25,12 @@
       </div>
 
     </div>
-    <div class="row align-items-stretch">
+    <div class="d-flex justify-content-center flex-wrap align-items-stretch">
 
       @for(product of products; track product; let i = $index) {
-      <div [ngClass]="{'my-3 col-12 dark-design': true, 'col-md-6': products.length > 1, 'disappear': onDisappear, 'delete': onDelete}">
+      <div class="my-3 max-width dark-design">
         @if (edit[i] === false) {
-        <div class="my-pizza-card d-flex flex-column justify-content-between animated">
+        <div class="my-pizza-card d-flex flex-column justify-content-between animated" [ngClass]="{'disappear': onDisappear, 'delete': onDelete}">
           <app-product-card *ngIf="useClient" [name]="products[i].name" [category]="products[i].category.name"
             [price]="products[i].price" [toppingDescriptions]="getToppinsDescriptions(i)"
             class="align-self-stretch"></app-product-card>
@@ -86,8 +87,6 @@
 
     </div>
   </div>
-  <div class="d-none d-md-block h-spacer" *ngIf="count === 0"></div>
   }
 </ng-container>
-<app-access-denied *ngIf="!isAdmin && useClient"></app-access-denied>
-<app-full-screen-loader [isLoading]="isLoading && isAdmin"></app-full-screen-loader>
+<app-full-screen-loader [isLoading]="isLoading && isAdmin === true"></app-full-screen-loader>

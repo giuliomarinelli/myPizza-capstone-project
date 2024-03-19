@@ -20,3 +20,23 @@ export interface Autority {
 export interface AuthoritiesRes {
   authorities: string[]
 }
+
+export interface Address {
+  id: string
+  road: string
+  civic: string
+  city: City
+  _default: boolean
+}
+
+export interface City {
+  id: number
+  name: string
+  provinceCode: string
+  provinceName: string
+  region: string
+}
+
+export interface AddressesRes {
+  addresses: Address[]
+}

@@ -1,3 +1,4 @@
+<app-access-denied *ngIf="accessDenied && isAdminPath"></app-access-denied>
 <mat-sidenav-container class="sidenav-container text-white" (backdropClick)="close('backdrop')">
   <mat-sidenav #sidenav (keydown.escape)="close('escape')" class="main-menu-offcanvas dark">
     <aside>
@@ -59,9 +60,9 @@
           @if(isLoggedIn) {
           <div class="text-white d-flex align-items-center gap-3">
             <a href="#" (click)="logout()">Logout</a>
-            <div class="avatar">
+            @if(userProfile) {<div class="avatar">
               <img [src]="userProfile.profileImage" class="img-fluid">
-            </div>
+            </div>}
           </div>
           } @else {
           <div class="d-none d-lg-flex align-items-center">
@@ -80,6 +81,7 @@
       </mat-toolbar>
     </header>
     <router-outlet></router-outlet>
+    <app-login *ngIf="showLogIn && isLoginPath"></app-login>
     <footer id="footer" class="bg-dark py-3 px-2">
       <div class="container-md text-center text-white">
         &copy; 2024 MyPizza. Tutti i diritti riservati

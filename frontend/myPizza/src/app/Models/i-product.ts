@@ -5,6 +5,7 @@ export interface Topping {
   price: number
   description: string
   createdAt: number
+  type: string
 }
 
 export type _Toppings = Topping | boolean
@@ -30,6 +31,7 @@ export interface Category {
 }
 
 export interface Product {
+  id: string
   name: string
   toppings: Topping[]
   type: string

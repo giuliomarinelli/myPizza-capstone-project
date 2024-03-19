@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { AggiungiProdottiRoutingModule } from './aggiungi-prodotti-routing.module';
 import { AggiungiProdottiComponent } from './aggiungi-prodotti.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MyPizzaGesModule } from '../my-pizza-ges.module';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { MatDialogModule } from '@angular/material/dialog';
     SharedComponentsModule,
     MatButtonModule,
     MatFormFieldModule,
-    MatDialogModule
+    MatDialogModule,
+    MyPizzaGesModule
   ]
 })
 export class AggiungiProdottiModule { }

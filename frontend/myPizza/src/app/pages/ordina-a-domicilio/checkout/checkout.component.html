@@ -1,0 +1,48 @@
+<h1 class="h1 text-center text-accent mt-4 d-block">
+  Checkout Ordine
+</h1>
+<hr class="hr text-secondary">
+<section class="bg-dark">
+  <div class="container-md px-5 py-2">
+    <h3 class="h4 text-accent">
+      Riepilogo ordine
+    </h3>
+    @if(orderSets) {
+    @for(o of orderSets; track o) {
+    <div class="row align-items-center text-mp-primary">
+      <div class="col"><em>{{o.product.name}}</em></div>
+      <div class="col">{{o.product.price.toFixed(2)}}€</div>
+      <div class="col">Quantità: {{o.quantity}}</div>
+    </div>
+    }
+    <div class="row text-mp-primary">
+      <div class="col">
+        Costo consegna: {{deliveryCost.toFixed(2)}}€
+      </div>
+      <div class="col">
+        <strong>Totale: {{totalAmount.toFixed(2)}}€</strong>
+      </div>
+    </div>
+    }
+  </div>
+</section>
+<section class="bg-dark">
+  <div class="container-md px-5 py-2">
+    <h3 class="h4 text-accent">
+      Indirizzo
+    </h3>
+    @if(address) {
+    <div class="m-0 my-3 d-flex align-items-center justify-content-between flex-wrap">
+      <span>{{address.road}} {{address.civic}}, {{address.city.name}} ({{address.city.provinceCode}}),
+        {{address.city.region}}</span>
+      <button class="btn btn-accent" *ngIf="!isGuest">Seleziona un altro indirizzo</button>
+    </div>
+    }
+  </div>
+</section>
+<ng-container class="dark-design">
+  <div class="btn-set p-5">
+    <button class="btn btn-primary w-100" (click)="sendOrder()">Invia</button>
+  </div>
+</ng-container>
+<app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>

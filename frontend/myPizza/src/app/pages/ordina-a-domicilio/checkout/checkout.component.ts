@@ -1,6 +1,9 @@
+import { OrderSet } from './../../../Models/i-order';
 import { Component, afterNextRender } from '@angular/core';
 import { OrderService } from '../../../services/order.service';
 import { AuthService } from '../../../services/auth.service';
+import { Address } from '../../../Models/i-user';
+import { SocketService } from '../../../services/socket.service';
 
 @Component({
   selector: 'main#checkout',
@@ -9,19 +12,48 @@ import { AuthService } from '../../../services/auth.service';
 })
 export class CheckoutComponent {
 
-  constructor(private orderSvc: OrderService, private authSvc: AuthService) {
+  constructor(private orderSvc: OrderService, private authSvc: AuthService, private socket: SocketService) {
+
     afterNextRender(() => {
       authSvc.isLoggedIn$.subscribe(res => {
         this.isGuest = !res
-        console.log(this.isGuest)
-        orderSvc.getOrderId().subscribe(res => {this.orderId = res.orderId})
+        orderSvc.getOrderInit(this.isGuest).subscribe(res => {
+          this.orderId = res.orderId
+          this.deliveryCost = res.deliveryCost
+          this.address = res.address
+          this.orderSets = res.orderSets
+          this.totalAmount = res.totalAmount
+          this.isLoading = false
+          console.log(res)
+          if (!this.isGuest) authSvc.getAddresses().subscribe(addRes => {
+            this.addresses = addRes.addresses
+            console.log(addRes)
+          })
+
+        })
         // se non c'è l'order id bisogna gestire la situazione
       })
     })
   }
 
+  protected isLoading: boolean = true
+
+  protected addresses: Address[] = []
+
+  protected totalAmount: number = 0
+
+  protected orderSets: OrderSet[] = []
+
+  protected address!: Address
+
   protected isGuest: boolean = true
 
   protected orderId: string = ''
+
+  protected deliveryCost: number = 0
+
+  protected sendOrder(): void {
+    this.socket.sendMessage()
+  }
 
 }

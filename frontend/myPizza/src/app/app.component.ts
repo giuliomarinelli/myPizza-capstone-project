@@ -6,6 +6,7 @@ import { Router, RoutesRecognized } from '@angular/router';
 import { isPlatformBrowser } from '@angular/common';
 import { AuthService } from './services/auth.service';
 import { User } from './Models/i-user';
+import { SocketService } from './services/socket.service';
 
 @Component({
   selector: '#root',
@@ -14,27 +15,37 @@ import { User } from './Models/i-user';
 })
 export class AppComponent {
 
-  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: string, private authSvc: AuthService) {
+  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: string, private authSvc: AuthService, private socket: SocketService) {
 
     afterNextRender(() => {
+
       this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
         if (isLoggedIn) {
-          this.isLoggedIn = true
+          if (!socket.connected) {
+            this.authSvc.isWsAuthValidOrRefresh().subscribe(res => {
+              socket.connect()
+            })
+          } this.isLoggedIn = true
           this.getProfile()
           this.authSvc.isAdmin().subscribe(isAdmin => {
             this.authSvc.adminSbj.next(isAdmin)
             this.isAdmin = true
           },
-          err => this.accessDenied = true
+            err => this.accessDenied = true
           )
         } else {
           this.authSvc.isLoggedInQuery().subscribe(res => {
+            if (!socket.connected) {
+              this.authSvc.isWsAuthValidOrRefresh().subscribe(res => {
+                socket.connect()
+              })
+            }
             this.isLoggedIn = res.loggedIn
             this.authSvc.loggedInSbj.next(res.loggedIn)
             this.authSvc.isAdmin().subscribe(isAdmin => this.authSvc.adminSbj.next(isAdmin))
             this.getProfile()
           },
-          err => this.showLogIn = true)
+            err => this.showLogIn = true)
         }
       })
     })

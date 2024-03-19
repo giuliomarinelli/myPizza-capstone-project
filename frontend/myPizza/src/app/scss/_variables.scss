@@ -296,7 +296,7 @@ $light: $gray-100 !default;
 $dark: $gray-900 !default;
 // scss-docs-end theme-color-variables
 $mp-primary: #2980ef;
-$accent: $orange-500;
+$accent: lighten(rgb(221, 151, 21), 10%);//$orange-500;
 // scss-docs-start theme-colors-map
 $theme-colors: (
   "primary": $primary,

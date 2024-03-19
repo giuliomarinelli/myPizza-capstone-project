@@ -1,3 +1,4 @@
+import { SocketService } from './../../services/socket.service';
 import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -10,7 +11,7 @@ import { Router, RoutesRecognized } from '@angular/router';
 })
 export class LoginComponent {
 
-  constructor(private fb: FormBuilder, private authSvc: AuthService, private router: Router) { }
+  constructor(private fb: FormBuilder, private authSvc: AuthService, private router: Router, private socket: SocketService) { }
 
   protected errorMsg: string = ''
 
@@ -58,16 +59,17 @@ export class LoginComponent {
 
   protected performLogin(): void {
     if (this.loginForm.valid) {
+
+
       this.authSvc.login(this.loginForm.value).subscribe(
         res => {
 
           this.authSvc.loggedInSbj.next(true)
-
           this.authSvc.isAdmin().subscribe(res => {
             if (res) {
-              this.path === '/login' ? this.router.navigate(['/my-pizza-ges/prodotti']) : location.href = location.href
+              this.path === '/login' ? location.href = '/my-pizza-ges/prodotti' : location.href = location.href
             } else {
-              this.path === '/login' ? this.router.navigate(['/my-pizza']) : location.href = location.href
+              this.path === '/login' ? location.href = '/my-pizza' : location.href = location.href
             }
           })
 
@@ -77,8 +79,7 @@ export class LoginComponent {
           console.log(err.error.message)
           if (err.error.message === 'Email and/or password are incorrect') this.loginErrorMsg = 'Email o password errate'
           console.log(this.errorMsg)
-        }
-      )
+        })
     } else {
       Object.values(this.loginForm.controls).forEach(control => {
         if (control.invalid) {

@@ -1,3 +1,4 @@
+import { Socket } from 'socket.io-client';
 import { Component, ElementRef, HostListener, Inject, PLATFORM_ID, ViewChild, afterNextRender } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { ProductService } from '../../../services/product.service';
@@ -7,6 +8,7 @@ import { Breakpoint } from '../../../Models/i-breakpoint';
 import { isPlatformBrowser } from '@angular/common';
 import { Platform } from '@angular/cdk/platform';
 import { count } from 'console';
+import { SocketService } from '../../../services/socket.service';
 
 @Component({
   selector: 'app-prodotti',
@@ -15,9 +17,10 @@ import { count } from 'console';
 })
 export class ProdottiComponent {
   constructor(private authSvc: AuthService, private productSvc: ProductService,
-    @Inject(PLATFORM_ID) private platformId: string) {
+    @Inject(PLATFORM_ID) private platformId: string, private socket: SocketService) {
 
     afterNextRender(() => {
+
       this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
         if (isLoggedIn && this._onlyOnce) {
           this.authSvc.isAdmin$.subscribe(isAdmin => {

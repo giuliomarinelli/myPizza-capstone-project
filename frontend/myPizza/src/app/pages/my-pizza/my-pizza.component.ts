@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, afterNextRender } from '@angular/core';
+import { SocketService } from '../../services/socket.service';
 
 @Component({
   selector: 'app-my-pizza',
@@ -6,5 +7,4 @@ import { Component } from '@angular/core';
   styleUrl: './my-pizza.component.scss'
 })
 export class MyPizzaComponent {
-
 }

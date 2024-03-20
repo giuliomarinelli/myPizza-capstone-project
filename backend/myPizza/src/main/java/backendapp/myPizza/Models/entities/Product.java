@@ -37,9 +37,6 @@ public class Product extends MenuItem {
 
     private long createdAt;
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "product")
-    private Task task;
 
     @Transient
     private double price;

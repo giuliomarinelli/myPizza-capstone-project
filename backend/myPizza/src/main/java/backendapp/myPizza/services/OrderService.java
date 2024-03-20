@@ -4,6 +4,7 @@ import backendapp.myPizza.Models.entities.*;
 import backendapp.myPizza.Models.enums.OrderStatus;
 import backendapp.myPizza.Models.reqDTO.OrderInitDTO;
 import backendapp.myPizza.Models.reqDTO.OrderSetDTO;
+import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.Models.resDTO.OrderCheckoutInfo;
 import backendapp.myPizza.Models.resDTO.OrderInitRes;
 import backendapp.myPizza.exceptions.BadRequestException;
@@ -11,6 +12,7 @@ import backendapp.myPizza.exceptions.UnauthorizedException;
 import backendapp.myPizza.repositories.*;
 import backendapp.myPizza.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -96,5 +98,28 @@ public class OrderService {
         }
 
     }
+
+    public ConfirmRes sendOrder(UUID orderId) throws BadRequestException {
+        Order order = orderRp.findById(orderId).orElseThrow(
+                () -> new BadRequestException("Order you're trying to send doesn't exist")
+        );
+        if (!order.getStatus().equals(OrderStatus.INIT)) throw new BadRequestException("An order must have INIT status to be sent");
+        order.setStatus(OrderStatus.PENDING);
+        orderRp.save(order);
+        return new ConfirmRes("Order with id='" + orderId + " confirmed successfully", HttpStatus.OK);
+    }
+
+    public ConfirmRes rejectOrder(UUID orderId) throws BadRequestException {
+        Order order = orderRp.findById(orderId).orElseThrow(
+                () -> new BadRequestException("Order you're trying to reject doesn't exist")
+        );
+        if (!order.getStatus().equals(OrderStatus.PENDING)) throw new BadRequestException("An order must have PENDING status to be confirmed or rejected");
+        order.setStatus(OrderStatus.PENDING);
+        orderRp.save(order);
+        return new ConfirmRes("Order with id='" + orderId + " rejected", HttpStatus.OK);
+    }
+
+
+
 
 }

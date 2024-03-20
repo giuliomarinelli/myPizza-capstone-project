@@ -1,6 +1,7 @@
 package backendapp.myPizza.SocketIO.services;
 
 
+import backendapp.myPizza.Models.entities.TimeInterval;
 import backendapp.myPizza.Models.entities.User;
 import backendapp.myPizza.SocketIO.entities.Message;
 import backendapp.myPizza.SocketIO.repositories.MessageRepository;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.UUID;
 
-//@Component
+@Component
 @Log4j2
 public class Try implements CommandLineRunner {
     @Autowired
@@ -45,17 +46,20 @@ public class Try implements CommandLineRunner {
 //        System.out.println(trackingSvc.getSessionTracker());
 //        trackingSvc.removeSession(sid11);
 //        System.out.println(trackingSvc.getSessionTracker());
-        UUID id = UUID.fromString("b46bf3ca-9a56-4cfa-aeee-5e8b5eb67efc");
-        log.info("Unread");
-        messageRp.findAllUnreadMessagesByRecipientUserId(id).forEach(log::info);
-        log.info("-------------------------------------------------");
-        log.info("All");
-        messageRp.findAllMessagesByRecipientUserId(id).forEach(log::info);
-        log.info("-------------------------------------------------");
-        log.info("Read");
-        messageRp.findAllReadMessagesByRecipientUserId(id).forEach(log::info);
-        log.info("-------------------------------------------------");
-        log.info("Was offline");
-        messageRp.findAllWasOffLineMessagesByRecipientUserId(id).forEach(log::info);
+//        UUID id = UUID.fromString("b46bf3ca-9a56-4cfa-aeee-5e8b5eb67efc");
+//        log.info("Unread");
+//        messageRp.findAllUnreadMessagesByRecipientUserId(id).forEach(log::info);
+//        log.info("-------------------------------------------------");
+//        log.info("All");
+//        messageRp.findAllMessagesByRecipientUserId(id).forEach(log::info);
+//        log.info("-------------------------------------------------");
+//        log.info("Read");
+//        messageRp.findAllReadMessagesByRecipientUserId(id).forEach(log::info);
+//        log.info("-------------------------------------------------");
+//        log.info("Was offline");
+//        messageRp.findAllWasOffLineMessagesByRecipientUserId(id).forEach(log::info);
+
+        List<TimeInterval> timeInterval = TimeInterval.getTimeIntervals(1710958500000L, 1710969000000L);
+        System.out.println(timeInterval);
     }
 }

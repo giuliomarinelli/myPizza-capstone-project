@@ -10,8 +10,8 @@
     @if(orderSets) {
     @for(o of orderSets; track o) {
     <div class="row align-items-center text-mp-primary">
-      <div class="col"><em>{{o.product.name}}</em></div>
-      <div class="col">{{o.product.price.toFixed(2)}}€</div>
+      <div class="col"><em>{{o.productRef.name}}</em></div>
+      <div class="col">{{o.productRef.price.toFixed(2)}}€</div>
       <div class="col">Quantità: {{o.quantity}}</div>
     </div>
     }

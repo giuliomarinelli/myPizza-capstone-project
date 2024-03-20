@@ -13,7 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = "toppings")
+@Table(name = "toppings_ref")
 public class ToppingRef {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

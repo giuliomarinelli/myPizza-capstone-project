@@ -98,8 +98,6 @@ public class SocketIOController {
             log.info(sessionSvc.getSessionTracker());
             assert userRp.findById(userId).isPresent();
             User u = userRp.findById(userId).get();
-
-
             client.sendEvent("connection_ok", "Connected to Socket.IO server.");
         }
     };
@@ -114,8 +112,6 @@ public class SocketIOController {
             log.info(sessionSvc.getSessionTracker());
         }
     };
-
-    public void()
 
     public DataListener<MessageDTO> onSendMessage = new DataListener<>() {
         @Override
@@ -169,37 +165,14 @@ public class SocketIOController {
 
 
             assert userRp.findById(getUserId(client)).isPresent();
-            User senderUser = userRp.findById(getUserId(client)).get();
+            User recipientUser = userRp.findById(getUserId(client)).get();
 
-//            User recipientUser = userRp.findById(messageDTO.recipientUserId()).orElseThrow(
-//                    () -> new Exception("recipient user not found")
-//            );
-
-
-//            boolean isRecipientUserOnLine = sessionSvc.isOnLine(recipientUser.getId());
-//            log.info(isRecipientUserOnLine);
-//
-//            log.info(senderUser.getId() + " " + recipientUser.getId());
-//
-//            Message message = new Message(senderUser, recipientUser, messageDTO.order(), messageDTO.message(), isRecipientUserOnLine);
-//
-//            client.sendEvent("auto_message", "ciao");
-//
-//
-//            messageRp.save(message);
-//
-//            if (isRecipientUserOnLine) {
-//                messageSvc.sendMessageToClient(message);
-//            }
-//
-//
-//            log.info(message.getSenderUser().getId() + " user sent message to user " + message.getRecipientUser().getId() + " and message is " + message.getMessage());
-//
+            messageSvc.restoreMessages(recipientUser.getId());
 
             /**
              * After sending message to target user we can send acknowledge to sender
              */
-            acknowledge.sendAckData("Message sent to target user successfully");
+            acknowledge.sendAckData("User " + recipientUser.getId() + " restored unread messages");
         }
     };
 

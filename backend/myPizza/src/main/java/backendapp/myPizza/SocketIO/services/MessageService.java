@@ -27,12 +27,11 @@ public class MessageService {
     private MessageRepository messageRp;
 
 
-
     public void sendMessageToClient(Message message) {
 
 
         Set<UUID> clientIds = sessionSvc.getClientIdsFromUserId(message.getRecipientUser().getId());
-        log.info(message.getRecipientUser().getId());
+        log.info(message.getRecipientUser().getId() + " receving message");
         for (UUID clientId : clientIds) {
             SocketIOClient client = clientSvc.getClient(clientId);
             log.info(client);
@@ -44,7 +43,17 @@ public class MessageService {
         }
     }
 
-    public void restoreMessages() {
-        List<Message> messages = message
+    public void restoreMessages(UUID recipientUserId) {
+        if (sessionSvc.isOnLine(recipientUserId)) {
+            List<Message> messages = messageRp.findAllUnreadMessagesByRecipientUserId(recipientUserId);
+            messages = messages.stream().peek(m -> {
+                m.setWasUserOnLine(true);
+                m.setRestore(true);
+            }).toList();
+            messageRp.saveAll(messages);
+            for (Message m : messages) {
+                sendMessageToClient(m);
+            }
+        }
     }
 }

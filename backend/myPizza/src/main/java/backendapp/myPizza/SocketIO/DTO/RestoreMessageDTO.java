@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class RestoreMessageDTO {
-    private boolean restoreUnreadOrOfflineMessages;
+    private boolean restore;
 }

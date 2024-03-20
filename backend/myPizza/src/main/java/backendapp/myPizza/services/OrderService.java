@@ -8,10 +8,7 @@ import backendapp.myPizza.Models.resDTO.OrderCheckoutInfo;
 import backendapp.myPizza.Models.resDTO.OrderInitRes;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.exceptions.UnauthorizedException;
-import backendapp.myPizza.repositories.OrderRepository;
-import backendapp.myPizza.repositories.OrderSetRepository;
-import backendapp.myPizza.repositories.ProductRepository;
-import backendapp.myPizza.repositories.UserRepository;
+import backendapp.myPizza.repositories.*;
 import backendapp.myPizza.security.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +35,12 @@ public class OrderService {
     @Autowired
     private UserRepository userRp;
 
+    @Autowired
+    private ToppingRefRepository toppingRefRp;
+
+    @Autowired
+    private ProductRefRepository productRefRp;
+
 
     public OrderInitRes orderInit(OrderInitDTO orderInitDTO) throws BadRequestException {
         Order order = new Order();
@@ -49,9 +52,17 @@ public class OrderService {
             Product p = productRp.findById(o.productId()).orElseThrow(
                     () -> new BadRequestException("Product with id='" + o.productId() + "' doesn't exist")
             );
+            p.setProductTotalAmount();
             if (o.quantity() <= 0)
                 throw new BadRequestException("Product with id=' + o.productId() + ': quantity must be an integer number major than 0");
-            OrderSet orderSet = new OrderSet(p, o.quantity());
+            ProductRef pr = new ProductRef(p.getName(), p.getPrice());
+            for (Topping t : p.getToppings()) {
+                ToppingRef tr = new ToppingRef(t.getName(), t.getPrice());
+                toppingRefRp.save(tr);
+                pr.getToppingsRef().add(tr);
+            }
+            productRefRp.save(pr);
+            OrderSet orderSet = new OrderSet(pr, o.quantity());
             orderSet.setOrder(order);
             orderSets.add(orderSet);
         }
@@ -73,11 +84,11 @@ public class OrderService {
                             () -> new BadRequestException("Cannot find default address, please set a default address before retrying")
                     );
             OrderStatus status = order.getStatus();
-            List<OrderSet> orderSets = order.getOrderSets().stream().peek(os -> os.getProduct().setProductTotalAmount()).toList();
+            List<OrderSet> orderSets = order.getOrderSets();
             double deliveryCost = order.getDeliveryCost();
             double totalAmount = 0;
             for (OrderSet os : orderSets) {
-                totalAmount += os.getQuantity() * os.getProduct().getPrice();
+                totalAmount += os.getQuantity() * os.getProductRef().getPrice();
             }
             totalAmount += deliveryCost;
 

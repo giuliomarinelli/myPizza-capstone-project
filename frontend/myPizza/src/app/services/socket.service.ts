@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Socket, io } from 'socket.io-client'
 import { AuthService } from './auth.service';
-import { Message } from '../Models/i-message';
+import { Message, MessageDTO } from '../Models/i-message';
+import { PublicApiService } from './public-api.service';
 
 
 
@@ -11,7 +12,7 @@ const socket: Socket = io('http://localhost:8085', {
   transports: ['websocket'],
   reconnection: false,
   autoConnect: false,
-  query: {'guest': false}
+  query: { 'guest': false }
 })
 
 const socketGuest = io('http://localhost:8085', {
@@ -19,7 +20,7 @@ const socketGuest = io('http://localhost:8085', {
   transports: ['websocket'],
   reconnection: false,
   autoConnect: false,
-  query: {'guest': true}
+  query: { 'guest': true }
 })
 
 
@@ -30,8 +31,11 @@ const socketGuest = io('http://localhost:8085', {
 })
 export class SocketService {
 
-  constructor(private authSvc: AuthService) { }
+  constructor(private publicApi: PublicApiService, private authSvc: AuthService) {
+    publicApi.getAdminUserId().subscribe(res => this.adminUserId = res)
+  }
 
+  private adminUserId!: string
   private socket!: Socket
 
   public connectSbj = new BehaviorSubject<boolean>(false)
@@ -57,6 +61,15 @@ export class SocketService {
     })
   }
 
+  restoreMessages(): Observable<string> {
+    return new Observable<string>(observer => {
+      socket.emit('restore_messages', {
+        restore: true
+      }, function (ack: string) {
+        observer.next(ack)
+      })
+    })
+  }
 
 
   public onConnect(): Observable<string> {
@@ -77,13 +90,16 @@ export class SocketService {
     })
   }
 
-  public sendMessage(): void {
-    socket.emit('messageSendToUser', {
-      recipientUserId: "b46bf3ca-9a56-4cfa-aeee-5e8b5eb67efc",
-      message: "ciao"
-    }, function (ack: any) {
-      console.log(ack)
+  public sendMessage(messageDTO: MessageDTO): Observable<string> {
+    return new Observable<string>(observer => {
+      socket.emit('messageSendToUser', {
+        recipientUserId: messageDTO.recipientUserId,
+        message: "ciao"
+      }, function (ack: string) {
+        observer.next(ack)
+      })
     })
+
   }
 
 

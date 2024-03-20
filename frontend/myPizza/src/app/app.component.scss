@@ -20,6 +20,11 @@ a {
   }
 }
 
+.fs-sm {
+  font-size: .6rem;
+  ;
+}
+
 .spacer {
   flex: 1 1 auto;
 }
@@ -40,6 +45,7 @@ a {
   display: flex;
   flex-direction: column;
   gap: 20px;
+
   li {
     list-style-type: none;
     text-transform: uppercase;
@@ -58,9 +64,45 @@ a {
   font-size: 1rem;
 }
 
+button.fake-btn {
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1.3em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: fit-content;
+
+  &.bell {
+    margin-top: 5px;
+  }
+
+  color: white;
+
+  transition: color .35s;
+
+  &:hover {
+    color: rgba(white, .75);
+  }
+}
+
+.icon-fs {
+  font-size: 1.25rem;
+}
+
+.div-size {
+  height: 38px;
+
+  &.i {
+    font-size: 38px;
+  }
+}
+
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
+
   img {
     border-radius: 100%;
   }
@@ -68,4 +110,54 @@ a {
 
 .fs-dropdown {
   font-size: .8rem;
+}
+
+.alert-notification {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding: 0 12px;
+  z-index: 10;
+  opacity: .975;
+
+  @media screen and (min-width: 426px) {
+    max-width: 550px;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+  }
+
+}
+
+.backdr {
+  backdrop-filter: blur(10px);
+}
+
+.fade-in {
+  animation: 1.5s ease-in-out forwards fade-in-kf
+}
+
+.fade-out {
+  animation: 1.5s ease-in-out forwards fade-out-kf
+}
+
+@keyframes fade-in-kf {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out-kf {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }

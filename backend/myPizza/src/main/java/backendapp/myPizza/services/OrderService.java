@@ -54,7 +54,7 @@ public class OrderService {
             );
             p.setProductTotalAmount();
             if (o.quantity() <= 0)
-                throw new BadRequestException("Product with id=' + o.productId() + ': quantity must be an integer number major than 0");
+                throw new BadRequestException("Product with id='" + o.productId() + "': quantity must be an integer number major than 0");
             ProductRef pr = new ProductRef(p.getName(), p.getPrice());
             for (Topping t : p.getToppings()) {
                 ToppingRef tr = new ToppingRef(t.getName(), t.getPrice());

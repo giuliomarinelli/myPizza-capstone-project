@@ -102,6 +102,10 @@ a {
   animation: .5s ease-in-out forwards go-away;
 }
 
+.add {
+  animation: .5s ease-in-out forwards
+}
+
 @keyframes go-up {
   from {
     opacity: 0;

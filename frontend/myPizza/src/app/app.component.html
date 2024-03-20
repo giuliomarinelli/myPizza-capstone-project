@@ -1,4 +1,4 @@
-<app-access-denied *ngIf="accessDenied && isAdminPath"></app-access-denied>
+<app-access-denied *ngIf="!isAdmin && isAdminPath && isLoggedIn"></app-access-denied>
 <mat-sidenav-container class="sidenav-container text-white" (backdropClick)="close('backdrop')">
   <mat-sidenav #sidenav (keydown.escape)="close('escape')" class="main-menu-offcanvas dark">
     <aside>
@@ -58,7 +58,8 @@
           </div>
           <span class="spacer"></span>
           @if(isLoggedIn) {
-          <div class="d-flex justify-content-center align-items-center gap-2">
+            <div class="d-flex justify-content-center align-items-center gap-2">
+            @if(!isSessionPath) {
             <button class="bell-size fake-btn bell">
               <div class="position-relative text-white">
                 <i class="bi bi-bell-fill fs-icon"></i>
@@ -70,6 +71,7 @@
               }
               </div>
             </button>
+          }
             @if(userProfile) {<button (click)="logout()" class="avatar fake-btn">
               <img [src]="userProfile.profileImage" class="img-fluid">
             </button>}

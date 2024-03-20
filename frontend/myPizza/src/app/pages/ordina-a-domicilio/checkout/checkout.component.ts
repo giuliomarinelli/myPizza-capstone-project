@@ -4,6 +4,7 @@ import { OrderService } from '../../../services/order.service';
 import { AuthService } from '../../../services/auth.service';
 import { Address } from '../../../Models/i-user';
 import { SocketService } from '../../../services/socket.service';
+import { PublicApiService } from '../../../services/public-api.service';
 
 @Component({
   selector: 'main#checkout',
@@ -12,12 +13,14 @@ import { SocketService } from '../../../services/socket.service';
 })
 export class CheckoutComponent {
 
-  constructor(private orderSvc: OrderService, private authSvc: AuthService, private socket: SocketService) {
+  constructor(private orderSvc: OrderService, private authSvc: AuthService,
+     private socket: SocketService, private publicApi: PublicApiService) {
 
     afterNextRender(() => {
+      publicApi.getAdminUserId().subscribe(res => this.adminUserId = res)
       authSvc.isLoggedIn$.subscribe(res => {
         this.isGuest = !res
-        orderSvc.getOrderInit(this.isGuest).subscribe(res => {
+        orderSvc.getOrderInit().subscribe(res => {
           this.orderId = res.orderId
           this.deliveryCost = res.deliveryCost
           this.address = res.address
@@ -36,6 +39,8 @@ export class CheckoutComponent {
     })
   }
 
+  private adminUserId!: string
+
   protected isLoading: boolean = true
 
   protected addresses: Address[] = []
@@ -53,7 +58,10 @@ export class CheckoutComponent {
   protected deliveryCost: number = 0
 
   protected sendOrder(): void {
-    this.socket.sendMessage()
+    this.socket.sendMessage({
+      recipientUserId: this.adminUserId,
+      message: 'Nuovo ordine'
+    }).subscribe(ack => console.log(ack))
   }
 
 }

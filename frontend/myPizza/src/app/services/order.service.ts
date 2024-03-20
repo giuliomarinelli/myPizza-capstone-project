@@ -21,8 +21,8 @@ export class OrderService {
     return this.http.get<GetOrderIdRes>(`${this.backendUrl}/public/get-client-order-id`, { withCredentials: true })
   }
 
-  public getOrderInit(guest: boolean): Observable<OrderCheckoutInfo> {
-    return this.http.get<OrderCheckoutInfo>(`${this.backendUrl}/public/get-client-order-init?guest=${guest}`, { withCredentials: true })
+  public getOrderInit(): Observable<OrderCheckoutInfo> {
+    return this.http.get<OrderCheckoutInfo>(`${this.backendUrl}/public/get-client-order-init`, { withCredentials: true })
   }
 
 }

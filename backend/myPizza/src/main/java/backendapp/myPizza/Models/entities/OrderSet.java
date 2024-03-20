@@ -21,8 +21,8 @@ public class OrderSet {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @JoinColumn(name = "product_ref_id")
+    private ProductRef productRef;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
@@ -32,8 +32,8 @@ public class OrderSet {
 
     int quantity;
 
-    public OrderSet(Product product, int quantity) {
-        this.product = product;
+    public OrderSet(ProductRef productRef, int quantity) {
+        this.productRef = productRef;
         this.quantity = quantity;
     }
 }

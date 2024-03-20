@@ -58,3 +58,16 @@ export interface OnProductUpdate {
   i: number
   product: ProductDTO
 }
+
+export interface ToppingRef {
+  id: string
+  name: string
+  price: number
+}
+
+export interface ProductRef {
+  id: string
+  name: string
+  price: number
+  toppingsRef: ToppingRef[]
+}

@@ -11,8 +11,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { HomeModule } from './pages/home/home.module'
 import { HttpClientModule } from '@angular/common/http';
-import { AuthComponentsModule } from './auth-components/auth-components.module';
-
+import { AuthComponentsModule } from './auth-components/auth-components.module'
 
 
 

@@ -21,6 +21,10 @@ export interface AuthoritiesRes {
   authorities: string[]
 }
 
+export interface AdminUserIdRes {
+  adminUserId: string
+}
+
 export interface Address {
   id: string
   road: string

@@ -1,5 +1,15 @@
 import { User } from "./i-user";
 
+export interface RestoreMessageDTO {
+  restore: boolean
+}
+
+export interface MessageDTO {
+  recipientUserId: string
+  order?: any // da implementare
+  message: string
+}
+
 export interface Message {
 
   id: string
@@ -21,6 +31,8 @@ export interface Message {
   wasUserOnLine: boolean
 
   read: boolean
+
+  restore: boolean
 }
 
 export interface MessageMng {

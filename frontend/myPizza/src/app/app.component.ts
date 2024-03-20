@@ -1,4 +1,4 @@
-import { Component, Inject, PLATFORM_ID, ViewChild, afterNextRender } from '@angular/core';
+import { ApplicationRef, ChangeDetectionStrategy, Component, Inject, PLATFORM_ID, SimpleChanges, ViewChild, afterNextRender } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { iLink } from './Models/i-link';
 import { ThemePalette } from '@angular/material/core';
@@ -7,55 +7,153 @@ import { isPlatformBrowser } from '@angular/common';
 import { AuthService } from './services/auth.service';
 import { User } from './Models/i-user';
 import { SocketService } from './services/socket.service';
+import { Message, MessageMng } from './Models/i-message';
+import { application } from 'express';
 
 @Component({
   selector: '#root',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
 })
 export class AppComponent {
 
-  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: string, private authSvc: AuthService, private socket: SocketService) {
+  constructor(private router: Router, @Inject(PLATFORM_ID) private platformId: string,
+    private authSvc: AuthService, private socket: SocketService, private appRef: ApplicationRef) {
 
     afterNextRender(() => {
+      this.router.events.subscribe((event) => {
+        if (event instanceof RoutesRecognized) {
+          this.activeLink = this.links[0]
+          this.isHome = false
+          const path = event.url
+          this.path = path
+          if (path.startsWith('/my-pizza-ges')) {
+            this.brand = 'MyPizzaGes'
+            this.isAdminPath = true
+          }
+          if (path.includes('my-pizza-ges/sessione')) this.isSessionPath = true
+          console.log('is sesssion path', this.isSessionPath)
+          console.log('PATH', path)
+          const i = this.links.findIndex(link => link.path === path.trim())
+          if (i) {
+            this.activeLink = this.links[i]
+            this.isHome = false
+          } else if (path !== '/') {
+            this.isHome = false
+          } else {
+            this.isHome = true
+          }
+          if (path.includes('my-pizza-ges')) this.isAdminPath = true
+          if (path.includes('my-pizza')) this.isLoginPath = true
+          console.log('path', path)
+          console.log('path', this.isAdminPath)
+          console.log('access denied', this.accessDenied)
+          console.log(this.isHome)
+          this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
+            if (isLoggedIn) {
+              console.log('session path', this.isSessionPath)
+              if (!socket.connected) {
 
-      this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
-        if (isLoggedIn) {
-          if (!socket.connected) {
-            this.authSvc.isWsAuthValidOrRefresh().subscribe(res => {
-              socket.connect()
-            })
-          } this.isLoggedIn = true
-          this.getProfile()
-          this.authSvc.isAdmin().subscribe(isAdmin => {
-            this.authSvc.adminSbj.next(isAdmin)
-            this.isAdmin = true
-          },
-            err => this.accessDenied = true
-          )
-        } else {
-          this.authSvc.isLoggedInQuery().subscribe(res => {
-            if (!socket.connected) {
-              this.authSvc.isWsAuthValidOrRefresh().subscribe(res => {
-                socket.connect()
-              })
+                if (!this.isSessionPath)
+                  this.authSvc.isWsAuthValidOrRefresh().subscribe(res => {
+                    socket.connect()
+                    socket.onReceiveMessage().subscribe(message => {
+                      this.count++
+                      setTimeout(() => {
+                        if (message.restore === false) {
+                          this.newMessage = {
+                            delete: false,
+                            add: true,
+                            message
+                          }
+                          console.log(this.newMessage)
+                        }
+                        this.messages.unshift(message)
+                        appRef.tick()
+                      }, 100)
+                      setTimeout(() => this.removeMessage(), 6000)
+
+                    })
+                  })
+                socket.restoreMessages().subscribe(ack => {
+                  console.log(ack)
+
+                })
+              }
+
+              this.isLoggedIn = true
+              this.showLogIn = false
+              this.getProfile()
+              this.authSvc.isAdmin().subscribe(isAdmin => {
+                this.authSvc.adminSbj.next(isAdmin)
+                this.isAdmin = true
+
+              },
+                err => this.accessDenied = true
+              )
+            } else {
+              this.authSvc.isLoggedInQuery().subscribe(res => {
+                if (!socket.connected) {
+                  this.authSvc.isWsAuthValidOrRefresh().subscribe(res => {
+                    socket.connect()
+                  })
+                }
+                this.showLogIn = false
+                this.isLoggedIn = res.loggedIn
+                this.authSvc.loggedInSbj.next(res.loggedIn)
+                this.authSvc.isAdmin().subscribe(isAdmin => {
+                  this.authSvc.adminSbj.next(isAdmin)
+                  this.accessDenied = true
+                })
+                this.getProfile()
+              },
+                err => {
+
+
+                })
             }
-            this.isLoggedIn = res.loggedIn
-            this.authSvc.loggedInSbj.next(res.loggedIn)
-            this.authSvc.isAdmin().subscribe(isAdmin => this.authSvc.adminSbj.next(isAdmin))
-            this.getProfile()
-          },
-            err => this.showLogIn = true)
+          })
         }
+
       })
+
     })
   }
+
+
+
+  protected isSessionPath: boolean = false
+
+  protected count: number = 0
+
+
+
+
+  protected removeMessage() {
+    if (this.newMessage) {
+      this.appRef.tick()
+      this.newMessage.delete = true
+      setTimeout(() => {
+        this.appRef.tick()
+        this.newMessage = undefined
+      }, 500)
+
+    }
+  }
+
+
+
+  protected newMessage: MessageMng | undefined = undefined
+
+  protected messages: Message[] = []
+
+  private path = ''
 
   protected brand: string = 'MyPizza'
 
   isLoginPath = false
 
-  protected showLogIn = false
+  protected showLogIn = true
 
   protected isLoggedIn = false
 
@@ -69,7 +167,10 @@ export class AppComponent {
   protected isAdmin = false
 
   protected logout(): void {
-    this.authSvc.logout().subscribe(res => this.isLoggedIn = false)
+    this.authSvc.logout().subscribe(res => {
+      this.isLoggedIn = false
+      location.href = location.href
+    })
   }
 
   protected get useClient(): boolean {
@@ -123,30 +224,7 @@ export class AppComponent {
   ngOnInit() {
 
     for (let i: number = 0; i < 3; i++) this.smMdLinks.push(this.links[i])
-    this.router.events.subscribe((event) => {
-      if (event instanceof RoutesRecognized) {
-        this.activeLink = this.links[0]
-        this.isHome = false
-        const path = event.url
-        if (path.startsWith('/my-pizza-ges')) this.brand = 'MyPizzaGes'
-        const i = this.links.findIndex(link => link.path === path.trim())
-        if (i) {
-          this.activeLink = this.links[i]
-          this.isHome = false
-        } else if (path !== '/') {
-          this.isHome = false
-        } else {
-          this.isHome = true
-        }
-        if (path.includes('my-pizza-ges')) this.isAdminPath = true
-        if (path.includes('my-pizza')) this.isLoginPath = true
-        console.log('path', path)
-        console.log('path', this.isAdminPath)
-        console.log('access denied', this.accessDenied)
-        console.log(this.isHome)
-      }
 
-    })
 
 
 

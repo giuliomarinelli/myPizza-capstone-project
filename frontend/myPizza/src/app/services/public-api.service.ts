@@ -4,6 +4,8 @@ import { environment } from '../../environments/environment.development';
 import { Observable, map } from 'rxjs';
 import { InternationalPrefix } from '../Models/i-international-prefix';
 import { CityAutocomplete } from '../Models/i-city-autocomplete';
+import { UUID, randomUUID } from 'crypto';
+import { AdminUserIdRes } from '../Models/i-user';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +26,12 @@ export class PublicApiService {
     let apiUrl = `${this.backendUrl}/public/city-autocomplete?q=${q}`
     if (limit) apiUrl += `&limit=${limit}`
     return this.http.get<CityAutocomplete[]>(apiUrl)
+  }
+
+  public getAdminUserId(): Observable<string> {
+    return this.http.get<AdminUserIdRes>(`${this.backendUrl}/api/user-profile/get-admin-userid`).pipe(map(res => {
+      return res.adminUserId
+    }))
   }
 
 }

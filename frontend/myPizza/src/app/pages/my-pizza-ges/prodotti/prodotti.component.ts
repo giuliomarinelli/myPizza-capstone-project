@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io-client';
-import { Component, ElementRef, HostListener, Inject, PLATFORM_ID, ViewChild, afterNextRender } from '@angular/core';
+import { ApplicationRef, Component, ElementRef, HostListener, Inject, PLATFORM_ID, ViewChild, afterNextRender } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { ProductService } from '../../../services/product.service';
 import { ViewportRuler } from '@angular/cdk/scrolling';
@@ -17,9 +17,10 @@ import { SocketService } from '../../../services/socket.service';
 })
 export class ProdottiComponent {
   constructor(private authSvc: AuthService, private productSvc: ProductService,
-    @Inject(PLATFORM_ID) private platformId: string, private socket: SocketService) {
+    @Inject(PLATFORM_ID) private platformId: string, private socket: SocketService, private appRef: ApplicationRef) {
 
     afterNextRender(() => {
+
 
       this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
         if (isLoggedIn && this._onlyOnce) {

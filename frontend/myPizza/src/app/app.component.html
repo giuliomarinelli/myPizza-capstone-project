@@ -1,4 +1,4 @@
-<app-access-denied *ngIf="accessDenied && isAdminPath"></app-access-denied>
+<app-access-denied *ngIf="!isAdmin && isAdminPath && isLoggedIn"></app-access-denied>
 <mat-sidenav-container class="sidenav-container text-white" (backdropClick)="close('backdrop')">
   <mat-sidenav #sidenav (keydown.escape)="close('escape')" class="main-menu-offcanvas dark">
     <aside>
@@ -58,11 +58,23 @@
           </div>
           <span class="spacer"></span>
           @if(isLoggedIn) {
-          <div class="text-white d-flex align-items-center gap-3">
-            <a href="#" (click)="logout()">Logout</a>
-            @if(userProfile) {<div class="avatar">
+            <div class="d-flex justify-content-center align-items-center gap-2">
+            @if(!isSessionPath) {
+            <button class="bell-size fake-btn bell">
+              <div class="position-relative text-white">
+                <i class="bi bi-bell-fill fs-icon"></i>
+                @if (messages.length > 0) {
+                <span class="position-absolute animated fs-sm top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {{messages.length}}
+                  <span class="visually-hidden"></span>
+                </span>
+              }
+              </div>
+            </button>
+          }
+            @if(userProfile) {<button (click)="logout()" class="avatar fake-btn">
               <img [src]="userProfile.profileImage" class="img-fluid">
-            </div>}
+            </button>}
           </div>
           } @else {
           <div class="d-none d-lg-flex align-items-center">
@@ -89,3 +101,16 @@
     </footer>
   </mat-sidenav-content>
 </mat-sidenav-container>
+@if(newMessage) {<div class="alert-notification">
+  <div class="fade-in alert alert-dismissible w-100 backdr" [ngClass]="{'fade-out': newMessage.delete === true, 'alert-success': count % 2 === 0, 'alert-primary': count % 2 !== 0}" role="alert">
+
+      <div>Da <strong>{{newMessage.message._from}}</strong></div>
+      <div>A <strong>{{newMessage.message._to}}</strong></div>
+      <div>{{newMessage.message.sentAt | date : 'dd/MM/y ore HH:mm:ss' }}</div>
+      <div>{{newMessage.message.message}}</div>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+        (click)="removeMessage()"></button>
+
+  </div>
+</div>
+}

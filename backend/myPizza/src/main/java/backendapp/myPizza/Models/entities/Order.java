@@ -45,22 +45,16 @@ public class Order {
 
     private double deliveryCost = 1.5;
 
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "orders")
+    private List<WorkSession> workSessions;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(mappedBy = "order")
-    private Command command;
 
     private boolean guest;
 
-    private String guestFirstName;
 
-    private String guestLastName;
-
-    private String guestPhoneNumber;
-
-    private String guestEmail;
 
 }

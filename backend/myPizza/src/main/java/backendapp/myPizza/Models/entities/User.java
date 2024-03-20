@@ -50,6 +50,9 @@ public class User implements UserDetails {
     private String messagingUsername;
 
     @JsonIgnore
+    private String guestEmail;
+
+    @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private List<Order> orders = new ArrayList<>();
 
@@ -67,6 +70,21 @@ public class User implements UserDetails {
 
     @JsonIgnore
     private List<UserScope> scope;
+
+    public static User generateGuestUser(String firstName, String lastName, String email, String phoneNumber) {
+        return new User(firstName, lastName, email, phoneNumber);
+    }
+
+    private User(String firstName, String lastName, String email, String phoneNumber) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.guestEmail = email;
+        this.phoneNumber = phoneNumber;
+        scope = List.of(UserScope.GUEST);
+        createdAt = System.currentTimeMillis();
+        lastUpdate = System.currentTimeMillis();
+        messagingUsername = firstName + " " + lastName + " (GUEST)";
+    }
 
     public User(String firstName, String lastName, String email, String hashPassword, String phoneNumber, Gender gender) {
         this.firstName = firstName;

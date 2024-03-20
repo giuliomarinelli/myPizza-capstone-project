@@ -1,4 +1,4 @@
-import { Product } from "./i-product"
+import { Product, ProductRef } from "./i-product"
 import { Address } from "./i-user"
 
 export interface OrderCheckModel {
@@ -25,7 +25,7 @@ export type GetOrderIdRes = Omit<OrderInitRes, 'status'>
 
 export interface OrderSet {
   id: string
-  product: Product
+  productRef: ProductRef
   quantity: number
 }
 

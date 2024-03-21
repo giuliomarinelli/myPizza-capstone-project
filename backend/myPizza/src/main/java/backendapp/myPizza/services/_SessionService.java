@@ -39,7 +39,7 @@ public class _SessionService {
         );
     }
 
-    public WorkSession startNewSession(StartSessionDTO startSessionDTO) {
+    public WorkSession startNewSession(StartSessionDTO startSessionDTO) throws BadRequestException {
         _sessionRp.saveAll(_sessionRp.findAll().stream().peek(s -> {
             if (s.isActive()) s.setActive(false);
         }).toList());
@@ -48,10 +48,10 @@ public class _SessionService {
         session.setActive(true);
         _sessionRp.save(session);
         List<TimeInterval> timeIntervals = TimeInterval.getTimeIntervals(startSessionDTO.openTime(), startSessionDTO.closeTime());
-        for (TimeInterval t : timeIntervals) {
-            t.getWorkSessions().add(session);
-        }
         timeIntervalRp.saveAll(timeIntervals);
+        for (TimeInterval ti : timeIntervals) {
+            session.getTimeIntervals().add(ti);
+        }
         return _sessionRp.save(session);
     }
 
@@ -78,4 +78,6 @@ public class _SessionService {
         _sessionRp.save(session);
         return new ConfirmRes("Order wid id ='" + orderId + "' correctly added to active working session", HttpStatus.OK);
     }
+
+
 }

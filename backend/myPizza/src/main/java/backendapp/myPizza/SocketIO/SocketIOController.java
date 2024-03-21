@@ -10,6 +10,7 @@ import backendapp.myPizza.SocketIO.services.SessionTrackingService;
 import backendapp.myPizza.SocketIO.services.SocketIOClientService;
 import backendapp.myPizza.repositories.UserRepository;
 import backendapp.myPizza.security.JwtUtils;
+import backendapp.myPizza.services._SessionService;
 import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
@@ -51,6 +52,9 @@ public class SocketIOController {
     @Autowired
     private MessageRepository messageRp;
 
+    @Autowired
+    private _SessionService _session;
+
     SocketIOController(SocketIOServer socketServer) {
         this.socketServer = socketServer;
 
@@ -64,6 +68,7 @@ public class SocketIOController {
          */
         this.socketServer.addEventListener("messageSendToUser", MessageDTO.class, onSendMessage);
         this.socketServer.addEventListener("restore_messages", RestoreMessageDTO.class, onRestoreMessage);
+        this.socketServer.addEventListener("restore_work_session", Object.class, onRestoreWorkSession);
     }
 
     private UUID getUserId(SocketIOClient client) {
@@ -173,6 +178,19 @@ public class SocketIOController {
              * After sending message to target user we can send acknowledge to sender
              */
             acknowledge.sendAckData("User " + recipientUser.getId() + " restored unread messages");
+        }
+    };
+
+    public DataListener<Object> onRestoreWorkSession = new DataListener<>() {
+        @Override
+        public void onData(SocketIOClient client, Object args, AckRequest acknowledge) throws Exception {
+
+            messageSvc.pushWorkSession();
+
+            /**
+             * After sending message to target user we can send acknowledge to sender
+             */
+            acknowledge.sendAckData("Restore work session ok");
         }
     };
 

@@ -30,7 +30,7 @@ public class SessionController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/start-new-session")
-    public WorkSession startNewSession(@RequestBody StartSessionDTO startSessionDTO) {
+    public WorkSession startNewSession(@RequestBody StartSessionDTO startSessionDTO) throws BadRequestException {
         return _sessionSvc.startNewSession(startSessionDTO);
     }
 }

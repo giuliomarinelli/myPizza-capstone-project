@@ -24,12 +24,8 @@ public class TimeInterval {
     @Setter(AccessLevel.NONE)
     private UUID id;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "time_intervals_work_sessions",
-            joinColumns = @JoinColumn(name = "time_interval_id"),
-            inverseJoinColumns = @JoinColumn(name = "work_order_id")
-    )
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "timeInterval")
     List<Order> orders = new ArrayList<>();
 
     private long startsAt;
@@ -38,7 +34,7 @@ public class TimeInterval {
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "timeIntervals")
-    private List<WorkSession> workSessions;
+    private List<WorkSession> workSessions = new ArrayList<>();
 
     private TimeInterval(long startsAt, long endsAt) {
         this.startsAt = startsAt;

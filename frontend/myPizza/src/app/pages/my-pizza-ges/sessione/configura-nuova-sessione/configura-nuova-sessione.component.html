@@ -1,0 +1,73 @@
+@if (isOk) {
+<div class="dark-design footer-bottom my-5 d-flex justify-content-center align-items-center">
+  <div class="my-pizza-card">
+    <p class="fs-3 text-accent">Sessione creata con successo</p>
+    <p>La sessione è stata creata con successo e i clienti potranno ordinare nelle seguenti fasce orarie:</p>
+    <ul>
+      @for(t of timeIntervals; track t) {
+        <li>{{t.startsAt | date : 'HH:mm'}}</li>
+      }
+    </ul>
+    <a routerLink="/my-pizza-ges/sessione" class="fs-3">Vai alla sessione</a>
+  </div>
+</div>
+}
+@else{<div class="dark-design footer-bottom mb-5">
+  <h1 class="h1 text-center text-accent mt-3 mb-4">Inizia una nuova sessione</h1>
+  <form (submit)="performSubmit()" [formGroup]="startSessionForm" class="w-768 row align-items-center"
+    data-bs-theme="dark">
+    <div class="col-12 col-sm-6"><label class="mb-2">Orario inizio ordini</label></div>
+    <div class="col col-sm-6 m-0 mb-sm-3 d-flex gap-4 form-group mb-4">
+      <select class="form-select date-w ù" onfocus='this.size=10;' onblur='this.size=1;'
+        onchange='this.size=1; this.blur();' formControlName="openH">
+        <option value="HH">(ore)</option>
+        @for(h of hours; track h) {
+        <option [value]="h" [innerHTML]="generateNumberValue(h)"></option>
+        }
+      </select>
+      <select class="form-select date-w" formControlName="openM">
+        <option value="MM">(min)</option>
+        @for(m of minutes; track m) {
+        <option [value]="m" [innerHTML]="generateNumberValue(m)"></option>
+        }
+      </select>
+    </div>
+    <div class="col-12 col-sm-6"><label class="mb-2">Orario termine ordini</label></div>
+    <div class="col col-sm-6 m-0 mb-sm-3 d-flex gap-4 form-group mb-4">
+      <select class="form-select date-w" formControlName="closeH">
+        <option value="HH">(ore)</option>
+        @for(h of hours; track h) {
+        <option [value]="h" [innerHTML]="generateNumberValue(h)"></option>
+        }
+      </select>
+      <select class="form-select date-w" formControlName="closeM">
+        <option value="MM">(min)</option>
+        @for(m of minutes; track m) {
+        <option [value]="m" [innerHTML]="generateNumberValue(m)"></option>
+        }
+      </select>
+    </div>
+    <div class="form-group col-12 offset-sm-3 col-sm-6 mb-4">
+      <select class="form-select" formControlName="type">
+        <option value="none">(seleziona il tipo)</option>
+        <option value="LUNCH">Pranzo</option>
+        <option value="DINNER">Cena</option>
+        <option value="OTHER">Altro</option>
+      </select>
+    </div>
+    <div class="form-group col-12 col-sm-6 mb-4">
+      <input type="number" class="form-control" placeholder="Numero cuochi al lavoro" formControlName="cookCount">
+    </div>
+    <div class="form-group col-12 col-sm-6 mb-4">
+      <input type="number" class="form-control" placeholder="Numero rider al lavoro" formControlName="ridersCount">
+    </div>
+    <p class="fs-3 text-accent">ATTENZIONE! se è già presente una sessione aperta, procedendo verrà automaticamente
+      chiusa!</p>
+    <div class="btn-set p-4 d-flex justify-content-center">
+      <button class="btn btn-primary btn-400 d-flex justify-content-center align-items-center gap-3">
+        <i class="bi bi-check-circle"></i>
+        <span>Inizia sessione</span>
+      </button>
+    </div>
+  </form>
+</div>}

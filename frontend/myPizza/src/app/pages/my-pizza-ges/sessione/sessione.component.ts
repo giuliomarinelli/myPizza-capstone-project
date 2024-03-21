@@ -31,7 +31,6 @@ export class SessioneComponent {
                 this.isThereAnActiveSession = res
                 if (res === true) {
                   this.setSocket()
-
                 } else {
                   ngZone.run(() => router.navigate(['my-pizza-ges/sessione/configura-nuova-sessione']))
                 }

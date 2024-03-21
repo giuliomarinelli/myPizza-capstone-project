@@ -2,6 +2,7 @@ package backendapp.myPizza.Models.entities;
 
 import backendapp.myPizza.Models.enums.OrderStatus;
 import backendapp.myPizza.SocketIO.entities.Message;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,7 +37,7 @@ public class Order {
     private long deliveryTime;
 
     private boolean asap;
-
+    @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "order")
     private List<Message> messages;
 
@@ -45,8 +46,10 @@ public class Order {
 
     private double deliveryCost = 1.5;
 
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "orders")
-    private List<TimeInterval> timeIntervals;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "time_interval_id")
+    private TimeInterval timeInterval;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")

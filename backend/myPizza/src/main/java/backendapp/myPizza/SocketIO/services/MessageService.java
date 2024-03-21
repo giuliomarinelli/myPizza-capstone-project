@@ -47,7 +47,6 @@ public class MessageService {
         if (sessionSvc.isOnLine(recipientUserId)) {
             List<Message> messages = messageRp.findAllUnreadMessagesByRecipientUserId(recipientUserId);
             messages = messages.stream().peek(m -> {
-                m.setWasUserOnLine(true);
                 m.setRestore(true);
             }).toList();
             messageRp.saveAll(messages);

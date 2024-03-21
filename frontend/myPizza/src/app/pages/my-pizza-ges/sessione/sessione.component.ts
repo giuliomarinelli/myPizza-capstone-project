@@ -1,8 +1,11 @@
-import { ApplicationRef, Component, Inject, PLATFORM_ID, afterNextRender } from '@angular/core';
+import { IsThereAnActiveSessionRes } from './../../../Models/i_session';
+import { ApplicationRef, Component, Inject, NgZone, PLATFORM_ID, afterNextRender } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { ProductService } from '../../../services/product.service';
 import { SocketService } from '../../../services/socket.service';
 import { Message, MessageMng } from '../../../Models/i-message';
+import { SessionService } from '../../../services/session.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -13,15 +16,26 @@ import { Message, MessageMng } from '../../../Models/i-message';
 export class SessioneComponent {
 
   constructor(private authSvc: AuthService, private productSvc: ProductService,
-    @Inject(PLATFORM_ID) private platformId: string, private socket: SocketService, private appRef: ApplicationRef) {
+    @Inject(PLATFORM_ID) private platformId: string, private socket: SocketService,
+     private appRef: ApplicationRef, private _session: SessionService, private router: Router,
+    private ngZone: NgZone ) {
 
     afterNextRender(() => {
-      this.setSocket()
+
       this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
-        if (isLoggedIn && this.onlyOnce) {
+        if (isLoggedIn) {
           this.authSvc.isAdmin$.subscribe(isAdmin => {
             if (isAdmin) {
+              _session.isThereAnActiveSession().subscribe(res => {
+                console.log('sess', res)
+                this.isThereAnActiveSession = res
+                if (res === true) {
+                  this.setSocket()
 
+                } else {
+                  ngZone.run(() => router.navigate(['my-pizza-ges/sessione/configura-nuova-sessione']))
+                }
+              })
 
               console.log('accesso admin concesso')
               this.isAdmin = true
@@ -36,6 +50,8 @@ export class SessioneComponent {
 
     })
   }
+
+  protected isThereAnActiveSession!: boolean
 
   private onlyOnce: boolean = true
 

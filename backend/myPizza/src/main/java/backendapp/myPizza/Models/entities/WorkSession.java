@@ -32,14 +32,6 @@ public class WorkSession {
     private List<TimeInterval> timeIntervals = new ArrayList<>();
 
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "work_sessions_orders",
-            joinColumns = @JoinColumn(name = "work_session_id"),
-            inverseJoinColumns = @JoinColumn(name = "order_id")
-    )
-    private List<Order> orders = new ArrayList<>();
-
     private boolean active;
 
     @Enumerated(EnumType.STRING)

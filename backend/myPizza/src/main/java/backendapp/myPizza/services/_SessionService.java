@@ -1,12 +1,14 @@
 package backendapp.myPizza.services;
 
 import backendapp.myPizza.Models.entities.Order;
+import backendapp.myPizza.Models.entities.TimeInterval;
 import backendapp.myPizza.Models.entities.WorkSession;
 import backendapp.myPizza.Models.enums.OrderStatus;
 import backendapp.myPizza.Models.reqDTO.StartSessionDTO;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.repositories.OrderRepository;
+import backendapp.myPizza.repositories.TimeIntervalRepository;
 import backendapp.myPizza.repositories.WorkSessionRepository;
 import jakarta.mail.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,8 @@ import java.util.UUID;
 
 @Service
 public class _SessionService {
+    @Autowired
+    TimeIntervalRepository timeIntervalRp;
 
     @Autowired
     private OrderRepository orderRp;
@@ -42,6 +46,12 @@ public class _SessionService {
         WorkSession session = new WorkSession(startSessionDTO.type(), startSessionDTO.openTime(), startSessionDTO.closeTime(),
                 startSessionDTO.cookCount(), startSessionDTO.ridersCount());
         session.setActive(true);
+        _sessionRp.save(session);
+        List<TimeInterval> timeIntervals = TimeInterval.getTimeIntervals(startSessionDTO.openTime(), startSessionDTO.closeTime());
+        for (TimeInterval t : timeIntervals) {
+            t.getWorkSessions().add(session);
+        }
+        timeIntervalRp.saveAll(timeIntervals);
         return _sessionRp.save(session);
     }
 
@@ -52,13 +62,19 @@ public class _SessionService {
         return new ConfirmRes("Working session with id='" + session.getId() + "' successfully closed", HttpStatus.OK);
     }
 
-    public ConfirmRes addOrderToActiveSession(UUID orderId) throws BadRequestException {
+    public ConfirmRes addOrderToActiveSession(UUID orderId, UUID timeIntervalId) throws BadRequestException {
         Order order = orderRp.findById(orderId).orElseThrow(
                 () -> new BadRequestException("Order wid id =" + orderId + "' doesn't exist")
         );
         WorkSession session = getActiveSession();
+        TimeInterval timeInterval = session.getTimeIntervals().stream().filter(ti -> ti.getId().equals(timeIntervalId))
+                        .findFirst().orElseThrow(
+                        () -> new BadRequestException("Time interval with id='" + timeIntervalId + "' doesn't " +
+                                "exist in order with id='" + orderId + "'")
+                );
+        timeInterval.getOrders().add(order);
+        timeIntervalRp.save(timeInterval);
         order.setStatus(OrderStatus.ACCEPTED);
-        session.getOrders().add(order);
         _sessionRp.save(session);
         return new ConfirmRes("Order wid id ='" + orderId + "' correctly added to active working session", HttpStatus.OK);
     }

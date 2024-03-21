@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.time.*;
 import java.time.temporal.ChronoUnit;
@@ -23,6 +24,13 @@ public class TimeInterval {
     @Setter(AccessLevel.NONE)
     private UUID id;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "time_intervals_work_sessions",
+            joinColumns = @JoinColumn(name = "time_interval_id"),
+            inverseJoinColumns = @JoinColumn(name = "work_order_id")
+    )
+    List<Order> orders = new ArrayList<>();
 
     private long startsAt;
 

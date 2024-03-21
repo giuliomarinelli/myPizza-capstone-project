@@ -46,7 +46,7 @@ public class Order {
     private double deliveryCost = 1.5;
 
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "orders")
-    private List<WorkSession> workSessions;
+    private List<TimeInterval> timeIntervals;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")

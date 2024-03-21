@@ -48,30 +48,46 @@
             <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
 
           </nav>
-          <div ngClass="d-none d-sm-block d-md-none" mat-tab-nav-bar [backgroundColor]="background"
+          <nav ngClass="d-none d-mbsm-block d-mbsm-none" mat-tab-nav-bar [backgroundColor]="background"
+            [tabPanel]="tabPanel1" mat-stretch-tabs="false" class="fit-content">
+            @for (link of mbSmLinks; track link) {
+            <a mat-tab-link [routerLink]="link.path" [active]="activeLink === link"> {{link.name}} </a>
+            }
+            <mat-tab-nav-panel #tabPanel1></mat-tab-nav-panel>
+          </nav>
+          <nav ngClass="d-none d-mbsm-block d-smmd-none" mat-tab-nav-bar [backgroundColor]="background"
+            [tabPanel]="tabPanel1" mat-stretch-tabs="false" class="fit-content">
+            @for (link of mbSmLinks; track link) {
+            <a mat-tab-link [routerLink]="link.path" [active]="activeLink === link"> {{link.name}} </a>
+            }
+            <mat-tab-nav-panel #tabPanel1></mat-tab-nav-panel>
+
+          </nav>
+          <nav ngClass="d-none d-smmd-block d-md-none" mat-tab-nav-bar [backgroundColor]="background"
             [tabPanel]="tabPanel1" mat-stretch-tabs="false" class="fit-content">
             @for (link of smMdLinks; track link) {
             <a mat-tab-link [routerLink]="link.path" [active]="activeLink === link"> {{link.name}} </a>
             }
             <mat-tab-nav-panel #tabPanel1></mat-tab-nav-panel>
 
-          </div>
+          </nav>
           <span class="spacer"></span>
           @if(isLoggedIn) {
-            <div class="d-flex justify-content-center align-items-center gap-2">
+          <div class="d-flex justify-content-center align-items-center gap-2">
             @if(!isSessionPath) {
             <button class="bell-size fake-btn bell">
               <div class="position-relative text-white">
                 <i class="bi bi-bell-fill fs-icon"></i>
                 @if (messages.length > 0) {
-                <span class="position-absolute animated fs-sm top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                <span
+                  class="position-absolute animated fs-sm top-0 start-100 translate-middle badge rounded-pill bg-danger">
                   {{messages.length}}
                   <span class="visually-hidden"></span>
                 </span>
-              }
+                }
               </div>
             </button>
-          }
+            }
             @if(userProfile) {<button (click)="logout()" class="avatar fake-btn">
               <img [src]="userProfile.profileImage" class="img-fluid">
             </button>}
@@ -102,15 +118,18 @@
   </mat-sidenav-content>
 </mat-sidenav-container>
 @if(newMessage) {<div class="alert-notification">
-  <div class="fade-in alert alert-dismissible w-100 backdr" [ngClass]="{'fade-out': newMessage.delete === true, 'alert-success': count % 2 === 0, 'alert-primary': count % 2 !== 0}" role="alert">
+  <div class="fade-in alert alert-dismissible w-100 backdr"
+    [ngClass]="{'fade-out': newMessage.delete === true, 'alert-success': count % 2 === 0, 'alert-primary': count % 2 !== 0}"
+    role="alert">
 
-      <div>Da <strong>{{newMessage.message._from}}</strong></div>
-      <div>A <strong>{{newMessage.message._to}}</strong></div>
-      <div>{{newMessage.message.sentAt | date : 'dd/MM/y ore HH:mm:ss' }}</div>
-      <div>{{newMessage.message.message}}</div>
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
-        (click)="removeMessage()"></button>
+    <div>Da <strong>{{newMessage.message._from}}</strong></div>
+    <div>A <strong>{{newMessage.message._to}}</strong></div>
+    <div>{{newMessage.message.sentAt | date : 'dd/MM/y ore HH:mm:ss' }}</div>
+    <div>{{newMessage.message.message}}</div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+      (click)="removeMessage()"></button>
 
   </div>
 </div>
 }
+<app-route-config [links]="links" (onRouteConfig)="handleRouteConfig($event)"></app-route-config>

@@ -1,3 +1,4 @@
+import { DeliveryTimeRes } from './../../../Models/i_session';
 import { OrderSet } from './../../../Models/i-order';
 import { Component, afterNextRender } from '@angular/core';
 import { OrderService } from '../../../services/order.service';
@@ -6,6 +7,7 @@ import { Address } from '../../../Models/i-user';
 import { SocketService } from '../../../services/socket.service';
 import { PublicApiService } from '../../../services/public-api.service';
 import { SessionService } from '../../../services/session.service';
+import { FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'main#checkout',
@@ -14,7 +16,7 @@ import { SessionService } from '../../../services/session.service';
 })
 export class CheckoutComponent {
 
-  constructor(private orderSvc: OrderService, private authSvc: AuthService,
+  constructor(private orderSvc: OrderService, private authSvc: AuthService, private fb: FormBuilder,
     private socket: SocketService, private publicApi: PublicApiService, private _session: SessionService) {
 
     afterNextRender(() => {
@@ -22,6 +24,7 @@ export class CheckoutComponent {
         this.isThereAnActiveSession = res
         this.res = true
         this.isLoading = false
+        this._session.getDeliveryTimes().subscribe(res => this.deliveryTimes = res.deliveryTimes)
       })
       publicApi.getAdminUserId().subscribe(res => this.adminUserId = res)
       authSvc.isLoggedIn$.subscribe(res => {
@@ -44,6 +47,15 @@ export class CheckoutComponent {
       })
     })
   }
+
+  protected deliveryTimes: number[] = []
+  protected checkoutForm = this.fb.group({
+  deliveryTime: this.fb.control(this.deliveryTimes[0] || null),
+  asap: this.fb.control(false)
+  })
+
+  protected selectedTime!: number
+
 
   protected res = false
 

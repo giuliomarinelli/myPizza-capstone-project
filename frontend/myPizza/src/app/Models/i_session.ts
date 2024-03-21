@@ -24,3 +24,7 @@ export interface _Session {
   active: boolean
 
 }
+
+export interface DeliveryTimeRes {
+  deliveryTimes: number[]
+}

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,6 +29,12 @@ public class _SessionService {
 
     @Autowired
     private WorkSessionRepository _sessionRp;
+
+    public List<Long> getActiveSessionDeliveryTimes() {
+        List<Long> list = new ArrayList<>(_sessionRp.getActiveSessionTimeIntervals().stream().map(TimeInterval::getStartsAt).toList());
+        list.add(_sessionRp.getActiveSessionTimeIntervals().stream().map(TimeInterval::getEndsAt).toList().getLast());
+        return list;
+    }
 
     public boolean isThereAnActiveSession() {
         return _sessionRp.findAll().stream().anyMatch(WorkSession::isActive);

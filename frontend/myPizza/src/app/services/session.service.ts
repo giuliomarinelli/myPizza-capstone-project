@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { Observable, map } from 'rxjs';
-import { IsThereAnActiveSessionRes, StartSessionDTO, _Session } from '../Models/i_session';
+import { DeliveryTimeRes, IsThereAnActiveSessionRes, StartSessionDTO, _Session } from '../Models/i_session';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +20,10 @@ export class SessionService {
 
   public startNewSession(startSessionDTO: StartSessionDTO): Observable<_Session> {
     return this.http.post<_Session>(`${this.backendUrl}/api/work-session/start-new-session`, startSessionDTO, { withCredentials: true })
+  }
+
+  public getDeliveryTimes(): Observable<DeliveryTimeRes> {
+    return this.http.get<DeliveryTimeRes>(`${this.backendUrl}/api/work-session/get-delivery-times`)
   }
 
 }

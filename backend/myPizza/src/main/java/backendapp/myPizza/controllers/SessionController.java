@@ -2,6 +2,7 @@ package backendapp.myPizza.controllers;
 
 import backendapp.myPizza.Models.entities.WorkSession;
 import backendapp.myPizza.Models.reqDTO.StartSessionDTO;
+import backendapp.myPizza.Models.resDTO.DeliveryTimeRes;
 import backendapp.myPizza.Models.resDTO.IsThereAnActiveSessionRes;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.services._SessionService;
@@ -32,5 +33,10 @@ public class SessionController {
     @PostMapping("/start-new-session")
     public WorkSession startNewSession(@RequestBody StartSessionDTO startSessionDTO) throws BadRequestException {
         return _sessionSvc.startNewSession(startSessionDTO);
+    }
+
+    @GetMapping("/get-delivery-times")
+    public DeliveryTimeRes getDeliveryTimes() {
+        return new DeliveryTimeRes(_sessionSvc.getActiveSessionDeliveryTimes());
     }
 }

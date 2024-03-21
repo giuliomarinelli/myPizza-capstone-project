@@ -9,6 +9,7 @@ import { User } from './Models/i-user';
 import { SocketService } from './services/socket.service';
 import { Message, MessageMng } from './Models/i-message';
 import { application } from 'express';
+import { Order } from './Models/i-order';
 
 @Component({
   selector: '#root',
@@ -103,6 +104,22 @@ export class AppComponent {
 
 
 
+  }
+
+  protected orderToString(order: Order): string {
+    let str: string = `<h6><strong>Ordine ${order.id}: </strong></h6><p>`
+    let c = 0
+    order.orderSets.forEach((os, i) => {
+      if (i === 0) str += '<p><em>'
+      if (i < 3) {
+        str += `${os.quantity} x ${os.productRef.name}`
+        if (i < 2 && i < order.orderSets.length - 1) str += ', '
+      }
+      if (i === 2 && i < order.orderSets.length - 1)
+        str += '...'
+    })
+    str += '</em></p>'
+    return str
   }
 
   protected handleRouteConfig(c: iRouteConfig): void {

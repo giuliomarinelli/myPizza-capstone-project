@@ -43,6 +43,9 @@ public class OrderService {
     @Autowired
     private ProductRefRepository productRefRp;
 
+    @Autowired
+    private _SessionService _session;
+
 
     public OrderInitRes orderInit(OrderInitDTO orderInitDTO) throws BadRequestException {
         Order order = new Order();
@@ -103,9 +106,10 @@ public class OrderService {
         Order order = orderRp.findById(orderId).orElseThrow(
                 () -> new BadRequestException("Order you're trying to send doesn't exist")
         );
-        if (!order.getStatus().equals(OrderStatus.INIT)) throw new BadRequestException("An order must have INIT status to be sent");
+        if (!order.getStatus().equals(OrderStatus.INIT))
+            throw new BadRequestException("An order must have INIT status to be sent");
         order.setStatus(OrderStatus.PENDING);
-        orderRp.save(order);
+
         return new ConfirmRes("Order with id='" + orderId + " confirmed successfully", HttpStatus.OK);
     }
 
@@ -113,13 +117,12 @@ public class OrderService {
         Order order = orderRp.findById(orderId).orElseThrow(
                 () -> new BadRequestException("Order you're trying to reject doesn't exist")
         );
-        if (!order.getStatus().equals(OrderStatus.PENDING)) throw new BadRequestException("An order must have PENDING status to be confirmed or rejected");
+        if (!order.getStatus().equals(OrderStatus.PENDING))
+            throw new BadRequestException("An order must have PENDING status to be confirmed or rejected");
         order.setStatus(OrderStatus.PENDING);
         orderRp.save(order);
         return new ConfirmRes("Order with id='" + orderId + " rejected", HttpStatus.OK);
     }
-
-
 
 
 }

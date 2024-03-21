@@ -126,6 +126,10 @@
     <div>A <strong>{{newMessage.message._to}}</strong></div>
     <div>{{newMessage.message.sentAt | date : 'dd/MM/y ore HH:mm:ss' }}</div>
     <div>{{newMessage.message.message}}</div>
+    @if(newMessage.message.order)
+    {
+    <div [innerHTML]="orderToString(newMessage.message.order)"></div>
+    }
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
       (click)="removeMessage()"></button>
 

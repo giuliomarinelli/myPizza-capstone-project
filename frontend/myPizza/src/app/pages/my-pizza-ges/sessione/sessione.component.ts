@@ -1,4 +1,4 @@
-import { IsThereAnActiveSessionRes } from './../../../Models/i_session';
+import { IsThereAnActiveSessionRes, _Session } from './../../../Models/i_session';
 import { ApplicationRef, Component, Inject, NgZone, PLATFORM_ID, afterNextRender } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { ProductService } from '../../../services/product.service';
@@ -32,7 +32,7 @@ export class SessioneComponent {
                 if (res === true) {
                   this.setSocket()
                 } else {
-                  ngZone.run(() => router.navigate(['my-pizza-ges/sessione/configura-nuova-sessione']))
+                   ngZone.run(() => router.navigate(['my-pizza-ges/sessione/configura-nuova-sessione']))
                 }
               })
 
@@ -60,9 +60,17 @@ export class SessioneComponent {
 
   protected realTimeMessages: MessageMng[] = []
 
+  protected __session!: _Session
+
   private setSocket(): void {
     if (!this.onlyOnce) return
     this.onlyOnce = false
+
+    this.socket.OnActiveSessionChange().subscribe(sess => {
+      this.socket.restoreWorkSession().subscribe(ack => console.log(ack))
+      this.__session = sess
+      console.log('session changed')
+    })
     this.socket.onReceiveMessage().subscribe(res => {
 
 

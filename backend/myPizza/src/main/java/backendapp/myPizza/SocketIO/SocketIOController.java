@@ -1,5 +1,6 @@
 package backendapp.myPizza.SocketIO;
 
+import backendapp.myPizza.Models.entities.Order;
 import backendapp.myPizza.Models.entities.User;
 import backendapp.myPizza.SocketIO.DTO.MessageDTO;
 import backendapp.myPizza.SocketIO.DTO.RestoreMessageDTO;
@@ -8,6 +9,7 @@ import backendapp.myPizza.SocketIO.repositories.MessageRepository;
 import backendapp.myPizza.SocketIO.services.MessageService;
 import backendapp.myPizza.SocketIO.services.SessionTrackingService;
 import backendapp.myPizza.SocketIO.services.SocketIOClientService;
+import backendapp.myPizza.repositories.OrderRepository;
 import backendapp.myPizza.repositories.UserRepository;
 import backendapp.myPizza.security.JwtUtils;
 import backendapp.myPizza.services._SessionService;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -53,7 +56,7 @@ public class SocketIOController {
     private MessageRepository messageRp;
 
     @Autowired
-    private _SessionService _session;
+    private OrderRepository orderRp;
 
     SocketIOController(SocketIOServer socketServer) {
         this.socketServer = socketServer;
@@ -140,9 +143,15 @@ public class SocketIOController {
 
             log.info(senderUser.getId() + " " + recipientUser.getId());
 
-            Message message = new Message(senderUser, recipientUser, messageDTO.order(), messageDTO.message(), isRecipientUserOnLine);
 
-            client.sendEvent("auto_message", "ciao");
+            Order order = orderRp.findById(messageDTO.orderId()).orElse(null);
+
+
+
+
+            Message message = new Message(senderUser, recipientUser, order, messageDTO.message(), isRecipientUserOnLine);
+
+
 
 
             messageRp.save(message);

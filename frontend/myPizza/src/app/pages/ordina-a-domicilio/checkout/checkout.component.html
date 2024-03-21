@@ -1,3 +1,4 @@
+ @if(isThereAnActiveSession) {
 <h1 class="h1 text-center text-accent mt-4 d-block">
   Checkout Ordine
 </h1>
@@ -45,4 +46,13 @@
     <button class="btn btn-primary w-100" (click)="sendOrder()">Invia</button>
   </div>
 </ng-container>
+} @else if (res) {
+  <section class="d-flex justify-content-center align-items-center footer-bottom dark-design">
+    <div class="my-pizza-card w-75">
+      <p class="fs-3 text-accent">
+        Al momento non è possibile fare ordini perché il ristorante non li sta gestendo, riprova più tardi, guarda i nostri orari oppure contattaci
+      </p>
+    </div>
+  </section>
+}
 <app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>

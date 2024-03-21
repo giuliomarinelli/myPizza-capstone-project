@@ -5,6 +5,7 @@ import { AuthService } from '../../../services/auth.service';
 import { Address } from '../../../Models/i-user';
 import { SocketService } from '../../../services/socket.service';
 import { PublicApiService } from '../../../services/public-api.service';
+import { SessionService } from '../../../services/session.service';
 
 @Component({
   selector: 'main#checkout',
@@ -14,9 +15,14 @@ import { PublicApiService } from '../../../services/public-api.service';
 export class CheckoutComponent {
 
   constructor(private orderSvc: OrderService, private authSvc: AuthService,
-     private socket: SocketService, private publicApi: PublicApiService) {
+    private socket: SocketService, private publicApi: PublicApiService, private _session: SessionService) {
 
     afterNextRender(() => {
+      _session.isThereAnActiveSession().subscribe(res => {
+        this.isThereAnActiveSession = res
+        this.res = true
+        this.isLoading = false
+      })
       publicApi.getAdminUserId().subscribe(res => this.adminUserId = res)
       authSvc.isLoggedIn$.subscribe(res => {
         this.isGuest = !res
@@ -39,6 +45,10 @@ export class CheckoutComponent {
     })
   }
 
+  protected res = false
+
+  protected isThereAnActiveSession!: boolean
+
   private adminUserId!: string
 
   protected isLoading: boolean = true
@@ -58,9 +68,11 @@ export class CheckoutComponent {
   protected deliveryCost: number = 0
 
   protected sendOrder(): void {
+    console.log(this.orderId)
     this.socket.sendMessage({
       recipientUserId: this.adminUserId,
-      message: 'Nuovo ordine'
+      message: 'Nuova richiesta di ordine inviata',
+      orderId: this.orderId
     }).subscribe(ack => console.log(ack))
   }
 

@@ -18,25 +18,26 @@ export class SessioneComponent {
 
   constructor(private authSvc: AuthService, private productSvc: ProductService,
     @Inject(PLATFORM_ID) private platformId: string, private socket: SocketService,
-     private appRef: ApplicationRef, private _session: SessionService, private router: Router,
-    private ngZone: NgZone ) {
+    private appRef: ApplicationRef, private _session: SessionService, private router: Router,
+    private ngZone: NgZone) {
 
     afterNextRender(() => {
+
 
       this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
         if (isLoggedIn) {
           this.authSvc.isAdmin$.subscribe(isAdmin => {
             if (isAdmin) {
 
+
+
               this.res = true
+
               _session.isThereAnActiveSession().subscribe(res => {
                 console.log('sess', res)
                 this.isThereAnActiveSession = res
-                if (res === true) {
-                  this.setSocket()
-                } else {
-                   ngZone.run(() => router.navigate(['my-pizza-ges/sessione/configura-nuova-sessione']))
-                }
+                if (!res) ngZone.run(() => router.navigate(['my-pizza-ges/sessione/configura-nuova-sessione']))
+
               })
 
               console.log('accesso admin concesso')
@@ -49,6 +50,47 @@ export class SessioneComponent {
           })
         } else (console.log('accesso negato: non loggato'))
       })
+
+    })
+  }
+
+  ngAfterContentInit() {
+    this.socket.restoreWorkSession().subscribe(ack => {
+      console.log(ack)
+    })
+    this.socket.OnActiveSessionChange().subscribe(sess => {
+      this.__session = sess
+      console.log(sess)
+    })
+
+
+
+    this.socket.onReceiveMessage().subscribe(res => {
+      this.isLoading = false
+      this.realTimeMessages.unshift({
+
+        message: res,
+        add: true,
+        delete: false
+      })
+
+      this.appRef.tick()
+    })
+  }
+
+  protected finalizeOrder(orderId: string, act: string): void {
+    switch (act) {
+      case 'CONFIRM':
+      case 'DELETE':
+        break
+      default: return
+    }
+    this.ngZone.run(() => {
+      this.appRef.tick()
+      this.router.navigate(
+        ['my-pizza-ges/sessione/finalizza-ordine'],
+        { queryParams: { order_id: orderId, act } }
+      )
 
     })
   }
@@ -89,27 +131,6 @@ export class SessioneComponent {
     return (order.orderSets.map(os => os.productRef.price).reduce((c, p) => c + p) + order.deliveryCost).toFixed(2) + '€'
   }
 
-  private setSocket(): void {
-    if (!this.onlyOnce) return
-    this.onlyOnce = false
-    this.socket.restoreWorkSession().subscribe(ack => console.log(ack))
-    this.socket.OnActiveSessionChange().subscribe(sess => {
-      this.__session = sess
-      console.log(sess)
-    })
-    this.socket.onReceiveMessage().subscribe(res => {
-      this.isLoading = false
-
-      this.realTimeMessages.unshift({
-
-        message: res,
-        add: true,
-        delete: false
-      })
-
-      this.appRef.tick()
-    })
-  }
 
 
   protected removeMessage(i: number) {

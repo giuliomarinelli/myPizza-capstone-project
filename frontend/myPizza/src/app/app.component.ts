@@ -134,6 +134,7 @@ export class AppComponent {
     return str
   }
 
+
   protected handleRouteConfig(c: iRouteConfig): void {
     console.log(c)
     this.isHome = c.isHome

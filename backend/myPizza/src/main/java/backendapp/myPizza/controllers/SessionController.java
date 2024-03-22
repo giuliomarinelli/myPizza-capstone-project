@@ -40,7 +40,7 @@ public class SessionController {
     public DeliveryTimeRes getDeliveryTimes() {
         return new DeliveryTimeRes(_sessionSvc.getActiveSessionDeliveryTimes());
     }
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/get-active-session-time-intervals")
     public TimeIntervalsRes getActiveSessionTimeIntervals() {
         return new TimeIntervalsRes(_sessionSvc.getActiveSessionTimeIntervals());

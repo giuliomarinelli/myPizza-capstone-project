@@ -9,6 +9,8 @@ import backendapp.myPizza.Models.resDTO.AdminUserIdRes;
 import backendapp.myPizza.Models.resDTO.AuthoritiesRes;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.Models.resDTO.IsLoggedInRes;
+import backendapp.myPizza.SocketIO.entities.Message;
+import backendapp.myPizza.SocketIO.services.MessageService;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.exceptions.NotFoundException;
 import backendapp.myPizza.exceptions.UnauthorizedException;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/user-profile")
@@ -24,6 +27,9 @@ public class ProfileController {
 
     @Autowired
     private ProfileService profileSvc;
+
+    @Autowired
+    private MessageService messageSvc;
 
     @GetMapping("")
     public User get() throws UnauthorizedException {
@@ -69,4 +75,12 @@ public class ProfileController {
     public AdminUserIdRes getAdminUserId() throws NotFoundException {
         return profileSvc.getAdminUserId();
     }
+
+    // MESSAGES
+
+    @GetMapping("/message/{id}/set-read")
+    public Message setMessageRead(@PathVariable UUID id) throws NotFoundException, UnauthorizedException {
+        return messageSvc.setMessageAsReadById(id);
+    }
+
 }

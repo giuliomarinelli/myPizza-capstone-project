@@ -29,10 +29,6 @@ public class Product extends MenuItem {
     )
     private List<Topping> toppings = new ArrayList<>();
 
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "product")
-    private List<OrderSet> orderSets = new ArrayList<>();
-
     private double basePrice;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -41,9 +37,6 @@ public class Product extends MenuItem {
 
     private long createdAt;
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "product")
-    private Task task;
 
     @Transient
     private double price;

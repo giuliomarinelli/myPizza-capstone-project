@@ -1,3 +1,4 @@
+@if(isThereAnActiveSession && !sent) {
 <h1 class="h1 text-center text-accent mt-4 d-block">
   Checkout Ordine
 </h1>
@@ -10,8 +11,8 @@
     @if(orderSets) {
     @for(o of orderSets; track o) {
     <div class="row align-items-center text-mp-primary">
-      <div class="col"><em>{{o.product.name}}</em></div>
-      <div class="col">{{o.product.price.toFixed(2)}}€</div>
+      <div class="col"><em>{{o.productRef.name}}</em></div>
+      <div class="col">{{o.productRef.price.toFixed(2)}}€</div>
       <div class="col">Quantità: {{o.quantity}}</div>
     </div>
     }
@@ -40,9 +41,47 @@
     }
   </div>
 </section>
+<form [formGroup]="checkoutForm" class="bg-dark" data-bs-theme="dark">
+  <div class="container-md px-5 py-2">
+    <h3 class="h4 text-accent mb-3">
+      Seleziona un orario per la consegna
+    </h3>
+    <select class="form-select max-w-s mb-3" formControlName="deliveryTime">
+      <option [value]="0">(orario)</option>
+      @for(t of deliveryTimes; track t){
+      <option [value]="t">{{t | date : 'HH:mm'}}</option>
+      }
+    </select>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="asap">
+      <label class="form-check-label" for="asap">
+        Consegna prima possibile se si può
+      </label>
+    </div>
+  </div>
+</form>
 <ng-container class="dark-design">
   <div class="btn-set p-5">
-    <button class="btn btn-primary w-100" (click)="sendOrder()">Invia</button>
+    <button class="btn btn-primary w-100" [disabled]="selectDisabled" (click)="sendOrder()">Invia</button>
   </div>
 </ng-container>
+} @else if (!isThereAnActiveSession && res) {
+<section class="d-flex justify-content-center align-items-center footer-bottom dark-design">
+  <div class="my-pizza-card w-75">
+    <p class="fs-3 text-accent">
+      Al momento non è possibile fare ordini perché il ristorante non li sta gestendo, riprova più tardi, guarda i
+      nostri orari oppure contattaci
+    </p>
+  </div>
+</section>
+} @else if(isThereAnActiveSession && sent) {
+  <main class="footer-bottom d-flex justify-content-center align-items-center dark-design">
+    <section class="my-pizza-card p-4">
+      <h2 class="h2 text-accent mb-3">
+        Ordine inviato con successo
+      </h2>
+      <p class="text-white">Il tuo ordine è stato preso in carico dal nostro staff che ha già ricevuto una notifica istantanea e al più presto ti invierà una risposta di conferma</p>
+    </section>
+  </main>
+}
 <app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>

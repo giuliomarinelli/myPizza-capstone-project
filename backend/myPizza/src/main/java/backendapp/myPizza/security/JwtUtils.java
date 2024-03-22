@@ -169,12 +169,12 @@ public class JwtUtils {
                 .compact();
     }
 
-    public String generateGuestWsAccessToken() {
+    public String generateGuestWsAccessToken(UUID guestUserId) {
 
         return Jwts.builder()
                 .issuer("MyPizza")
                 .claim("typ", "JWT WS_ACCESS TOKEN")
-                .subject(UUID.randomUUID().toString())
+                .subject(guestUserId.toString())
                 .claim("scope", "GUEST")
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + wsAccessExp))
@@ -183,89 +183,109 @@ public class JwtUtils {
     }
 
 
-public UUID extractUserIdFromAccessToken(String accessToken) throws UnauthorizedException {
+    public UUID extractUserIdFromAccessToken(String accessToken) throws UnauthorizedException {
 
-    try {
-        return UUID.fromString(Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(accessSecret.getBytes()))
-                .build()
-                .parseSignedClaims(accessToken)
-                .getPayload()
-                .getSubject());
-    } catch (Exception e) {
-        throw new UnauthorizedException("Invalid access token");
-    }
+        try {
+            return UUID.fromString(Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(accessSecret.getBytes()))
+                    .build()
+                    .parseSignedClaims(accessToken)
+                    .getPayload()
+                    .getSubject());
+        } catch (Exception e) {
+            throw new UnauthorizedException("Invalid access token");
+        }
 
-}
-
-
-public UUID extractUserIdFromRefreshToken(String refreshToken) throws UnauthorizedException {
-    try {
-        return UUID.fromString(Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(refreshSecret.getBytes()))
-                .build()
-                .parseSignedClaims(refreshToken)
-                .getPayload()
-                .getSubject());
-    } catch (Exception e) {
-        throw new UnauthorizedException("Invalid refresh token");
-    }
-}
-
-public UUID extractUserIdFromWsAccessToken(String wsAccessToken) throws UnauthorizedException {
-    try {
-        return UUID.fromString(Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(wsAccessSecret.getBytes()))
-                .build()
-                .parseSignedClaims(wsAccessToken)
-                .getPayload()
-                .getSubject());
-    } catch (Exception e) {
-        throw new UnauthorizedException("Invalid ws_access token");
-    }
-}
-
-public UUID extractUserIdFromWsRefreshToken(String wsRefreshToken) throws UnauthorizedException {
-    try {
-        return UUID.fromString(Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(wsRefreshSecret.getBytes()))
-                .build()
-                .parseSignedClaims(wsRefreshToken)
-                .getPayload()
-                .getSubject());
-    } catch (Exception e) {
-        throw new UnauthorizedException("Invalid ws_access token");
-    }
-}
-
-public UUID extractUserIdFromReq() throws UnauthorizedException {
-    RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-    HttpServletRequest req;
-    if (requestAttributes instanceof ServletRequestAttributes) {
-        req = ((ServletRequestAttributes) requestAttributes).getRequest();
-    } else
-        throw new UnauthorizedException("Invalid access and refresh tokens");
-
-
-    if (req.getCookies() == null) {
-        throw new UnauthorizedException("No provided access and refresh tokens");
-    }
-    Cookie[] cookies = req.getCookies();
-    TokenPair tokens = new TokenPair();
-    for (Cookie cookie : cookies) {
-        if (cookie.getName().equals("__access_tkn")) tokens.setAccessToken(cookie.getValue());
-        if (cookie.getName().equals("__refresh_tkn")) tokens.setRefreshToken(cookie.getValue());
-    }
-    if (tokens.getAccessToken() == null) throw new UnauthorizedException("No provided access token");
-    if (tokens.getRefreshToken() == null) throw new UnauthorizedException("No provided refresh token");
-    try {
-        verifyAccessToken(tokens.getAccessToken());
-        return extractUserIdFromAccessToken(tokens.getAccessToken());
-    } catch (ExpiredJwtException e) {
-        return extractUserIdFromRefreshToken(tokens.getRefreshToken());
     }
 
 
-}
+    public UUID extractUserIdFromRefreshToken(String refreshToken) throws UnauthorizedException {
+        try {
+            return UUID.fromString(Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(refreshSecret.getBytes()))
+                    .build()
+                    .parseSignedClaims(refreshToken)
+                    .getPayload()
+                    .getSubject());
+        } catch (Exception e) {
+            throw new UnauthorizedException("Invalid refresh token");
+        }
+    }
+
+    public UUID extractUserIdFromWsAccessToken(String wsAccessToken) throws UnauthorizedException {
+        try {
+            return UUID.fromString(Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(wsAccessSecret.getBytes()))
+                    .build()
+                    .parseSignedClaims(wsAccessToken)
+                    .getPayload()
+                    .getSubject());
+        } catch (Exception e) {
+            throw new UnauthorizedException("Invalid ws_access token");
+        }
+    }
+
+    public UUID extractUserIdFromWsRefreshToken(String wsRefreshToken) throws UnauthorizedException {
+        try {
+            return UUID.fromString(Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(wsRefreshSecret.getBytes()))
+                    .build()
+                    .parseSignedClaims(wsRefreshToken)
+                    .getPayload()
+                    .getSubject());
+        } catch (Exception e) {
+            throw new UnauthorizedException("Invalid ws_access token");
+        }
+    }
+
+    public UUID extractUserIdFromReq() throws UnauthorizedException {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        HttpServletRequest req;
+        if (requestAttributes instanceof ServletRequestAttributes) {
+            req = ((ServletRequestAttributes) requestAttributes).getRequest();
+        } else
+            throw new UnauthorizedException("Invalid access and refresh tokens");
+
+
+        if (req.getCookies() == null) {
+            throw new UnauthorizedException("No provided access and refresh tokens");
+        }
+        Cookie[] cookies = req.getCookies();
+        TokenPair tokens = new TokenPair();
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("__access_tkn")) tokens.setAccessToken(cookie.getValue());
+            if (cookie.getName().equals("__refresh_tkn")) tokens.setRefreshToken(cookie.getValue());
+        }
+        if (tokens.getAccessToken() == null) throw new UnauthorizedException("No provided access token");
+        if (tokens.getRefreshToken() == null) throw new UnauthorizedException("No provided refresh token");
+        try {
+            verifyAccessToken(tokens.getAccessToken());
+            return extractUserIdFromAccessToken(tokens.getAccessToken());
+        } catch (ExpiredJwtException e) {
+            return extractUserIdFromRefreshToken(tokens.getRefreshToken());
+        }
+
+
+    }
+
+    public UUID extractGuestUserIdFromReq() throws UnauthorizedException {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        HttpServletRequest req;
+        if (requestAttributes instanceof ServletRequestAttributes) {
+            req = ((ServletRequestAttributes) requestAttributes).getRequest();
+        } else
+            throw new UnauthorizedException("ws_access_token");
+        if (req.getCookies() == null) {
+            throw new UnauthorizedException("No provided ws_access_token");
+        }
+        Cookie[] cookies = req.getCookies();
+        String wsAccessToken = "";
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("__ws_access_tkn")) wsAccessToken = cookie.getValue();
+        }
+        if (wsAccessToken.isEmpty()) throw new UnauthorizedException("No provided ws_access_token");
+        return extractUserIdFromWsAccessToken(wsAccessToken);
+
+    }
 
 }

@@ -1,37 +1,130 @@
-<div>
+@if(isAdmin) {
+<div class="footer-bottom">
 
-  <div class="row">
-    <div class="col-12 bg-mp-primary py-3 text-center">
+
+  <div class="bg-mp-primary py-3 text-center">
     <h1 class="h1">Sessione lavorativa</h1>
   </div>
-    <div class="col-12 bg-dark py-2 d-flex justify-content-center align-items-center">
-      <h3 class="h3">Nuovi ordini</h3>
+
+  <div class="bg-dark py-2 d-flex justify-content-center align-items-center">
+    <h3 class="h3">Nuovi ordini</h3>
+  </div>
+  @if (realTimeMessages.length === 0) {
+  <div class="col bg-accent h d-flex justify-content-center align-items-center fs-3">
+
+    <p>Non ci sono messaggi</p>
+
+  </div>
+  } @else {
+  <div class="col bg-moderate-yellow h d-flex justify-content-center flex-wrap align-items-center p-4">
+    @for(message of realTimeMessages; track message; let i = $index) {
+
+    <div [ngClass]="{'alert w-100 transition': true, 'alert-primary': i % 2 === 0, 'alert-success': i % 2 !== 0}"
+      role="alert">
+      <div>
+        <span>Da <strong>{{message.message._from}}</strong></span><span> a
+          <strong>{{message.message._to}}</strong></span>
+        <span class="d-inline-block ms-3 text-success"> <i class="bi bi-clock"></i> {{message.message.sentAt | date
+          :
+          'dd/MM/y ore HH:mm:ss' }}</span>
+      </div>
+
+
+      <div class="mt-2"><em>{{message.message.message}}</em></div>
+      @if(message.message.order)
+      {
+      <hr class="hr">
+      <h5 class="h5">Ordine {{message.message.order.id}}</h5>
+
+      <div class="mb-2 d-flex gap-3 align-items-center flex-wrap mt-4 mb-4 order-sets-container">
+        <mat-icon [inline]="true" class="text-mp-primary icon-col fs-3">restaurant</mat-icon>
+        <div class="order-sets-col">
+          @for(o of message.message.order.orderSets; track o; let j = $index) {
+          <span><em>{{o.productRef.name}} ({{o.productRef.price.toFixed(2)}}€) x {{o.quantity}}</em>
+            @if(j < message.message.order.orderSets.length - 1) { <span>, </span>
+          }
+          </span>
+          }
+        </div>
+      </div>
+      <p><strong>COSTO DELLA CONSEGNA: </strong><span>{{message.message.order.deliveryCost.toFixed(2)}}€</span></p>
+      <p><strong>TOTALE: </strong><span [innerHTML]="calctTotalAmount(message.message.order)"></span></p>
+
+      <div class="btn-set d-flex gap-3 justify-content-center flex-wrap max-w">
+        <button (click)="finalizeOrder(message.message.order.id, 'CONFIRM', message.message.id,i)"
+          class="btn btn-primary d-flex justify-content-center align-items-center gap-3">
+          <i class="bi bi-check-circle-fill"></i>
+          <span>
+            Accetta ordine
+          </span>
+        </button>
+        <button (click)="finalizeOrder(message.message.order.id, 'DELETE', message.message.id, i)"
+          class="btn btn-danger d-flex justify-content-center align-items-center gap-3">
+          <i class="bi bi-check-circle-fill"></i>
+          <span>
+            Rifiuta ordine
+          </span>
+        </button>
+      </div>
+      }
+
     </div>
-    @if (realTimeMessages.length === 0) {
-    <div class="col bg-accent h d-flex justify-content-center align-items-center fs-3">
+    }
+  </div>
+  }
 
-      <p>Non ci sono messaggi</p>
 
-    </div>
-    } @else {
-    <div class="col bg-moderate-yellow h d-flex justify-content-center flex-wrap align-items-center p-4">
-      @for(message of realTimeMessages; track message; let i = $index) {
 
-      <div
-        [ngClass]="{'alert alert-dismissible w-100 transition': true, 'alert-primary': i % 2 === 0, 'alert-success': i % 2 !== 0}"
-        role="alert">
-        <div [ngClass]="{'add': true, 'delete': message.delete === true}">
-          <div>Da <strong>{{message.message._from}}</strong></div>
-          <div>A <strong>{{message.message._to}}</strong></div>
-          <div>{{message.message.sentAt | date : 'dd/MM/y ore HH:mm:ss' }}</div>
-          <div>{{message.message.message}}</div>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
-            (click)="removeMessage(i)"></button>
+  <div class="col-12 bg-dark py-3 mb-4 d-flex justify-content-center align-items-center">
+    <h3 class="h3">Ordini in lavorazione</h3>
+  </div>
+  <div class="container-lg">
+    <div class="row dark-design align-items-stretch">
+      @if (timeIntervals) {
+      @for(ti of timeIntervals; track ti) {
+      <div class="col-12 col-md-6 col-xxl-4 p-3">
+        <div class="my-pizza-card h-100">
+          <h5 class="h5 text-accent">
+            Ore {{ti.startsAt | date : 'HH:mm'}} - {{ti.endsAt | date : 'HH:mm'}}
+          </h5>
+          <hr class="hr text-secondary">
+          @if (ti.orders.length === 0) {
+          <p class="text-white">Non ci sono ordini</p>
+          } @else {
+          @for(o of ti.orders; track o; let ind = $index) {
+          <h6 class="h6 text-accent">Ordine da {{o.user.messagingUsername}}</h6>
+            <p class="m-0 mb-2 text-mp-primary mt-1">id: {{o.id}}</p>
+          <ul>
+            @for(os of o.orderSets; track os) {
+            <li>{{os.quantity}} x {{os.productRef.name}}</li>
+            }
+          </ul>
+          <div class="row btn-set">
+            <div class="col">
+              <button class="btn-primary d-flex justify-content-center align-items-center gap-3">
+                <i class="bi bi-check-circle-fill"></i>
+                <span>Completa ordine</span>
+              </button>
+            </div>
+          </div>
+          @if(ind < ti.orders.length - 1) {
+            <hr class="hr text-secondary">
+          }
+
+          }
+          }
         </div>
       </div>
       }
-    </div>
-    }
+      }
 
+    </div>
   </div>
+
 </div>
+} @else if (isLoggedIn && res) {
+<app-access-denied></app-access-denied>
+} @else {
+<div class="footer-bottom"></div>
+}
+<app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>

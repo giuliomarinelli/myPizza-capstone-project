@@ -1,5 +1,5 @@
 package backendapp.myPizza.Models.enums;
 
 public enum WorkSessionType {
-    LUNCH, DINNER
+    LUNCH, DINNER, OTHER
 }

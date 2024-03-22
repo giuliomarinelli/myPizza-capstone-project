@@ -1,5 +1,5 @@
 import { SocketService } from './../../services/socket.service';
-import { Component } from '@angular/core';
+import { ApplicationRef, Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router, RoutesRecognized } from '@angular/router';
@@ -11,7 +11,8 @@ import { Router, RoutesRecognized } from '@angular/router';
 })
 export class LoginComponent {
 
-  constructor(private fb: FormBuilder, private authSvc: AuthService, private router: Router, private socket: SocketService) { }
+  constructor(private fb: FormBuilder, private authSvc: AuthService,
+    private router: Router, private socket: SocketService, private appRef: ApplicationRef) { }
 
   protected errorMsg: string = ''
 
@@ -66,10 +67,11 @@ export class LoginComponent {
 
           this.authSvc.loggedInSbj.next(true)
           this.authSvc.isAdmin().subscribe(res => {
+            this.appRef.tick()
             if (res) {
-              this.path === '/login' ? location.href = '/my-pizza-ges/prodotti' : location.href = location.href
+              this.path === '/login' ? this.router.navigate(['/my-pizza-ges/prodotti']) : location.href = location.href
             } else {
-              this.path === '/login' ? location.href = '/my-pizza' : location.href = location.href
+              this.path === '/login' ? this.router.navigate(['/my-pizza']) : location.href = location.href
             }
           })
 

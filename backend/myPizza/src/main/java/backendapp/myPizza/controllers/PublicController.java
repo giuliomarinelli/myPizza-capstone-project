@@ -5,7 +5,9 @@ import backendapp.myPizza.Models.entities.Menu;
 import backendapp.myPizza.Models.entities.Order;
 import backendapp.myPizza.Models.entities.User;
 import backendapp.myPizza.Models.enums.TokenType;
+import backendapp.myPizza.Models.reqDTO.GuestUserDTO;
 import backendapp.myPizza.Models.reqDTO.OrderInitDTO;
+import backendapp.myPizza.Models.reqDTO.SendOrderDTO;
 import backendapp.myPizza.Models.resDTO.*;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.exceptions.UnauthorizedException;
@@ -123,9 +125,23 @@ public class PublicController {
         return orderSvc.getClientOrderInit(false, order);
     }
 
-    @GetMapping("/get-guest-ws-auth")
-    public ConfirmRes getGuestWsAuth(HttpServletResponse res) {
-        String wsAccessToken = jwtUtils.generateGuestWsAccessToken();
+    @PostMapping("/send-order")
+    public ConfirmRes sendOrder(@RequestParam(required = false) Boolean guest, @RequestBody  SendOrderDTO sendOrderDTO, HttpServletResponse res) throws UnauthorizedException, BadRequestException {
+        boolean _guest = Objects.requireNonNullElse(guest, false);
+        ConfirmRes conf = orderSvc.sendOrder(sendOrderDTO, _guest);
+        Cookie cookie = new Cookie("__order_id", null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setDomain("localhost");
+        cookie.setMaxAge(0);
+        res.addCookie(cookie);
+        return conf;
+    }
+
+    @PostMapping("/get-guest-ws-auth")
+    public ConfirmRes getGuestWsUser(@RequestBody GuestUserDTO guestUserDTO, HttpServletResponse res) {
+        User guest = authSvc.generateGuestUser(guestUserDTO);
+        String wsAccessToken = jwtUtils.generateGuestWsAccessToken(guest.getId());
         Cookie cookie = new Cookie("__ws_access_tkn", wsAccessToken);
         cookie.setDomain("localhost");
         cookie.setHttpOnly(true);
@@ -134,5 +150,6 @@ public class PublicController {
         return new ConfirmRes("As a guest, you can remain connected for not more than 1 hour" +
                 " to notification system", HttpStatus.OK);
     }
+
 
 }

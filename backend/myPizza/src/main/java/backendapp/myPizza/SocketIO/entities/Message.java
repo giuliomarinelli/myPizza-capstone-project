@@ -44,12 +44,14 @@ public class Message {
 
     private boolean read;
 
+    boolean restore;
     public Message(User senderUser, User recipientUser, Order order, String message, boolean wasUserOnLine) {
         this.senderUser = senderUser;
         this.recipientUser = recipientUser;
         this.order = order;
         this.message = message;
         this.wasUserOnLine = wasUserOnLine;
+        restore = false;
         _from = senderUser.getMessagingUsername();
         _to = recipientUser.getMessagingUsername();
         sentAt = System.currentTimeMillis();

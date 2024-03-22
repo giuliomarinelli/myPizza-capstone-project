@@ -3,6 +3,10 @@ import { CommonModule } from '@angular/common';
 import { NgxRerenderModule } from 'ngx-rerender'
 import { SessioneRoutingModule } from './sessione-routing.module';
 import { SessioneComponent } from './sessione.component';
+import { SharedComponentsModule } from '../../../shared-components/shared-components.module';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MyPizzaGesShComponentsModule } from '../../../my-pizza-ges-sh-components/my-pizza-ges-sh-components.module';
 
 
 @NgModule({
@@ -12,7 +16,11 @@ import { SessioneComponent } from './sessione.component';
   imports: [
     CommonModule,
     SessioneRoutingModule,
-    NgxRerenderModule
+    NgxRerenderModule,
+    SharedComponentsModule,
+    MatIconModule,
+    MatDialogModule,
+    MyPizzaGesShComponentsModule
   ]
 })
 export class SessioneModule { }

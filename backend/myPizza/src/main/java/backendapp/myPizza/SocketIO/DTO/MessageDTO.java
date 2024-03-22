@@ -9,7 +9,9 @@ import java.util.UUID;
 public record MessageDTO(
         @NotNull
         UUID recipientUserId,
-        Order order,
+
+
+        UUID orderId,
         @NotNull
         String message
 ) {}

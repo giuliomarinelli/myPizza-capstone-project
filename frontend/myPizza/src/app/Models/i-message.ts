@@ -1,4 +1,16 @@
+import { UUID } from "crypto";
+import { Order } from "./i-order";
 import { User } from "./i-user";
+
+export interface RestoreMessageDTO {
+  restore: boolean
+}
+
+export interface MessageDTO {
+  recipientUserId: string
+  orderId?: string
+  message: string
+}
 
 export interface Message {
 
@@ -8,7 +20,7 @@ export interface Message {
 
   recipientUser: User
 
-  order: null // da aggiornare
+  order: Order | null
 
   _from: string
 
@@ -21,6 +33,8 @@ export interface Message {
   wasUserOnLine: boolean
 
   read: boolean
+
+  restore: boolean
 }
 
 export interface MessageMng {

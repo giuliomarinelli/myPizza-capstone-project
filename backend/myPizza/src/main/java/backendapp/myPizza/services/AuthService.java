@@ -43,6 +43,10 @@ public class AuthService {
     @Autowired
     private CityRepository cityRp;
 
+    public User generateGuestUser(GuestUserDTO guestUserDTO) {
+        return userRp.save(User.generateGuestUser(guestUserDTO.firstName(), guestUserDTO.lastName(), guestUserDTO.email(), guestUserDTO.phoneNumber()));
+    }
+
     public User register(UserPostDTO userPostDTO) throws BadRequestException {
         City city = cityRp.findByNameAndProvinceCode(userPostDTO.address().city(), userPostDTO.address().province())
                 .orElseThrow(
@@ -73,7 +77,7 @@ public class AuthService {
         User u = userRp.findByEmail(email).orElseThrow(
                 () -> new UnauthorizedException("Email and/or password are incorrect")
         );
-
+        if (u.getScope().contains(UserScope.GUEST)) throw new UnauthorizedException("Email and/or password are incorrect");
         if (!encoder.matches(password, u.getHashPassword()))
             throw new UnauthorizedException("Email and/or password are incorrect");
         Map<TokenPairType, TokenPair> tokenMap = new HashMap<>();

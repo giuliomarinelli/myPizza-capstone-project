@@ -1,4 +1,4 @@
-<app-access-denied *ngIf="accessDenied && isAdminPath"></app-access-denied>
+
 <mat-sidenav-container class="sidenav-container text-white" (backdropClick)="close('backdrop')">
   <mat-sidenav #sidenav (keydown.escape)="close('escape')" class="main-menu-offcanvas dark">
     <aside>
@@ -12,6 +12,7 @@
       </mat-toolbar>
       <nav>
         <ul class="offcanvas-menu pt-4">
+          @if(!isAdminPath) {
           <li><a (click)="close('')" routerLink="/" routerLinkActive="active"
               [routerLinkActiveOptions]="{ exact: true }">Home</a></li>
           <li><a (click)="close('')" routerLink="/ordina-a-domicilio" routerLinkActive="active">ordina a domicilio</a>
@@ -20,12 +21,22 @@
           </li>
           <li><a (click)="close('')" routerLink="/il-nostro-menu" routerLinkActive="active">il nostro menu</a></li>
           <li><a (click)="close('')" routerLink="/contatti" routerLinkActive="active">contatti</a></li>
+        } @else {
+          <li><a (click)="close('')" routerLink="/my-pizza-ges/prodotti" routerLinkActive="active">Gestione prodotti</a>
+          </li>
+          <li><a (click)="close('')" routerLink="/my-pizza-ges/aggiungi-prodotti" routerLinkActive="active">Aggiungi prodotti</a></li>
+          <li><a (click)="close('')" routerLink="/my-pizza-ges/ingredienti" routerLinkActive="active">Gestione ingredienti</a></li>
+          <li><a (click)="close('')" routerLink="/my-pizza-ges/gestisci-visualizzazione-menu" routerLinkActive="active">Gestione ordinamento menu ingredienti</a></li>
+          <li><a (click)="close('')" routerLink="/my-pizza-ges/sessione" routerLinkActive="active">Gestione sessione ordini</a></li>
+        }
         </ul>
         <hr class="hr text-white">
+        @if (isLoggedIn === false && res) {
         <ul class="offcanvas-menu">
           <li><a (click)="close('')" routerLink="/registrati" routerLinkActive="active">Registrati</a></li>
           <li><a (click)="close('')" routerLink="/login" routerLinkActive="active">Login</a></li>
         </ul>
+        }
       </nav>
     </aside>
   </mat-sidenav>
@@ -40,31 +51,87 @@
             </div>
             <p class="text-white m-0 nanum-gothic-coding-bold">{{brand}}</p>
           </a>
+          @if (!isAdminPath) {
           <nav ngClass="d-none d-md-block" mat-tab-nav-bar [backgroundColor]="background" [tabPanel]="tabPanel"
             mat-stretch-tabs="false" class="fit-content">
             @for (link of links; track link) {
-            <a mat-tab-link [routerLink]="link.path" [active]="activeLink === link"> {{link.name}} </a>
+            <a mat-tab-link [routerLink]="link.linkPath" [active]="activeLink === link"> {{link.name}} </a>
             }
             <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
 
           </nav>
-          <div ngClass="d-none d-sm-block d-md-none" mat-tab-nav-bar [backgroundColor]="background"
+          <nav ngClass="d-none d-mbsm-block d-mbsm-none" mat-tab-nav-bar [backgroundColor]="background"
             [tabPanel]="tabPanel1" mat-stretch-tabs="false" class="fit-content">
-            @for (link of smMdLinks; track link) {
-            <a mat-tab-link [routerLink]="link.path" [active]="activeLink === link"> {{link.name}} </a>
+            @for (link of mbSmLinks; track link) {
+            <a mat-tab-link [routerLink]="link.linkPath" [active]="activeLink === link"> {{link.name}} </a>
             }
             <mat-tab-nav-panel #tabPanel1></mat-tab-nav-panel>
+          </nav>
+          <nav ngClass="d-none d-mbsm-block d-smmd-none" mat-tab-nav-bar [backgroundColor]="background"
+            [tabPanel]="tabPanel2" mat-stretch-tabs="false" class="fit-content">
+            @for (link of mbSmLinks; track link) {
+            <a mat-tab-link [routerLink]="link.linkPath" [active]="activeLink === link"> {{link.name}} </a>
+            }
+            <mat-tab-nav-panel #tabPanel2></mat-tab-nav-panel>
 
-          </div>
-          <span class="spacer"></span>
-          @if(isLoggedIn) {
-          <div class="text-white d-flex align-items-center gap-3">
-            <a href="#" (click)="logout()">Logout</a>
-            @if(userProfile) {<div class="avatar">
-              <img [src]="userProfile.profileImage" class="img-fluid">
-            </div>}
-          </div>
+          </nav>
+          <nav ngClass="d-none d-smmd-block d-md-none" mat-tab-nav-bar [backgroundColor]="background"
+            [tabPanel]="tabPanel3" mat-stretch-tabs="false" class="fit-content">
+            @for (link of smMdLinks; track link) {
+            <a mat-tab-link [routerLink]="link.linkPath" [active]="activeLink === link"> {{link.name}} </a>
+            }
+            <mat-tab-nav-panel #tabPanel3></mat-tab-nav-panel>
+
+          </nav>
           } @else {
+          <nav ngClass="d-none d-lg-block" mat-tab-nav-bar [backgroundColor]="background" [tabPanel]="tabPanel4"
+            mat-stretch-tabs="false" class="fit-content">
+            @for (link of myPizzaGesLinks; track link) {
+            <a mat-tab-link [routerLink]="link.linkPath" [active]="activeAdminLink === link"> {{link.name}} </a>
+            }
+            <mat-tab-nav-panel #tabPanel4></mat-tab-nav-panel>
+
+          </nav>
+          <nav ngClass="d-none d-md-block d-lg-none" mat-tab-nav-bar [backgroundColor]="background"
+            [tabPanel]="tabPanel4" mat-stretch-tabs="false" class="fit-content">
+            @for (link of smMdAdminLinks; track link) {
+            <a mat-tab-link [routerLink]="link.linkPath" [active]="activeAdminLink === link"> {{link.name}} </a>
+            }
+            <mat-tab-nav-panel #tabPanel5></mat-tab-nav-panel>
+
+          </nav>
+
+          <nav ngClass="d-none d-sm-block d-md-none" mat-tab-nav-bar [backgroundColor]="background"
+            [tabPanel]="tabPanel4" mat-stretch-tabs="false" class="fit-content">
+            @for (link of mbSmAdminLinks; track link) {
+            <a mat-tab-link [routerLink]="link.linkPath" [active]="activeAdminLink === link"> {{link.name}} </a>
+            }
+            <mat-tab-nav-panel #tabPanel6></mat-tab-nav-panel>
+
+          </nav>
+          }
+          <span class="spacer"></span>
+          @if(isLoggedIn && res) {
+          <div class="d-flex justify-content-center align-items-center gap-3">
+            @if(!isSessionPath) {
+            <button class="bell-size fake-btn bell">
+              <div class="position-relative text-white">
+                <i class="bi bi-bell-fill fs-icon"></i>
+                @if (messages.length > 0) {
+                <span
+                  class="position-absolute animated fs-sm top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {{messages.length}}
+                  <span class="visually-hidden"></span>
+                </span>
+                }
+              </div>
+            </button>
+            }
+            @if(userProfile && res) {<button (click)="logout()" class="avatar fake-btn d-none d-xsmb-block m-xsmb-none">
+              <img [src]="userProfile.profileImage" class="img-fluid">
+            </button>}
+          </div>
+          } @else if (!isLoggedIn && res) {
           <div class="d-none d-lg-flex align-items-center">
             <a routerLink="/login" class="me-3 right-link">Accedi</a>
             <a routerLink="/registrati" class="me-3 right-link">Registrati</a>
@@ -81,7 +148,7 @@
       </mat-toolbar>
     </header>
     <router-outlet></router-outlet>
-    <app-login *ngIf="showLogIn && isLoginPath"></app-login>
+    <app-login *ngIf="isLoginPath && !isLoggedIn && res"></app-login>
     <footer id="footer" class="bg-dark py-3 px-2">
       <div class="container-md text-center text-white">
         &copy; 2024 MyPizza. Tutti i diritti riservati
@@ -89,3 +156,24 @@
     </footer>
   </mat-sidenav-content>
 </mat-sidenav-container>
+@if(newMessage && !isAdminPath) {<div class="alert-notification">
+  <div class="fade-in alert alert-dismissible w-100 backdr"
+    [ngClass]="{'fade-out': newMessage.delete === true, 'alert-success': count % 2 === 0, 'alert-primary': count % 2 !== 0}"
+    role="alert">
+
+    <div>Da <strong>{{newMessage.message._from}}</strong></div>
+    <div>A <strong>{{newMessage.message._to}}</strong></div>
+    <div>{{newMessage.message.sentAt | date : 'dd/MM/y ore HH:mm:ss' }}</div>
+    <div>{{newMessage.message.message}}</div>
+    @if(newMessage.message.order)
+    {
+    <div [innerHTML]="orderToString(newMessage.message.order)"></div>
+    }
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+      (click)="removeMessage()"></button>
+
+  </div>
+</div>
+}
+<app-route-config [links]="links" [myPizzaGesLinks]="myPizzaGesLinks"
+  (onRouteConfig)="handleRouteConfig($event)"></app-route-config>

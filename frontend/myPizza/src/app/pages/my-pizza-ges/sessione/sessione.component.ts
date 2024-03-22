@@ -6,6 +6,7 @@ import { SocketService } from '../../../services/socket.service';
 import { Message, MessageMng } from '../../../Models/i-message';
 import { SessionService } from '../../../services/session.service';
 import { Router } from '@angular/router';
+import { Order } from '../../../Models/i-order';
 
 
 @Component({
@@ -26,6 +27,8 @@ export class SessioneComponent {
         if (isLoggedIn) {
           this.authSvc.isAdmin$.subscribe(isAdmin => {
             if (isAdmin) {
+
+              this.res = true
               _session.isThereAnActiveSession().subscribe(res => {
                 console.log('sess', res)
                 this.isThereAnActiveSession = res
@@ -50,6 +53,10 @@ export class SessioneComponent {
     })
   }
 
+  protected isLoading: boolean = true
+
+  protected res: boolean = false
+
   protected isThereAnActiveSession!: boolean
 
   private onlyOnce: boolean = true
@@ -62,17 +69,36 @@ export class SessioneComponent {
 
   protected __session!: _Session
 
+  protected orderToString(order: Order): string {
+    let str: string = `<h6><strong>Ordine ${order.id}: </strong></h6><p>`
+    let c = 0
+    order.orderSets.forEach((os, i) => {
+      if (i === 0) str += '<p><em>'
+      if (i < 3) {
+        str += `${os.quantity} x ${os.productRef.name}`
+        if (i < 2 && i < order.orderSets.length - 1) str += ', '
+      }
+      if (i === 2 && i < order.orderSets.length - 1)
+        str += '...'
+    })
+    str += '</em></p>'
+    return str
+  }
+
+  protected calctTotalAmount(order: Order): string {
+    return (order.orderSets.map(os => os.productRef.price).reduce((c, p) => c + p) + order.deliveryCost).toFixed(2) + '€'
+  }
+
   private setSocket(): void {
     if (!this.onlyOnce) return
     this.onlyOnce = false
-
+    this.socket.restoreWorkSession().subscribe(ack => console.log(ack))
     this.socket.OnActiveSessionChange().subscribe(sess => {
-      this.socket.restoreWorkSession().subscribe(ack => console.log(ack))
       this.__session = sess
-      console.log('session changed')
+      console.log(sess)
     })
     this.socket.onReceiveMessage().subscribe(res => {
-
+      this.isLoading = false
 
       this.realTimeMessages.unshift({
 

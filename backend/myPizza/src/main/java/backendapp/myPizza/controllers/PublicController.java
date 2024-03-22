@@ -126,7 +126,7 @@ public class PublicController {
     }
 
     @PostMapping("/send-order")
-    public ConfirmRes sendOrder(@RequestParam(required = false) Boolean guest, @RequestBody SendOrderDTO sendOrderDTO, HttpServletResponse res) throws UnauthorizedException, BadRequestException {
+    public ConfirmRes sendOrder(@RequestParam(required = false) Boolean guest, @RequestBody  SendOrderDTO sendOrderDTO, HttpServletResponse res) throws UnauthorizedException, BadRequestException {
         boolean _guest = Objects.requireNonNullElse(guest, false);
         ConfirmRes conf = orderSvc.sendOrder(sendOrderDTO, _guest);
         Cookie cookie = new Cookie("__order_id", null);

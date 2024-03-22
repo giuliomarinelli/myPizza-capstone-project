@@ -16,6 +16,8 @@ export class RouteConfigComponent {
 
   @Input() public links: iLink[] = []
 
+  @Input() public myPizzaGesLinks: iLink[] = []
+
   @Output() public onRouteConfig = new EventEmitter<iRouteConfig>()
 
   ngOnInit() {
@@ -34,9 +36,27 @@ export class RouteConfigComponent {
         }
         if (path.includes('my-pizza-ges/sessione')) isSessionPath = true
 
-        let activeLinkIndex = this.links.findIndex(link => link.path === path.trim())
+        let activeLinkIndex = this.links.findIndex(link => {
+          let ret = false
+          for (const p of link.paths) {
+            if (p === path) {
+              ret = true
+              break;
+            }
+          }
+          return ret
+         })
 
-
+         let activeMyPizzaGesLinkIndex = this.myPizzaGesLinks.findIndex(link => {
+          let ret = false
+          for (const p of link.paths) {
+            if (p === path) {
+              ret = true
+              break;
+            }
+          }
+          return ret
+         })
         if (path !== '/') {
           isHome = false
         } else {
@@ -46,6 +66,7 @@ export class RouteConfigComponent {
         if (path.includes('my-pizza')) isLoginPath = true
         this.onRouteConfig.emit({
           activeLinkIndex,
+          activeMyPizzaGesLinkIndex,
           isAdminPath,
           isHome,
           brand,

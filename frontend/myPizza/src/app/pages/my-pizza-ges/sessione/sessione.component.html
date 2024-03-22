@@ -1,9 +1,9 @@
-<div>
-
+<div class="footer-bottom">
+  @if(isAdmin && res) {
   <div class="row">
     <div class="col-12 bg-mp-primary py-3 text-center">
-    <h1 class="h1">Sessione lavorativa</h1>
-  </div>
+      <h1 class="h1">Sessione lavorativa</h1>
+    </div>
     <div class="col-12 bg-dark py-2 d-flex justify-content-center align-items-center">
       <h3 class="h3">Nuovi ordini</h3>
     </div>
@@ -17,21 +17,58 @@
     <div class="col bg-moderate-yellow h d-flex justify-content-center flex-wrap align-items-center p-4">
       @for(message of realTimeMessages; track message; let i = $index) {
 
-      <div
-        [ngClass]="{'alert alert-dismissible w-100 transition': true, 'alert-primary': i % 2 === 0, 'alert-success': i % 2 !== 0}"
+      <div [ngClass]="{'alert w-100 transition': true, 'alert-primary': i % 2 === 0, 'alert-success': i % 2 !== 0}"
         role="alert">
-        <div [ngClass]="{'add': true, 'delete': message.delete === true}">
-          <div>Da <strong>{{message.message._from}}</strong></div>
-          <div>A <strong>{{message.message._to}}</strong></div>
-          <div>{{message.message.sentAt | date : 'dd/MM/y ore HH:mm:ss' }}</div>
-          <div>{{message.message.message}}</div>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
-            (click)="removeMessage(i)"></button>
+        <div>
+          <span>Da <strong>{{message.message._from}}</strong></span><span> a
+            <strong>{{message.message._to}}</strong></span>
+          <span class="d-inline-block ms-3 text-success"> <i class="bi bi-clock"></i> {{message.message.sentAt | date :
+            'dd/MM/y ore HH:mm:ss' }}</span>
         </div>
+
+
+        <div class="mt-2"><em>{{message.message.message}}</em></div>
+        @if(message.message.order)
+        {
+        <hr class="hr">
+        <h5 class="h5">Ordine {{message.message.order.id}}</h5>
+
+        <div class="mb-2 d-flex gap-3 align-items-center flex-wrap mt-4 mb-4 order-sets-container">
+          <mat-icon [inline]="true" class="text-mp-primary icon-col fs-3">restaurant</mat-icon>
+          <div class="order-sets-col">
+            @for(o of message.message.order.orderSets; track o; let j = $index) {
+            <span><em>{{o.productRef.name}} ({{o.productRef.price.toFixed(2)}}€) x {{o.quantity}}</em>
+              @if(j < message.message.order.orderSets.length - 1) { <span>, </span>
+            }
+            </span>
+            }
+          </div>
+        </div>
+        <p><strong>COSTO DELLA CONSEGNA: </strong><span>{{message.message.order.deliveryCost.toFixed(2)}}€</span></p>
+        <p><strong>TOTALE: </strong><span [innerHTML]="calctTotalAmount(message.message.order)"></span></p>
+
+        <div class="btn-set d-flex gap-3 justify-content-center flex-wrap max-w">
+          <button class="btn btn-primary d-flex justify-content-center align-items-center gap-3">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>
+              Accetta ordine
+            </span>
+          </button>
+          <button class="btn btn-danger d-flex justify-content-center align-items-center gap-3">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>
+              Rifiuta ordine
+            </span>
+          </button>
+        </div>
+        }
+
       </div>
       }
     </div>
     }
 
   </div>
+  }
 </div>
+<app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>

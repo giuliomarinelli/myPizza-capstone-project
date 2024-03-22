@@ -87,6 +87,7 @@ export class AppComponent {
                   socket.connect()
                 })
               }
+
               this.showLogIn = false
               this.isLoggedIn = res.loggedIn
               this.authSvc.loggedInSbj.next(res.loggedIn)
@@ -101,7 +102,7 @@ export class AppComponent {
               this.getProfile()
             },
             error: err => {
-
+              this.res = true
 
             }
           })
@@ -140,13 +141,8 @@ export class AppComponent {
     this.isAdminPath = c.isAdminPath
     this.isSessionPath = c.isSessionPath
     this.activeLink = this.links[c.activeLinkIndex]
-
-    if (this.isAdminPath) {
-      this.links = this.myPizzaGesLinks
-      this.resMenu = true
-    } else {
-      this.resMenu = true
-    }
+    this.activeAdminLink = this.myPizzaGesLinks[c.activeMyPizzaGesLinkIndex]
+    this.resMenu = true
   }
 
   protected messageIds: string[] = []
@@ -162,10 +158,10 @@ export class AppComponent {
     if (this.newMessage) {
       this.appRef.tick()
       this.newMessage.delete = true
-      setTimeout(() => {
+      this.ngZone.runOutsideAngular(() => setTimeout(() => {
         this.appRef.tick()
         this.newMessage = undefined
-      }, 500)
+      }, 500))
 
     }
   }
@@ -230,45 +226,67 @@ export class AppComponent {
   protected myPizzaGesLinks: iLink[] = [
     {
       name: 'gestione menu',
-      path: 'my-pizza-ges/prodotti'
+      paths: [
+        '/my-pizza-ges/prodotti',
+        '/my-pizza-ges/aggiungi-prodotti',
+        '/my-pizza-ges/ingredienti',
+        '/my-pizza-ges/gestisci-visualizzazione-menu'
+      ],
+      linkPath: 'my-pizza-ges/prodotti'
     },
     {
       name: 'sessione lavorativa',
-      path: 'my-pizza-ges/sessione'
+      paths: ['/my-pizza-ges/sessione'],
+      linkPath: '/my-pizza-ges/sessione'
     },
     {
       name: 'impostazioni',
-      path: 'my-pizza-ges/impostazioni'
+      paths: ['/my-pizza-ges/impostazioni'],
+      linkPath: '/my-pizza-ges/impostazioni'
     }
   ]
 
   protected links: iLink[] = [
     {
       name: 'home',
-      path: '/'
+      paths: ['/'],
+      linkPath: '/'
     },
     {
       name: 'ordina',
-      path: '/ordina-a-domicilio'
+      paths: [
+        '/ordina-a-domicilio',
+        '/ordina-a-domicilio/checkout'
+      ],
+      linkPath: '/ordina-a-domicilio'
     },
     {
       name: 'la pizzeria',
-      path: '/la-nostra-pizzeria'
+      paths: ['/la-nostra-pizzeria'],
+      linkPath: '/la-nostra-pizzeria'
     },
     {
       name: 'il menu',
-      path: '/il-nostro-menu'
+      paths: ['/il-nostro-menu'],
+      linkPath: '/il-nostro-menu'
     }
   ]
 
   protected smMdLinks: iLink[] = []
   protected mbSmLinks: iLink[] = []
+  protected smMdAdminLinks: iLink[] = []
+  protected mbSmAdminLinks: iLink[] = []
+  protected activeAdminLink!: iLink
 
   protected background: ThemePalette = undefined;
   ngOnInit() {
     for (let i: number = 0; i < 3; i++) this.smMdLinks.push(this.links[i])
     for (let i: number = 0; i < 2; i++) this.mbSmLinks.push(this.links[i])
-    this.activeLink = this.links[0]
+    for (let i: number = 0; i < 2; i++) this.smMdAdminLinks.push(this.myPizzaGesLinks[i])
+    for (let i: number = 0; i < 1; i++) this.mbSmAdminLinks.push(this.myPizzaGesLinks[i])
+    this.activeAdminLink = this.myPizzaGesLinks[0],
+      this.activeLink = this.links[0]
+
   }
 
 }

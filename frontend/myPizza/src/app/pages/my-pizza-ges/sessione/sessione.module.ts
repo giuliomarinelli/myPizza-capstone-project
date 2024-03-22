@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { NgxRerenderModule } from 'ngx-rerender'
 import { SessioneRoutingModule } from './sessione-routing.module';
 import { SessioneComponent } from './sessione.component';
+import { SharedComponentsModule } from '../../../shared-components/shared-components.module';
+import { MatIconModule } from '@angular/material/icon';
 
 
 @NgModule({
@@ -12,7 +14,9 @@ import { SessioneComponent } from './sessione.component';
   imports: [
     CommonModule,
     SessioneRoutingModule,
-    NgxRerenderModule
+    NgxRerenderModule,
+    SharedComponentsModule,
+    MatIconModule
   ]
 })
 export class SessioneModule { }

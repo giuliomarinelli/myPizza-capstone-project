@@ -22,7 +22,7 @@
           <li><a (click)="close('')" routerLink="/contatti" routerLinkActive="active">contatti</a></li>
         </ul>
         <hr class="hr text-white">
-        @if (isLoggedIn === false && res && res1 &&res2) {
+        @if (isLoggedIn === false && res) {
         <ul class="offcanvas-menu">
           <li><a (click)="close('')" routerLink="/registrati" routerLinkActive="active">Registrati</a></li>
           <li><a (click)="close('')" routerLink="/login" routerLinkActive="active">Login</a></li>
@@ -42,12 +42,11 @@
             </div>
             <p class="text-white m-0 nanum-gothic-coding-bold">{{brand}}</p>
           </a>
+          @if (!isAdminPath) {
           <nav ngClass="d-none d-md-block" mat-tab-nav-bar [backgroundColor]="background" [tabPanel]="tabPanel"
             mat-stretch-tabs="false" class="fit-content">
             @for (link of links; track link) {
-            @if(resMenu) {
-            <a mat-tab-link [routerLink]="link.path" [active]="activeLink === link"> {{link.name}} </a>
-            }
+            <a mat-tab-link [routerLink]="link.linkPath" [active]="activeLink === link"> {{link.name}} </a>
             }
             <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
 
@@ -55,31 +54,56 @@
           <nav ngClass="d-none d-mbsm-block d-mbsm-none" mat-tab-nav-bar [backgroundColor]="background"
             [tabPanel]="tabPanel1" mat-stretch-tabs="false" class="fit-content">
             @for (link of mbSmLinks; track link) {
-            @if(resMenu) {
-            <a mat-tab-link [routerLink]="link.path" [active]="activeLink === link"> {{link.name}} </a>
-            }
+            <a mat-tab-link [routerLink]="link.linkPath" [active]="activeLink === link"> {{link.name}} </a>
             }
             <mat-tab-nav-panel #tabPanel1></mat-tab-nav-panel>
           </nav>
           <nav ngClass="d-none d-mbsm-block d-smmd-none" mat-tab-nav-bar [backgroundColor]="background"
-            [tabPanel]="tabPanel1" mat-stretch-tabs="false" class="fit-content">
+            [tabPanel]="tabPanel2" mat-stretch-tabs="false" class="fit-content">
             @for (link of mbSmLinks; track link) {
-            <a mat-tab-link [routerLink]="link.path" [active]="activeLink === link"> {{link.name}} </a>
+            <a mat-tab-link [routerLink]="link.linkPath" [active]="activeLink === link"> {{link.name}} </a>
             }
-            <mat-tab-nav-panel #tabPanel1></mat-tab-nav-panel>
+            <mat-tab-nav-panel #tabPanel2></mat-tab-nav-panel>
 
           </nav>
           <nav ngClass="d-none d-smmd-block d-md-none" mat-tab-nav-bar [backgroundColor]="background"
-            [tabPanel]="tabPanel1" mat-stretch-tabs="false" class="fit-content">
+            [tabPanel]="tabPanel3" mat-stretch-tabs="false" class="fit-content">
             @for (link of smMdLinks; track link) {
-            <a mat-tab-link [routerLink]="link.path" [active]="activeLink === link"> {{link.name}} </a>
+            <a mat-tab-link [routerLink]="link.linkPath" [active]="activeLink === link"> {{link.name}} </a>
             }
-            <mat-tab-nav-panel #tabPanel1></mat-tab-nav-panel>
+            <mat-tab-nav-panel #tabPanel3></mat-tab-nav-panel>
 
           </nav>
+          } @else {
+          <nav ngClass="d-none d-lg-block" mat-tab-nav-bar [backgroundColor]="background" [tabPanel]="tabPanel4"
+            mat-stretch-tabs="false" class="fit-content">
+            @for (link of myPizzaGesLinks; track link) {
+            <a mat-tab-link [routerLink]="link.linkPath" [active]="activeAdminLink === link"> {{link.name}} </a>
+            }
+            <mat-tab-nav-panel #tabPanel4></mat-tab-nav-panel>
+
+          </nav>
+          <nav ngClass="d-none d-md-block d-lg-none" mat-tab-nav-bar [backgroundColor]="background"
+            [tabPanel]="tabPanel4" mat-stretch-tabs="false" class="fit-content">
+            @for (link of smMdAdminLinks; track link) {
+            <a mat-tab-link [routerLink]="link.linkPath" [active]="activeAdminLink === link"> {{link.name}} </a>
+            }
+            <mat-tab-nav-panel #tabPanel5></mat-tab-nav-panel>
+
+          </nav>
+
+          <nav ngClass="d-none d-sm-block d-md-none" mat-tab-nav-bar [backgroundColor]="background"
+            [tabPanel]="tabPanel4" mat-stretch-tabs="false" class="fit-content">
+            @for (link of mbSmAdminLinks; track link) {
+            <a mat-tab-link [routerLink]="link.linkPath" [active]="activeAdminLink === link"> {{link.name}} </a>
+            }
+            <mat-tab-nav-panel #tabPanel6></mat-tab-nav-panel>
+
+          </nav>
+          }
           <span class="spacer"></span>
-          @if(isLoggedIn && (res && res1) && res2) {
-          <div class="d-flex justify-content-center align-items-center gap-2">
+          @if(isLoggedIn && res) {
+          <div class="d-flex justify-content-center align-items-center gap-3">
             @if(!isSessionPath) {
             <button class="bell-size fake-btn bell">
               <div class="position-relative text-white">
@@ -94,11 +118,11 @@
               </div>
             </button>
             }
-            @if(userProfile && (res || res1) && res2) {<button (click)="logout()" class="avatar fake-btn">
+            @if(userProfile && res) {<button (click)="logout()" class="avatar fake-btn d-none d-xsmb-block m-xsmb-none">
               <img [src]="userProfile.profileImage" class="img-fluid">
             </button>}
           </div>
-          } @else if ((res || res1) && res2) {
+          } @else if (!isLoggedIn && res) {
           <div class="d-none d-lg-flex align-items-center">
             <a routerLink="/login" class="me-3 right-link">Accedi</a>
             <a routerLink="/registrati" class="me-3 right-link">Registrati</a>
@@ -142,4 +166,5 @@
   </div>
 </div>
 }
-<app-route-config [links]="links" (onRouteConfig)="handleRouteConfig($event)"></app-route-config>
+<app-route-config [links]="links" [myPizzaGesLinks]="myPizzaGesLinks"
+  (onRouteConfig)="handleRouteConfig($event)"></app-route-config>

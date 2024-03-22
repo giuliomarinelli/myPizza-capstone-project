@@ -4,6 +4,7 @@ import { Socket, io } from 'socket.io-client'
 import { AuthService } from './auth.service';
 import { Message, MessageDTO } from '../Models/i-message';
 import { PublicApiService } from './public-api.service';
+import { TimeInterval, _Session } from '../Models/i_session';
 
 
 
@@ -61,6 +62,26 @@ export class SocketService {
     })
   }
 
+  onTimeIntervalsChange(): Observable<TimeInterval[]> {
+    return new Observable<TimeInterval[]>(observer => {
+      socket.on('time_intervals', (data: TimeInterval[]) => {
+        observer.next(data)
+      })
+    })
+  }
+
+
+  restoreTimeIntervals(): Observable<Object> {
+    return new Observable<Object>(observer => {
+      socket.emit('restore_time_intervals', {
+        restore: true
+      },
+        (ack: Object) => {
+          observer.next(ack)
+        })
+    })
+  }
+
   restoreMessages(): Observable<string> {
     return new Observable<string>(observer => {
       socket.emit('restore_messages', {
@@ -93,8 +114,7 @@ export class SocketService {
   public sendMessage(messageDTO: MessageDTO): Observable<string> {
     return new Observable<string>(observer => {
       socket.emit('messageSendToUser', {
-        recipientUserId: messageDTO.recipientUserId,
-        message: "ciao"
+        ...messageDTO
       }, function (ack: string) {
         observer.next(ack)
       })

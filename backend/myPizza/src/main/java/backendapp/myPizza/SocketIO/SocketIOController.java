@@ -1,5 +1,6 @@
 package backendapp.myPizza.SocketIO;
 
+import backendapp.myPizza.Models.entities.Order;
 import backendapp.myPizza.Models.entities.User;
 import backendapp.myPizza.SocketIO.DTO.MessageDTO;
 import backendapp.myPizza.SocketIO.DTO.RestoreMessageDTO;
@@ -8,8 +9,10 @@ import backendapp.myPizza.SocketIO.repositories.MessageRepository;
 import backendapp.myPizza.SocketIO.services.MessageService;
 import backendapp.myPizza.SocketIO.services.SessionTrackingService;
 import backendapp.myPizza.SocketIO.services.SocketIOClientService;
+import backendapp.myPizza.repositories.OrderRepository;
 import backendapp.myPizza.repositories.UserRepository;
 import backendapp.myPizza.security.JwtUtils;
+import backendapp.myPizza.services._SessionService;
 import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
@@ -23,6 +26,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -51,6 +55,9 @@ public class SocketIOController {
     @Autowired
     private MessageRepository messageRp;
 
+    @Autowired
+    private OrderRepository orderRp;
+
     SocketIOController(SocketIOServer socketServer) {
         this.socketServer = socketServer;
 
@@ -64,6 +71,7 @@ public class SocketIOController {
          */
         this.socketServer.addEventListener("messageSendToUser", MessageDTO.class, onSendMessage);
         this.socketServer.addEventListener("restore_messages", RestoreMessageDTO.class, onRestoreMessage);
+        this.socketServer.addEventListener("restore_time_intervals", Object.class, onRestoreTimeIntervals);
     }
 
     private UUID getUserId(SocketIOClient client) {
@@ -135,9 +143,15 @@ public class SocketIOController {
 
             log.info(senderUser.getId() + " " + recipientUser.getId());
 
-            Message message = new Message(senderUser, recipientUser, messageDTO.order(), messageDTO.message(), isRecipientUserOnLine);
 
-            client.sendEvent("auto_message", "ciao");
+            Order order = orderRp.findById(messageDTO.orderId()).orElse(null);
+
+
+
+
+            Message message = new Message(senderUser, recipientUser, order, messageDTO.message(), isRecipientUserOnLine);
+
+
 
 
             messageRp.save(message);
@@ -173,6 +187,19 @@ public class SocketIOController {
              * After sending message to target user we can send acknowledge to sender
              */
             acknowledge.sendAckData("User " + recipientUser.getId() + " restored unread messages");
+        }
+    };
+
+    public DataListener<Object> onRestoreTimeIntervals = new DataListener<>() {
+        @Override
+        public void onData(SocketIOClient client, Object args, AckRequest acknowledge) throws Exception {
+
+            messageSvc.pushTimeIntervals();
+
+            /**
+             * After sending message to target user we can send acknowledge to sender
+             */
+            acknowledge.sendAckData("Restore time intervals ok");
         }
     };
 

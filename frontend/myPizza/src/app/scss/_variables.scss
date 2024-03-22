@@ -472,8 +472,11 @@ $paragraph-margin-bottom: 1rem !default;
 // scss-docs-start grid-breakpoints
 $grid-breakpoints: ( // OVERRIDDEN
   xs: 0,
+  xsmb: 355px,
   mb: 426px,
+  mbsm: 545px,
   sm: 576px,
+  smmd: 678px,
   md: 768px,
   lg: 992px,
   xl: 1200px,

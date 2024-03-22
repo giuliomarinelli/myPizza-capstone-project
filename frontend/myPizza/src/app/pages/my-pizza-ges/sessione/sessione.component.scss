@@ -26,13 +26,13 @@
   }
 
   to {
-    max-height: 269px;
+    max-height: 1500ps;
   }
 }
 
 @keyframes go-up {
   from {
-    max-height: 269px;
+    max-height: 1500px;
   }
 
   to {
@@ -59,3 +59,24 @@
     opacity: 1;
   }
 }
+
+.order-sets-container {
+  display: flex;
+  align-items: baseline;
+}
+
+.icon-col {
+  flex-basis: 50px;
+}
+
+.order-sets-col {
+  flex: 0 0 calc(100% - 100px)
+}
+
+.max-w {
+  max-width: 768px;
+  width: 96%;
+  margin: 0 auto;
+}
+
+

@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import { IsLoggedIn } from './../../Models/is-logged-in';
+import { ApplicationRef, Component, afterNextRender } from '@angular/core';
 import { MenuService } from '../../services/menu.service';
 import { Menu } from '../../Models/i-menu';
 import { Category, Product } from '../../Models/i-product';
 import { OrderCheckModel, OrderInitDTO } from '../../Models/i-order';
 import { OrderService } from '../../services/order.service';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'main#ordina-a-domicilio',
@@ -12,7 +15,11 @@ import { OrderService } from '../../services/order.service';
 })
 export class OrdinaADomicilioComponent {
 
-  constructor(private menuSvc: MenuService, private orderSvc: OrderService) { }
+  constructor(private menuSvc: MenuService, private orderSvc: OrderService, private authSvc: AuthService, private router: Router) {
+    afterNextRender(() => {
+      authSvc.isLoggedIn$.subscribe(res => this.IsLoggedIn = res)
+    })
+  }
 
   protected isLoading = false
 
@@ -24,7 +31,7 @@ export class OrdinaADomicilioComponent {
 
   private page: number = 0
 
-
+  protected IsLoggedIn!: boolean
 
 
   ngOnInit() {
@@ -80,7 +87,13 @@ export class OrdinaADomicilioComponent {
       }
       console.log('order', orderInitDTO)
       this.orderSvc.orderInit(orderInitDTO).subscribe(res => {
-        console.log(res) // se loggato => checkout, se non loggato form con i dati e chiede se vuole registrarsi o ordinare come ospite o loggarsi
+        if (this.IsLoggedIn)  {
+
+          location.href = '/ordina-a-domicilio/checkout'
+        }
+
+
+          // se loggato => checkout, se non loggato form con i dati e chiede se vuole registrarsi o ordinare come ospite o loggarsi
         //per ora gestisco il caso in cui l'utente è registrato
       })
     }
@@ -92,11 +105,11 @@ export class OrdinaADomicilioComponent {
   }
 
   protected castItemToProduct(item: Category | Product): Product {
-    return item as Product
+    return <Product> item
   }
 
   protected castItemToCategory(item: Category | Product): Category {
-    return item as Category
+    return <Category> item
   }
 
 

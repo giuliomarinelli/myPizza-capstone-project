@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.time.*;
 import java.time.temporal.ChronoUnit;
@@ -24,13 +25,17 @@ public class TimeInterval {
     private UUID id;
 
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "timeInterval")
+    List<Order> orders = new ArrayList<>();
+
     private long startsAt;
 
     private long endsAt;
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "timeIntervals")
-    private List<WorkSession> workSessions;
+    private List<WorkSession> workSessions = new ArrayList<>();
+
 
     private TimeInterval(long startsAt, long endsAt) {
         this.startsAt = startsAt;

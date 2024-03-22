@@ -1,3 +1,5 @@
+import { UUID } from "crypto";
+import { Order } from "./i-order";
 import { User } from "./i-user";
 
 export interface RestoreMessageDTO {
@@ -6,7 +8,7 @@ export interface RestoreMessageDTO {
 
 export interface MessageDTO {
   recipientUserId: string
-  order?: any // da implementare
+  orderId?: string
   message: string
 }
 
@@ -18,7 +20,7 @@ export interface Message {
 
   recipientUser: User
 
-  order: null // da aggiornare
+  order: Order | null
 
   _from: string
 

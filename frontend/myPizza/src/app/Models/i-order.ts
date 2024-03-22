@@ -1,5 +1,6 @@
 import { Product, ProductRef } from "./i-product"
-import { Address } from "./i-user"
+import { Address, User } from "./i-user"
+import { TimeInterval } from "./i_session"
 
 export interface OrderCheckModel {
   productId: string
@@ -36,4 +37,29 @@ export interface OrderCheckoutInfo {
   status: string
   deliveryCost: number
   totalAmount: number
+}
+
+export interface Order {
+  id: string
+  orderSets: OrderSet[]
+  address: Address
+  orderTime: number
+  expectedDeliveryTime: number
+  deliveryTime: number
+  asap: boolean
+  status: string
+  deliveryCost: number
+  user: User
+}
+
+export interface SendOrderDTO {
+  orderId: string
+  asap: boolean
+  expectedDeliveryTime: number
+  address: Address
+}
+
+export interface ConfirmOrderDTO {
+  orderId: string
+  timeIntervalId: string
 }

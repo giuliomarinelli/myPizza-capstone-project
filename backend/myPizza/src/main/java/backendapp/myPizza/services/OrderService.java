@@ -4,6 +4,7 @@ import backendapp.myPizza.Models.entities.*;
 import backendapp.myPizza.Models.enums.OrderStatus;
 import backendapp.myPizza.Models.reqDTO.OrderInitDTO;
 import backendapp.myPizza.Models.reqDTO.OrderSetDTO;
+import backendapp.myPizza.Models.reqDTO.SendOrderDTO;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.Models.resDTO.OrderCheckoutInfo;
 import backendapp.myPizza.Models.resDTO.OrderInitRes;
@@ -43,6 +44,11 @@ public class OrderService {
     @Autowired
     private ProductRefRepository productRefRp;
 
+    @Autowired
+    private _SessionService _session;
+
+    @Autowired
+    private TimeIntervalRepository timeIntervalRp;
 
     public OrderInitRes orderInit(OrderInitDTO orderInitDTO) throws BadRequestException {
         Order order = new Order();
@@ -99,27 +105,59 @@ public class OrderService {
 
     }
 
-    public ConfirmRes sendOrder(UUID orderId) throws BadRequestException {
-        Order order = orderRp.findById(orderId).orElseThrow(
+    public ConfirmRes sendOrder(SendOrderDTO sendOrderDTO, boolean guest) throws BadRequestException, UnauthorizedException {
+        Order order = orderRp.findById(sendOrderDTO.orderId()).orElseThrow(
                 () -> new BadRequestException("Order you're trying to send doesn't exist")
         );
-        if (!order.getStatus().equals(OrderStatus.INIT)) throw new BadRequestException("An order must have INIT status to be sent");
+        if (!order.getStatus().equals(OrderStatus.INIT))
+            throw new BadRequestException("An order must have INIT status to be sent");
         order.setStatus(OrderStatus.PENDING);
+        UUID userId = guest ? jwtUtils.extractGuestUserIdFromReq() : jwtUtils.extractUserIdFromReq();
+        User user = userRp.findById(userId).orElseThrow(
+                () -> new BadRequestException("User doesn't exist")
+        );
+        order.setUser(user);
+        order.setAddress(sendOrderDTO.address());
+        order.setAsap(sendOrderDTO.asap());
+        order.setExpectedDeliveryTime(sendOrderDTO.expectedDeliveryTime());
+        order.setOrderTime(System.currentTimeMillis());
         orderRp.save(order);
-        return new ConfirmRes("Order with id='" + orderId + " confirmed successfully", HttpStatus.OK);
+        return new ConfirmRes("Order with id='" + sendOrderDTO.orderId() + " confirmed successfully", HttpStatus.OK);
     }
+
+    public Order getOrderById(UUID orderId) throws BadRequestException {
+        return orderRp.findById(orderId).orElseThrow(
+                () -> new BadRequestException("order with id='" + orderId + "' doesn't exist")
+        );
+    }
+
+    public ConfirmRes confirmOrder(UUID orderId, UUID timeIntervalId) throws BadRequestException {
+        TimeInterval timeInterval = timeIntervalRp.findById(timeIntervalId).orElseThrow(
+                () -> new BadRequestException("TimeInterval with id='" + timeIntervalId + "' doesn't exist")
+        );
+        Order order = orderRp.findById(orderId).orElseThrow(
+                () -> new BadRequestException("Order with id='" + orderId + "' doesn't exist")
+        );
+        order.setTimeInterval(timeInterval);
+        order.setStatus(OrderStatus.ACCEPTED);
+        order.setDeliveryTime(timeInterval.getEndsAt());
+        orderRp.save(order);
+
+        return new ConfirmRes("order with id ='" + orderId + "' confirmed successfully", HttpStatus.OK);
+    }
+
+
 
     public ConfirmRes rejectOrder(UUID orderId) throws BadRequestException {
         Order order = orderRp.findById(orderId).orElseThrow(
                 () -> new BadRequestException("Order you're trying to reject doesn't exist")
         );
-        if (!order.getStatus().equals(OrderStatus.PENDING)) throw new BadRequestException("An order must have PENDING status to be confirmed or rejected");
+        if (!order.getStatus().equals(OrderStatus.PENDING))
+            throw new BadRequestException("An order must have PENDING status to be confirmed or rejected");
         order.setStatus(OrderStatus.PENDING);
         orderRp.save(order);
         return new ConfirmRes("Order with id='" + orderId + " rejected", HttpStatus.OK);
     }
-
-
 
 
 }

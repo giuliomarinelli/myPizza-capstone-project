@@ -7,6 +7,7 @@ import { Message, MessageMng } from '../../../Models/i-message';
 import { SessionService } from '../../../services/session.service';
 import { Router } from '@angular/router';
 import { Order } from '../../../Models/i-order';
+import { MessageService } from '../../../services/message.service';
 
 
 @Component({
@@ -19,7 +20,7 @@ export class SessioneComponent {
   constructor(private authSvc: AuthService, private productSvc: ProductService,
     @Inject(PLATFORM_ID) private platformId: string, private socket: SocketService,
     private appRef: ApplicationRef, private _session: SessionService, private router: Router,
-    private ngZone: NgZone) {
+    private ngZone: NgZone, private messageSvc: MessageService) {
 
     afterNextRender(() => {
 
@@ -30,7 +31,7 @@ export class SessioneComponent {
             if (isAdmin) {
 
 
-
+              this.isLoading = false
               this.res = true
 
               _session.isThereAnActiveSession().subscribe(res => {
@@ -66,7 +67,7 @@ export class SessioneComponent {
 
 
     this.socket.onReceiveMessage().subscribe(res => {
-      this.isLoading = false
+
       this.realTimeMessages.unshift({
 
         message: res,
@@ -78,21 +79,26 @@ export class SessioneComponent {
     })
   }
 
-  protected finalizeOrder(orderId: string, act: string): void {
+  protected finalizeOrder(orderId: string, act: string, messageId: string, i: number): void {
     switch (act) {
       case 'CONFIRM':
       case 'DELETE':
         break
       default: return
     }
-    this.ngZone.run(() => {
-      this.appRef.tick()
-      this.router.navigate(
-        ['my-pizza-ges/sessione/finalizza-ordine'],
-        { queryParams: { order_id: orderId, act } }
-      )
 
-    })
+      this.messageSvc.setMessageReadById(messageId).subscribe({next: res => {
+        this.appRef.tick()
+        this.realTimeMessages.splice(i, 1)
+        this.ngZone.runOutsideAngular(() => this.router.navigate(
+          ['my-pizza-ges/sessione/finalizza-ordine'],
+          { queryParams: { order_id: orderId, act } }
+        ))
+
+      }})
+
+
+
   }
 
   protected isLoading: boolean = true

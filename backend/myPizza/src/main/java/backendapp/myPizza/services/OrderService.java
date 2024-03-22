@@ -47,6 +47,8 @@ public class OrderService {
     @Autowired
     private _SessionService _session;
 
+    @Autowired
+    private TimeIntervalRepository timeIntervalRp;
 
     public OrderInitRes orderInit(OrderInitDTO orderInitDTO) throws BadRequestException {
         Order order = new Order();
@@ -128,6 +130,24 @@ public class OrderService {
                 () -> new BadRequestException("order with id='" + orderId + "' doesn't exist")
         );
     }
+
+    public ConfirmRes confirmOrder(UUID orderId, UUID timeIntervalId) throws BadRequestException {
+        TimeInterval timeInterval = timeIntervalRp.findById(timeIntervalId).orElseThrow(
+                () -> new BadRequestException("TimeInterval with id='" + timeIntervalId + "' doesn't exist")
+        );
+        Order order = orderRp.findById(orderId).orElseThrow(
+                () -> new BadRequestException("Order with id='" + orderId + "' doesn't exist")
+        );
+        order.setTimeInterval(timeInterval);
+        order.setStatus(OrderStatus.ACCEPTED);
+        order.setDeliveryTime(timeInterval.getEndsAt());
+        orderRp.save(order);
+
+        return new ConfirmRes("order with id ='" + orderId + "' confirmed successfully", HttpStatus.OK);
+    }
+
+
+
     public ConfirmRes rejectOrder(UUID orderId) throws BadRequestException {
         Order order = orderRp.findById(orderId).orElseThrow(
                 () -> new BadRequestException("Order you're trying to reject doesn't exist")

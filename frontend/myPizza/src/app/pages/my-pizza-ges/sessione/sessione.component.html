@@ -1,5 +1,5 @@
 <div class="footer-bottom">
-  @if(isAdmin && res) {
+
   <div class="row">
     <div class="col-12 bg-mp-primary py-3 text-center">
       <h1 class="h1">Sessione lavorativa</h1>
@@ -48,13 +48,15 @@
         <p><strong>TOTALE: </strong><span [innerHTML]="calctTotalAmount(message.message.order)"></span></p>
 
         <div class="btn-set d-flex gap-3 justify-content-center flex-wrap max-w">
-          <button class="btn btn-primary d-flex justify-content-center align-items-center gap-3">
+          <button (click)="finalizeOrder(message.message.order.id, 'CONFIRM', message.message.id,i)"
+            class="btn btn-primary d-flex justify-content-center align-items-center gap-3">
             <i class="bi bi-check-circle-fill"></i>
             <span>
               Accetta ordine
             </span>
           </button>
-          <button class="btn btn-danger d-flex justify-content-center align-items-center gap-3">
+          <button (click)="finalizeOrder(message.message.order.id, 'DELETE', message.message.id, i)"
+            class="btn btn-danger d-flex justify-content-center align-items-center gap-3">
             <i class="bi bi-check-circle-fill"></i>
             <span>
               Rifiuta ordine
@@ -69,6 +71,6 @@
     }
 
   </div>
-  }
+
 </div>
 <app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>

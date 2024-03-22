@@ -24,7 +24,7 @@ public class TimeInterval {
     @Setter(AccessLevel.NONE)
     private UUID id;
 
-
+    @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "timeInterval")
     List<Order> orders = new ArrayList<>();
 

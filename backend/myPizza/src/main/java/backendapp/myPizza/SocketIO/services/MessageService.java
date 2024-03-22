@@ -4,8 +4,11 @@ import backendapp.myPizza.Models.entities.WorkSession;
 import backendapp.myPizza.SocketIO.ClientNotification;
 import backendapp.myPizza.SocketIO.entities.Message;
 import backendapp.myPizza.SocketIO.repositories.MessageRepository;
+import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.exceptions.NotFoundException;
+import backendapp.myPizza.exceptions.UnauthorizedException;
 import backendapp.myPizza.repositories.WorkSessionRepository;
+import backendapp.myPizza.security.JwtUtils;
 import backendapp.myPizza.services.ProfileService;
 import com.corundumstudio.socketio.SocketIOClient;
 import lombok.extern.log4j.Log4j2;
@@ -34,8 +37,27 @@ public class MessageService {
     @Autowired
     private ProfileService profileSvc;
 
+    @Autowired
     private WorkSessionRepository _sessionRp;
 
+    @Autowired
+    private JwtUtils jwtUtils;
+
+    public Message getMessageById(UUID id) throws NotFoundException {
+        return messageRp.findById(id).orElseThrow(
+                () -> new NotFoundException("Message with id ='" + id + "' not found")
+        );
+    }
+
+    public Message setMessageAsReadById(UUID id) throws NotFoundException, UnauthorizedException {
+        Message m = getMessageById(id);
+        UUID userId = jwtUtils.extractUserIdFromReq();
+        if (!m.getRecipientUser().getId().equals(userId))
+            throw new UnauthorizedException("You don't have permissions to access this resource");
+        m.setRead(true);
+        messageRp.save(m);
+        return m;
+    }
 
     public void sendMessageToClient(Message message) {
 

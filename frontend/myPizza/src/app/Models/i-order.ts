@@ -59,3 +59,8 @@ export interface SendOrderDTO {
   expectedDeliveryTime: number
   address: Address
 }
+
+export interface ConfirmOrderDTO {
+  orderId: string
+  timeIntervalId: string
+}

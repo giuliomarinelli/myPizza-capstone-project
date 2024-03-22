@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
-import { GetOrderIdRes, OrderCheckoutInfo, OrderInitDTO, OrderInitRes, SendOrderDTO } from '../Models/i-order';
+import { GetOrderIdRes, Order, OrderCheckoutInfo, OrderInitDTO, OrderInitRes, SendOrderDTO } from '../Models/i-order';
 import { Observable } from 'rxjs';
 import { ConfirmRes } from '../Models/confirm-res';
 
@@ -28,6 +28,10 @@ export class OrderService {
 
   public sendOrder(sendOrderDTO: SendOrderDTO): Observable<ConfirmRes> {
     return this.http.post<ConfirmRes>(`${this.backendUrl}/public/send-order`, sendOrderDTO, { withCredentials: true })
+  }
+
+  public getOrderById(orderId: string): Observable<Order> {
+    return this.http.get<Order>(`${this.backendUrl}/api/order/${orderId}`, { withCredentials: true })
   }
 
 }

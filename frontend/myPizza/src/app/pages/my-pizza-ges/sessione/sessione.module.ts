@@ -5,6 +5,7 @@ import { SessioneRoutingModule } from './sessione-routing.module';
 import { SessioneComponent } from './sessione.component';
 import { SharedComponentsModule } from '../../../shared-components/shared-components.module';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import { MatIconModule } from '@angular/material/icon';
     SessioneRoutingModule,
     NgxRerenderModule,
     SharedComponentsModule,
-    MatIconModule
+    MatIconModule,
+    MatDialogModule,
   ]
 })
 export class SessioneModule { }

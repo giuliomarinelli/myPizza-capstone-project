@@ -36,6 +36,10 @@ public class _SessionService {
         return list;
     }
 
+    public List<TimeInterval> getActiveSessionTimeIntervals() {
+        return _sessionRp.getActiveSessionTimeIntervals();
+    }
+
     public boolean isThereAnActiveSession() {
         return _sessionRp.findAll().stream().anyMatch(WorkSession::isActive);
     }

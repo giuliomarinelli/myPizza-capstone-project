@@ -4,6 +4,7 @@ import backendapp.myPizza.Models.entities.WorkSession;
 import backendapp.myPizza.Models.reqDTO.StartSessionDTO;
 import backendapp.myPizza.Models.resDTO.DeliveryTimeRes;
 import backendapp.myPizza.Models.resDTO.IsThereAnActiveSessionRes;
+import backendapp.myPizza.Models.resDTO.TimeIntervalsRes;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.services._SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,4 +40,12 @@ public class SessionController {
     public DeliveryTimeRes getDeliveryTimes() {
         return new DeliveryTimeRes(_sessionSvc.getActiveSessionDeliveryTimes());
     }
+
+    @GetMapping("/get-active-session-time-intervals")
+    public TimeIntervalsRes getActiveSessionTimeIntervals() {
+        return new TimeIntervalsRes(_sessionSvc.getActiveSessionTimeIntervals());
+    }
+
+
+
 }

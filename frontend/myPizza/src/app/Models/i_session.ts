@@ -28,3 +28,7 @@ export interface _Session {
 export interface DeliveryTimeRes {
   deliveryTimes: number[]
 }
+
+export interface TimeIntervalsRes {
+  timeIntervals: TimeInterval[]
+}

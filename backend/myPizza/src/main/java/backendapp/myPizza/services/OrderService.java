@@ -123,6 +123,11 @@ public class OrderService {
         return new ConfirmRes("Order with id='" + sendOrderDTO.orderId() + " confirmed successfully", HttpStatus.OK);
     }
 
+    public Order getOrderById(UUID orderId) throws BadRequestException {
+        return orderRp.findById(orderId).orElseThrow(
+                () -> new BadRequestException("order with id='" + orderId + "' doesn't exist")
+        );
+    }
     public ConfirmRes rejectOrder(UUID orderId) throws BadRequestException {
         Order order = orderRp.findById(orderId).orElseThrow(
                 () -> new BadRequestException("Order you're trying to reject doesn't exist")

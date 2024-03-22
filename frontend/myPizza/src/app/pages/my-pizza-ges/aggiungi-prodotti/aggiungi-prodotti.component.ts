@@ -44,7 +44,7 @@ export class AggiungiProdottiComponent {
     const dialogRef = this.dialog.open(AggiungiProdottiDialogComponent)
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log(`Dialog result: ${result}`);
+
     });
   }
 

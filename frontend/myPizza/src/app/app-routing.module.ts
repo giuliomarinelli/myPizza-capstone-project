@@ -21,6 +21,7 @@ const routes: Routes = [
   { path: 'ordina-a-domicilio/checkout', loadChildren: () => import('./pages/ordina-a-domicilio/checkout/checkout.module').then(m => m.CheckoutModule) },
   { path: 'my-pizza-ges/sessione-lavorativa', loadChildren: () => import('./pages/my-pizza-ges/sessione-lavorativa/sessione-lavorativa.module').then(m => m.SessioneLavorativaModule) },
   { path: 'my-pizza-ges/sessione/configura-nuova-sessione', loadChildren: () => import('./pages/my-pizza-ges/sessione/configura-nuova-sessione/configura-nuova-sessione.module').then(m => m.ConfiguraNuovaSessioneModule) },
+  { path: 'my-pizza-ges/sessione/finalizza-ordine', loadChildren: () => import('./pages/my-pizza-ges/sessione/finalizza-ordine/finalizza-ordine.module').then(m => m.FinalizzaOrdineModule) },
 
 
 ]

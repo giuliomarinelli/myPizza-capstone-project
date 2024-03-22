@@ -52,3 +52,10 @@ export interface Order {
   timeInterval: TimeInterval
   user: User
 }
+
+export interface SendOrderDTO {
+  orderId: string
+  asap: boolean
+  expectedDeliveryTime: number
+  address: Address
+}

@@ -70,10 +70,13 @@ export class AppComponent {
           this.isLoggedIn = true
           this.showLogIn = false
           this.getProfile()
-          this.authSvc.isAdmin().subscribe(isAdmin => {
-            this.authSvc.adminSbj.next(isAdmin)
-            this.isAdmin = true
-
+          this.authSvc.isAdmin().subscribe({
+            next: isAdmin => {
+              this.authSvc.adminSbj.next(isAdmin)
+              this.isAdmin = true
+              this.res = true
+            },
+            error: err => this.res = true
           }
           )
         } else {
@@ -87,9 +90,13 @@ export class AppComponent {
               this.showLogIn = false
               this.isLoggedIn = res.loggedIn
               this.authSvc.loggedInSbj.next(res.loggedIn)
-              this.authSvc.isAdmin().subscribe(isAdmin => {
-                this.authSvc.adminSbj.next(isAdmin)
-                this.accessDenied = true
+              this.authSvc.isAdmin().subscribe({
+                next: isAdmin => {
+                  this.authSvc.adminSbj.next(isAdmin)
+                  this.accessDenied = true
+                  this.res1 = true
+                },
+                error: err => this.res1 = true
               })
               this.getProfile()
             },
@@ -105,6 +112,10 @@ export class AppComponent {
 
 
   }
+
+  protected res: boolean = false
+  protected res1: boolean = false
+  protected res2: boolean = true
 
   protected orderToString(order: Order): string {
     let str: string = `<h6><strong>Ordine ${order.id}: </strong></h6><p>`
@@ -130,6 +141,12 @@ export class AppComponent {
     this.isSessionPath = c.isSessionPath
     this.activeLink = this.links[c.activeLinkIndex]
 
+    if (this.isAdminPath) {
+      this.links = this.myPizzaGesLinks
+      this.resMenu = true
+    } else {
+      this.resMenu = true
+    }
   }
 
   protected messageIds: string[] = []
@@ -138,7 +155,7 @@ export class AppComponent {
 
   protected count: number = 0
 
-
+  protected resMenu: boolean = false
 
 
   protected removeMessage() {
@@ -210,6 +227,20 @@ export class AppComponent {
 
 
 
+  protected myPizzaGesLinks: iLink[] = [
+    {
+      name: 'gestione menu',
+      path: 'my-pizza-ges/prodotti'
+    },
+    {
+      name: 'sessione lavorativa',
+      path: 'my-pizza-ges/sessione'
+    },
+    {
+      name: 'impostazioni',
+      path: 'my-pizza-ges/impostazioni'
+    }
+  ]
 
   protected links: iLink[] = [
     {

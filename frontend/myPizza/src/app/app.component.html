@@ -1,4 +1,4 @@
-<app-access-denied *ngIf="!isAdmin && isAdminPath && isLoggedIn"></app-access-denied>
+<app-access-denied *ngIf="!isAdmin && isAdminPath && isLoggedIn && res && res1"></app-access-denied>
 <mat-sidenav-container class="sidenav-container text-white" (backdropClick)="close('backdrop')">
   <mat-sidenav #sidenav (keydown.escape)="close('escape')" class="main-menu-offcanvas dark">
     <aside>
@@ -22,10 +22,12 @@
           <li><a (click)="close('')" routerLink="/contatti" routerLinkActive="active">contatti</a></li>
         </ul>
         <hr class="hr text-white">
+        @if (isLoggedIn === false && res && res1 &&res2) {
         <ul class="offcanvas-menu">
           <li><a (click)="close('')" routerLink="/registrati" routerLinkActive="active">Registrati</a></li>
           <li><a (click)="close('')" routerLink="/login" routerLinkActive="active">Login</a></li>
         </ul>
+        }
       </nav>
     </aside>
   </mat-sidenav>
@@ -43,7 +45,9 @@
           <nav ngClass="d-none d-md-block" mat-tab-nav-bar [backgroundColor]="background" [tabPanel]="tabPanel"
             mat-stretch-tabs="false" class="fit-content">
             @for (link of links; track link) {
+            @if(resMenu) {
             <a mat-tab-link [routerLink]="link.path" [active]="activeLink === link"> {{link.name}} </a>
+            }
             }
             <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
 
@@ -51,7 +55,9 @@
           <nav ngClass="d-none d-mbsm-block d-mbsm-none" mat-tab-nav-bar [backgroundColor]="background"
             [tabPanel]="tabPanel1" mat-stretch-tabs="false" class="fit-content">
             @for (link of mbSmLinks; track link) {
+            @if(resMenu) {
             <a mat-tab-link [routerLink]="link.path" [active]="activeLink === link"> {{link.name}} </a>
+            }
             }
             <mat-tab-nav-panel #tabPanel1></mat-tab-nav-panel>
           </nav>
@@ -72,7 +78,7 @@
 
           </nav>
           <span class="spacer"></span>
-          @if(isLoggedIn) {
+          @if(isLoggedIn && (res && res1) && res2) {
           <div class="d-flex justify-content-center align-items-center gap-2">
             @if(!isSessionPath) {
             <button class="bell-size fake-btn bell">
@@ -88,11 +94,11 @@
               </div>
             </button>
             }
-            @if(userProfile) {<button (click)="logout()" class="avatar fake-btn">
+            @if(userProfile && (res || res1) && res2) {<button (click)="logout()" class="avatar fake-btn">
               <img [src]="userProfile.profileImage" class="img-fluid">
             </button>}
           </div>
-          } @else {
+          } @else if ((res || res1) && res2) {
           <div class="d-none d-lg-flex align-items-center">
             <a routerLink="/login" class="me-3 right-link">Accedi</a>
             <a routerLink="/registrati" class="me-3 right-link">Registrati</a>

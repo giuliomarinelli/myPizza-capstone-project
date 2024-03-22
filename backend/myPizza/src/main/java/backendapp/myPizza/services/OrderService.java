@@ -4,6 +4,7 @@ import backendapp.myPizza.Models.entities.*;
 import backendapp.myPizza.Models.enums.OrderStatus;
 import backendapp.myPizza.Models.reqDTO.OrderInitDTO;
 import backendapp.myPizza.Models.reqDTO.OrderSetDTO;
+import backendapp.myPizza.Models.reqDTO.SendOrderDTO;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.Models.resDTO.OrderCheckoutInfo;
 import backendapp.myPizza.Models.resDTO.OrderInitRes;
@@ -102,15 +103,24 @@ public class OrderService {
 
     }
 
-    public ConfirmRes sendOrder(UUID orderId) throws BadRequestException {
-        Order order = orderRp.findById(orderId).orElseThrow(
+    public ConfirmRes sendOrder(SendOrderDTO sendOrderDTO, boolean guest) throws BadRequestException, UnauthorizedException {
+        Order order = orderRp.findById(sendOrderDTO.orderId()).orElseThrow(
                 () -> new BadRequestException("Order you're trying to send doesn't exist")
         );
         if (!order.getStatus().equals(OrderStatus.INIT))
             throw new BadRequestException("An order must have INIT status to be sent");
         order.setStatus(OrderStatus.PENDING);
-
-        return new ConfirmRes("Order with id='" + orderId + " confirmed successfully", HttpStatus.OK);
+        UUID userId = guest ? jwtUtils.extractGuestUserIdFromReq() : jwtUtils.extractUserIdFromReq();
+        User user = userRp.findById(userId).orElseThrow(
+                () -> new BadRequestException("User doesn't exist")
+        );
+        order.setUser(user);
+        order.setAddress(sendOrderDTO.address());
+        order.setAsap(sendOrderDTO.asap());
+        order.setExpectedDeliveryTime(sendOrderDTO.expectedDeliveryTime());
+        order.setOrderTime(System.currentTimeMillis());
+        orderRp.save(order);
+        return new ConfirmRes("Order with id='" + sendOrderDTO.orderId() + " confirmed successfully", HttpStatus.OK);
     }
 
     public ConfirmRes rejectOrder(UUID orderId) throws BadRequestException {

@@ -19,16 +19,21 @@ export class AggiungiProdottiComponent {
     @Inject(PLATFORM_ID) private platformId: string, public dialog: MatDialog, private router: Router) {
     afterNextRender(() => {
       this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
-        if (isLoggedIn && this.onlyOnce) {
+        if (isLoggedIn) {
           this.authSvc.isAdmin$.subscribe(isAdmin => {
             if (isAdmin) {
               console.log('accesso admin concesso')
               this.isAdmin = true
+              this.res = true
             } else {
               this.isAdmin = false
+              this.res = true
             }
           })
-        } else (console.log('accesso negato: non loggato'))
+        } else {
+          this.res = true
+          this.isLoading = false
+        }
       })
 
     })
@@ -43,7 +48,7 @@ export class AggiungiProdottiComponent {
     });
   }
 
-
+  protected res: boolean = false
 
   protected onlyOnceAnimated = true
 

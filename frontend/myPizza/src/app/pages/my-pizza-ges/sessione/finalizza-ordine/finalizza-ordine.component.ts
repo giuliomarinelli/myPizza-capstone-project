@@ -9,6 +9,7 @@ import { filter } from 'rxjs';
 import { ConfirmOrderDTO, Order } from '../../../../Models/i-order';
 import { OrderService } from '../../../../services/order.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { MessageService } from '../../../../services/message.service';
 
 
 @Component({
@@ -20,7 +21,7 @@ export class FinalizzaOrdineComponent {
 
   constructor(private authSvc: AuthService, private socket: SocketService, private _session: SessionService,
     private ngZone: NgZone, private route: ActivatedRoute, private router: Router, private orderSvc: OrderService,
-    private appRef: ApplicationRef, private fb: FormBuilder
+    private appRef: ApplicationRef, private fb: FormBuilder, private messageSvc: MessageService
   ) {
 
     afterNextRender(() => {
@@ -36,6 +37,8 @@ export class FinalizzaOrdineComponent {
                 this.orderId = orderId
                 const act = <string>params['act']
                 this.act = act
+                const messageId = <string>params['message_id']
+                this.messageId = messageId
                 // validazione
                 const regex = new RegExp(/^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/)
                 valid = regex.test(orderId)
@@ -61,10 +64,10 @@ export class FinalizzaOrdineComponent {
                             },
                             error: err => {
 
-                                this.error = true
-                                console.log(err)
-                              }
-                            })
+                              this.error = true
+                              console.log(err)
+                            }
+                          })
                         }
                       })
                       console.log(res)
@@ -94,6 +97,8 @@ export class FinalizzaOrdineComponent {
 
     })
   }
+
+  protected messageId: string = ''
 
   protected confirm: boolean = false
 
@@ -133,6 +138,7 @@ export class FinalizzaOrdineComponent {
   })
 
   protected performConfirm(): void {
+
     const confirmOrderDTO: ConfirmOrderDTO = {
       orderId: <string>this.orderId,
       timeIntervalId: this.confirmOrderForm.get('timeIntervalId')?.value
@@ -144,15 +150,20 @@ export class FinalizzaOrdineComponent {
 
     this.selectedTimeInterval = this.getTimeIntervalInSessionById(confirmOrderDTO.timeIntervalId)
 
+    const date = new Date()
+    date.setTime(this.selectedTimeInterval.endsAt)
+
     const messageDTO: MessageDTO = {
       orderId: <string>this.orderId,
-      message: 'Il tuo ordine è stato accettato' + customMessage,
+      message: `Il tuo ordine è stato accettato e sarà consegnato alle ORE ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` + customMessage,
       recipientUserId: this.order.user.id
     }
 
 
     this.orderSvc.confirmOrder(confirmOrderDTO).subscribe({
       next: res => {
+        console.log(this.messageId)
+        this.messageSvc.setMessageReadById(this.messageId).subscribe({ next: res => console.log(res) })
         this.socket.sendMessage(messageDTO).subscribe(ack => console.log(ack))
         this.confirm = true
         this.appRef.tick()

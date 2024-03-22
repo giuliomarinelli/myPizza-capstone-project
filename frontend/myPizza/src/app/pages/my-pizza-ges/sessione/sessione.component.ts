@@ -1,11 +1,12 @@
-import { IsThereAnActiveSessionRes, _Session } from './../../../Models/i_session';
+import { User } from './../../../Models/i-user';
+import { IsThereAnActiveSessionRes, TimeInterval, _Session } from './../../../Models/i_session';
 import { ApplicationRef, Component, Inject, NgZone, PLATFORM_ID, afterNextRender } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { ProductService } from '../../../services/product.service';
 import { SocketService } from '../../../services/socket.service';
 import { Message, MessageMng } from '../../../Models/i-message';
 import { SessionService } from '../../../services/session.service';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { Order } from '../../../Models/i-order';
 import { MessageService } from '../../../services/message.service';
 
@@ -23,19 +24,34 @@ export class SessioneComponent {
     private ngZone: NgZone, private messageSvc: MessageService) {
 
     afterNextRender(() => {
-
+      if (localStorage != undefined) {
+        const mustRefresh = localStorage.getItem('refresh')
+        if (mustRefresh) {
+          localStorage.removeItem('refresh')
+          location.href = location.href
+        } else {
+          localStorage.setItem('refresh', 'must-refresh')
+        }
+      }
+      router.events.subscribe(e => {
+        if (e instanceof NavigationEnd) this.setSocket()
+      })
 
       this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
         if (isLoggedIn) {
+          this.isLoggedIn = true
           this.authSvc.isAdmin$.subscribe(isAdmin => {
             if (isAdmin) {
 
-
+              this.setSocket()
               this.isLoading = false
               this.res = true
 
               _session.isThereAnActiveSession().subscribe(res => {
-                console.log('sess', res)
+                this._session.getActiveSessionTimeIntervals().subscribe(res => {
+                  this.timeIntervals = res.timeIntervals
+                  console.log(res)
+                })
                 this.isThereAnActiveSession = res
                 if (!res) ngZone.run(() => router.navigate(['my-pizza-ges/sessione/configura-nuova-sessione']))
 
@@ -46,37 +62,71 @@ export class SessioneComponent {
 
 
             } else {
-              console.log('accesso negato, miss permissions')
+              this.isLoading = false
+              this.res = true
             }
           })
-        } else (console.log('accesso negato: non loggato'))
+        } this.isLoading = false
       })
 
     })
   }
 
-  ngAfterContentInit() {
-    this.socket.restoreWorkSession().subscribe(ack => {
+  protected timeIntervals: TimeInterval[] = []
+
+  protected messageIds: string[] = []
+
+  protected setSocket(): void {
+
+    this.socket.restoreTimeIntervals().subscribe(ack => {
       console.log(ack)
     })
-    this.socket.OnActiveSessionChange().subscribe(sess => {
-      this.__session = sess
-      console.log(sess)
-    })
-
-
-
-    this.socket.onReceiveMessage().subscribe(res => {
-
-      this.realTimeMessages.unshift({
-
-        message: res,
-        add: true,
-        delete: false
-      })
-
+    this.socket.onTimeIntervalsChange().subscribe(ti => {
+      this.timeIntervals = ti
       this.appRef.tick()
     })
+
+    // per accesso negato chiamata diretta a is admin senza subject e redirect
+    /* mancano
+      - rifiuta ordine
+      - conferma completamento ordine
+      - dropdown notifiche con ultime 3 notifiche
+      - message by id con controllo su autorizzazione
+      - all messages con possibilità di contrassegnare come letto
+      - storico ordini client
+      - storico ordini admin
+      - server exception handling e validation
+      - not logged e accesso negato
+      - home con slider
+      - ordina con login/registrati
+      -eliminare la nostra pizzeria e il nostro menu
+      - notifiche via mail
+      - sistemare registrazione
+      - crud profilo
+      -impostazioni globali
+
+    7 GIORNI
+
+    */
+
+
+    this.socket.onReceiveMessage().subscribe(message => {
+      if (!this.messageIds.includes(message.id)/* && (message.recipientUser).... admin user id escludi i messaggi con order CONFIRMED */) {
+        this.messageIds.push(message.id)
+        this.realTimeMessages.unshift({
+
+          message,
+          add: true,
+          delete: false
+        })
+
+        this.appRef.tick()
+      }
+    })
+  }
+
+  ngAfterContentInit() {
+
   }
 
   protected finalizeOrder(orderId: string, act: string, messageId: string, i: number): void {
@@ -87,19 +137,20 @@ export class SessioneComponent {
       default: return
     }
 
-      this.messageSvc.setMessageReadById(messageId).subscribe({next: res => {
-        this.appRef.tick()
-        this.realTimeMessages.splice(i, 1)
-        this.ngZone.runOutsideAngular(() => this.router.navigate(
-          ['my-pizza-ges/sessione/finalizza-ordine'],
-          { queryParams: { order_id: orderId, act } }
-        ))
+    this.appRef.tick()
+    this.realTimeMessages.splice(i, 1)
+    this.ngZone.runOutsideAngular(() => this.router.navigate(
+      ['my-pizza-ges/sessione/finalizza-ordine'],
+      { queryParams: { order_id: orderId, act, message_id: messageId } }
+    ))
 
-      }})
+
 
 
 
   }
+
+  protected isLoggedIn: boolean = false
 
   protected isLoading: boolean = true
 

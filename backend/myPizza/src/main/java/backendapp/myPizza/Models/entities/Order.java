@@ -46,7 +46,7 @@ public class Order {
 
     private double deliveryCost = 1.5;
 
-
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "time_interval_id")
     private TimeInterval timeInterval;

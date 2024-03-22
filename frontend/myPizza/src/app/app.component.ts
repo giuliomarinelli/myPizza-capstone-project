@@ -144,6 +144,8 @@ export class AppComponent {
     this.activeLink = this.links[c.activeLinkIndex]
     this.activeAdminLink = this.myPizzaGesLinks[c.activeMyPizzaGesLinkIndex]
     this.resMenu = true
+    this.isLoginPath = c.isLoginPath
+    this.appRef.tick()
   }
 
   protected messageIds: string[] = []

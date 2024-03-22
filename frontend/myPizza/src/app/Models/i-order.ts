@@ -49,7 +49,6 @@ export interface Order {
   asap: boolean
   status: string
   deliveryCost: number
-  timeInterval: TimeInterval
   user: User
 }
 

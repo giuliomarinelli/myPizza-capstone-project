@@ -71,7 +71,7 @@ public class SocketIOController {
          */
         this.socketServer.addEventListener("messageSendToUser", MessageDTO.class, onSendMessage);
         this.socketServer.addEventListener("restore_messages", RestoreMessageDTO.class, onRestoreMessage);
-        this.socketServer.addEventListener("restore_work_session", Object.class, onRestoreWorkSession);
+        this.socketServer.addEventListener("restore_time_intervals", Object.class, onRestoreTimeIntervals);
     }
 
     private UUID getUserId(SocketIOClient client) {
@@ -190,16 +190,16 @@ public class SocketIOController {
         }
     };
 
-    public DataListener<Object> onRestoreWorkSession = new DataListener<>() {
+    public DataListener<Object> onRestoreTimeIntervals = new DataListener<>() {
         @Override
         public void onData(SocketIOClient client, Object args, AckRequest acknowledge) throws Exception {
 
-            messageSvc.pushWorkSession();
+            messageSvc.pushTimeIntervals();
 
             /**
              * After sending message to target user we can send acknowledge to sender
              */
-            acknowledge.sendAckData("Restore work session ok");
+            acknowledge.sendAckData("Restore time intervals ok");
         }
     };
 

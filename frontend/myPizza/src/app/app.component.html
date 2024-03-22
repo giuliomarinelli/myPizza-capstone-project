@@ -1,4 +1,4 @@
-<app-access-denied *ngIf="!isAdmin && isAdminPath && isLoggedIn && res && res1"></app-access-denied>
+
 <mat-sidenav-container class="sidenav-container text-white" (backdropClick)="close('backdrop')">
   <mat-sidenav #sidenav (keydown.escape)="close('escape')" class="main-menu-offcanvas dark">
     <aside>
@@ -12,6 +12,7 @@
       </mat-toolbar>
       <nav>
         <ul class="offcanvas-menu pt-4">
+          @if(!isAdminPath) {
           <li><a (click)="close('')" routerLink="/" routerLinkActive="active"
               [routerLinkActiveOptions]="{ exact: true }">Home</a></li>
           <li><a (click)="close('')" routerLink="/ordina-a-domicilio" routerLinkActive="active">ordina a domicilio</a>
@@ -20,6 +21,14 @@
           </li>
           <li><a (click)="close('')" routerLink="/il-nostro-menu" routerLinkActive="active">il nostro menu</a></li>
           <li><a (click)="close('')" routerLink="/contatti" routerLinkActive="active">contatti</a></li>
+        } @else {
+          <li><a (click)="close('')" routerLink="/my-pizza-ges/prodotti" routerLinkActive="active">Gestione prodotti</a>
+          </li>
+          <li><a (click)="close('')" routerLink="/my-pizza-ges/aggiungi-prodotti" routerLinkActive="active">Aggiungi prodotti</a></li>
+          <li><a (click)="close('')" routerLink="/my-pizza-ges/ingredienti" routerLinkActive="active">Gestione ingredienti</a></li>
+          <li><a (click)="close('')" routerLink="/my-pizza-ges/gestisci-visualizzazione-menu" routerLinkActive="active">Gestione ordinamento menu ingredienti</a></li>
+          <li><a (click)="close('')" routerLink="/my-pizza-ges/sessione" routerLinkActive="active">Gestione sessione ordini</a></li>
+        }
         </ul>
         <hr class="hr text-white">
         @if (isLoggedIn === false && res) {
@@ -139,7 +148,7 @@
       </mat-toolbar>
     </header>
     <router-outlet></router-outlet>
-    <app-login *ngIf="showLogIn && isLoginPath"></app-login>
+    <app-login *ngIf="isLoginPath && !isLoggedIn && res"></app-login>
     <footer id="footer" class="bg-dark py-3 px-2">
       <div class="container-md text-center text-white">
         &copy; 2024 MyPizza. Tutti i diritti riservati
@@ -147,7 +156,7 @@
     </footer>
   </mat-sidenav-content>
 </mat-sidenav-container>
-@if(newMessage) {<div class="alert-notification">
+@if(newMessage && !isAdminPath) {<div class="alert-notification">
   <div class="fade-in alert alert-dismissible w-100 backdr"
     [ngClass]="{'fade-out': newMessage.delete === true, 'alert-success': count % 2 === 0, 'alert-primary': count % 2 !== 0}"
     role="alert">

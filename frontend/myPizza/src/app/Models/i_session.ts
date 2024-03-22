@@ -4,6 +4,7 @@ export interface TimeInterval {
   id: string
   startsAt: number
   endsAt: number
+  orders: Order[]
 }
 
 export interface IsThereAnActiveSessionRes {

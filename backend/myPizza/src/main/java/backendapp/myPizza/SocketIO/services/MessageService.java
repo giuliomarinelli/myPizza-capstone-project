@@ -1,5 +1,6 @@
 package backendapp.myPizza.SocketIO.services;
 
+import backendapp.myPizza.Models.entities.TimeInterval;
 import backendapp.myPizza.Models.entities.WorkSession;
 import backendapp.myPizza.SocketIO.ClientNotification;
 import backendapp.myPizza.SocketIO.entities.Message;
@@ -10,6 +11,7 @@ import backendapp.myPizza.exceptions.UnauthorizedException;
 import backendapp.myPizza.repositories.WorkSessionRepository;
 import backendapp.myPizza.security.JwtUtils;
 import backendapp.myPizza.services.ProfileService;
+import backendapp.myPizza.services._SessionService;
 import com.corundumstudio.socketio.SocketIOClient;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +40,7 @@ public class MessageService {
     private ProfileService profileSvc;
 
     @Autowired
-    private WorkSessionRepository _sessionRp;
+    private _SessionService _session;
 
     @Autowired
     private JwtUtils jwtUtils;
@@ -88,16 +90,15 @@ public class MessageService {
         }
     }
 
-    public void pushWorkSession() throws NotFoundException {
+    public void pushTimeIntervals() throws NotFoundException {
         Set<UUID> adminClientIds = sessionSvc.getClientIdsFromUserId(profileSvc.getAdminUserId().getAdminUserId());
-        Optional<WorkSession> opt = _sessionRp.findAll().stream().filter(WorkSession::isActive).findFirst();
-        if (opt.isEmpty()) return;
+        List<TimeInterval> timeIntervals = _session.getActiveSessionTimeIntervals();
         for (UUID clientId : adminClientIds) {
             SocketIOClient client = clientSvc.getClient(clientId);
             log.info(client);
             if (client != null) {
                 log.info("send active session");
-                client.sendEvent("active_session", opt.get());
+                client.sendEvent("time_intervals", timeIntervals);
             }
 
         }

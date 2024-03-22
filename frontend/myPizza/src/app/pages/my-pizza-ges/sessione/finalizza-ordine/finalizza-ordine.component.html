@@ -1,10 +1,11 @@
 <div class="footer-bottom dark-design">
-  @if(!confirm) {
+  @if(!confirm && isAdmin) {
   <div class="my-pizza-card mt-5">
     @if(act === 'CONFIRM') {
     <h1 class="h1 text-accent mb-3">Conferma ordine</h1>
     <div [formGroup]="confirmOrderForm">
       <div class="form-group">
+        <p>Il cliente <strong>{{order.user.messagingUsername}}</strong> ha richiesto la consegna per le <strong>{{order.expectedDeliveryTime | date : 'HH:mm'}}</strong>. Verifica se è possibile confermare per quall'ora. Eventualmente puoi lasciare un messaggio al cliente con delle spiegazioni.</p>
         <select class="form-select" (change)="setDisabled()" formControlName="timeIntervalId" data-bs-theme="dark">
           <option value="none">(orario in cui consegneremo)</option>
           @for (ti of timeIntervals; track ti) {
@@ -35,7 +36,7 @@
         </h2>
         <p>L'ordine <strong>{{orderId}}</strong> per {{order.user.messagingUsername}} è stato confermato per le {{selectedTimeInterval.endsAt | date : 'HH:mm'}} ed
          è stato inserito nell'intervallo di tempo lavorativo {{selectedTimeInterval.startsAt | date : 'HH:mm'}} - {{selectedTimeInterval.endsAt | date : 'HH:mm'}}</p>
-        <p><a routerLink="my-pizza-ges/sessione">Torna alla sessione</a></p>
+        <p><a routerLink="/my-pizza-ges/sessione">Torna alla sessione</a></p>
 
       </div>
     }
@@ -47,8 +48,13 @@
       Si è verificato un errore
     </h1>
     <p>L'ordine con id = {{orderId}} non esiste, oppure si è verificato un problema lato server</p>
-    <p><a routerLink="my-pizza-ges/sessione">Torna alla sessione</a></p>
+    <p><a routerLink="/my-pizza-ges/sessione">Torna alla sessione</a></p>
   </div>
   }
 </div>
+@if (!isAdmin) {
+  <div class="footer-bottom">
+
+  </div>
+}
 <app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>

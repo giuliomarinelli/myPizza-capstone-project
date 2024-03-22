@@ -24,7 +24,7 @@ public class TimeInterval {
     @Setter(AccessLevel.NONE)
     private UUID id;
 
-    @JsonIgnore
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "timeInterval")
     List<Order> orders = new ArrayList<>();
 
@@ -35,6 +35,7 @@ public class TimeInterval {
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER, mappedBy = "timeIntervals")
     private List<WorkSession> workSessions = new ArrayList<>();
+
 
     private TimeInterval(long startsAt, long endsAt) {
         this.startsAt = startsAt;

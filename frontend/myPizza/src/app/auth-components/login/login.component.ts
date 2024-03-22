@@ -69,9 +69,9 @@ export class LoginComponent {
           this.authSvc.isAdmin().subscribe(res => {
             this.appRef.tick()
             if (res) {
-              this.path === '/login' ? this.router.navigate(['/my-pizza-ges/prodotti']) : this.router.navigate([this.path])
+              this.path === '/login' ? this.router.navigate(['/my-pizza-ges/prodotti']) : location.href = location.href
             } else {
-              this.path === '/login' ? this.router.navigate(['/my-pizza']) : this.router.navigate([this.path])
+              this.path === '/login' ? this.router.navigate(['/my-pizza']) : location.href = location.href
             }
           })
 

@@ -30,6 +30,8 @@ public class _SessionService {
     @Autowired
     private WorkSessionRepository _sessionRp;
 
+
+
     public List<Long> getActiveSessionDeliveryTimes() {
         List<Long> list = new ArrayList<>(_sessionRp.getActiveSessionTimeIntervals().stream().map(TimeInterval::getStartsAt).toList());
         list.add(_sessionRp.getActiveSessionTimeIntervals().stream().map(TimeInterval::getEndsAt).toList().getLast());

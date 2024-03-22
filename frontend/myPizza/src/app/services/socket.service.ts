@@ -4,7 +4,7 @@ import { Socket, io } from 'socket.io-client'
 import { AuthService } from './auth.service';
 import { Message, MessageDTO } from '../Models/i-message';
 import { PublicApiService } from './public-api.service';
-import { _Session } from '../Models/i_session';
+import { TimeInterval, _Session } from '../Models/i_session';
 
 
 
@@ -62,18 +62,18 @@ export class SocketService {
     })
   }
 
-  OnActiveSessionChange(): Observable<_Session> {
-    return new Observable<_Session>(observer => {
-      socket.on('active_session', (data: _Session) => {
+  onTimeIntervalsChange(): Observable<TimeInterval[]> {
+    return new Observable<TimeInterval[]>(observer => {
+      socket.on('time_intervals', (data: TimeInterval[]) => {
         observer.next(data)
       })
     })
   }
 
 
-  restoreWorkSession(): Observable<Object> {
+  restoreTimeIntervals(): Observable<Object> {
     return new Observable<Object>(observer => {
-      socket.emit('restore_work_session', {
+      socket.emit('restore_time_intervals', {
         restore: true
       },
         (ack: Object) => {

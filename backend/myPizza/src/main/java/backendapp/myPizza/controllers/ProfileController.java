@@ -79,8 +79,8 @@ public class ProfileController {
     // MESSAGES
 
     @GetMapping("/message/{id}/set-read")
-    public Message setMessageRead(@PathVariable UUID id) throws NotFoundException {
-        return messageSvc.getMessageById(id);
+    public Message setMessageRead(@PathVariable UUID id) throws NotFoundException, UnauthorizedException {
+        return messageSvc.setMessageAsReadById(id);
     }
 
 }

@@ -29,17 +29,18 @@ export class RouteConfigComponent {
         let isAdminPath: boolean = false
         let isSessionPath: boolean = false
         let isLoginPath: boolean = false
+        let isMessagePath: boolean = false
 
         if (path.startsWith('/my-pizza-ges')) {
           brand = 'MyPizzaGes'
           isAdminPath = true
         }
         if (path.startsWith('/my-pizza')) {
-          brand = 'MyPizzaGes'
+          brand = 'MyPizza'
           isLoginPath = true
         }
         if (path.includes('my-pizza-ges/sessione')) isSessionPath = true
-
+        if (path.includes('my-pizza/messaggi')) isMessagePath = true
         let activeLinkIndex = this.links.findIndex(link => {
           let ret = false
           for (const p of link.paths) {
@@ -75,7 +76,8 @@ export class RouteConfigComponent {
           isHome,
           brand,
           isSessionPath,
-          isLoginPath
+          isLoginPath,
+          isMessagePath
         })
 
       }

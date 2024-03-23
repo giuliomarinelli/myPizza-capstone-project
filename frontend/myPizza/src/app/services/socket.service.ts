@@ -70,6 +70,11 @@ export class SocketService {
     })
   }
 
+  restoreAllMessages(): Observable<Object> {
+    return new Observable<Object>(observer => {
+      socket.emit('restore_all_messages', (ack: Object) => observer.next(ack))
+    })
+  }
 
   restoreTimeIntervals(): Observable<Object> {
     return new Observable<Object>(observer => {

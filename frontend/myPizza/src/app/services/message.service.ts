@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { Message } from '../Models/i-message';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +10,10 @@ import { Observable } from 'rxjs';
 export class MessageService {
 
   constructor(private http: HttpClient) { }
+
+  public messages = new BehaviorSubject<number>(-1)
+
+  public messages$ = this.messages.asObservable()
 
   private backendUrl = environment.backendUrl
 

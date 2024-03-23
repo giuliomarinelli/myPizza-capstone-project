@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 
 import { MyPizzaRoutingModule } from './my-pizza-routing.module';
 import { MyPizzaComponent } from './my-pizza.component';
+import { MessageCComponent } from './message-c/message-c.component';
 
 
 @NgModule({
   declarations: [
-    MyPizzaComponent
+    MyPizzaComponent,
+    MessageCComponent
   ],
   imports: [
     CommonModule,

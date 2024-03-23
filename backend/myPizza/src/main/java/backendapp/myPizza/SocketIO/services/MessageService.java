@@ -117,6 +117,22 @@ public class MessageService {
         }
     }
 
+
+public void restoreAllMessages(UUID recipientUserId) {
+        if (sessionSvc.isOnLine(recipientUserId)) {
+            List<Message> messages = messageRp.findAllMessagesByRecipientUserId(recipientUserId);
+            messages = messages.stream().peek(m -> {
+                m.setRestore(true);
+            }).toList();
+            messageRp.saveAll(messages);
+            for (Message m : messages) {
+                sendMessageToClient(m);
+            }
+        }
+    }
+
+
+
     public void pushTimeIntervals() throws NotFoundException {
         Set<UUID> adminClientIds = sessionSvc.getClientIdsFromUserId(profileSvc.getAdminUserId().getAdminUserId());
         List<TimeInterval> timeIntervals = _session.getActiveSessionTimeIntervals();

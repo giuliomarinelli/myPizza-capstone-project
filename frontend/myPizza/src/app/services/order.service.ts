@@ -38,4 +38,12 @@ export class OrderService {
     return this.http.post<ConfirmRes>(`${this.backendUrl}/api/order/confirm`, confirmOrderDTO, { withCredentials: true })
   }
 
+  public rejectOrder(orderId: string): Observable<ConfirmRes> {
+    return this.http.get<ConfirmRes>(`${this.backendUrl}/api/order/${orderId}/reject`, { withCredentials: true })
+  }
+
+  public completeOrder(orderId: string): Observable<ConfirmRes> {
+    return this.http.get<ConfirmRes>(`${this.backendUrl}/api/order/${orderId}/set-completed`, { withCredentials: true })
+  }
+
 }

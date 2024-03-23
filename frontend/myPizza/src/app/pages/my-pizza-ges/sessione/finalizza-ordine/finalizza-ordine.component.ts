@@ -42,7 +42,7 @@ export class FinalizzaOrdineComponent {
                 // validazione
                 const regex = new RegExp(/^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/)
                 valid = regex.test(orderId)
-                if (!(act === 'DELETE' || act === 'CONFIRM')) valid = false
+                if (!(act === 'DELETE' || act === 'CONFIRM' || act === 'SET_COMPLETED')) valid = false
                 if (!valid) ngZone.run(() => router.navigate(['my-pizza-ges', 'sessione']))
                 if (valid)
                   orderSvc.getOrderById(orderId).subscribe({
@@ -137,6 +137,32 @@ export class FinalizzaOrdineComponent {
     messageToCustomer: this.fb.control(null)
   })
 
+  protected rejectOrderForm: FormGroup = this.fb.group({
+    messageToCustomer: this.fb.control(null)
+  })
+
+  protected performReject(): void {
+    const messageField: string = this.confirmOrderForm.get('messageToCustomer')?.value
+
+    const customMessage = !messageField ? '' : ' - Motivazione: ' + messageField
+
+    const messageDTO: MessageDTO = {
+      orderId: <string>this.orderId,
+      message: `Purtroppo il tuo ordine non è stato accettato` + customMessage +' - Contattaci per avere maggiori informazioni',
+      recipientUserId: this.order.user.id
+    }
+
+    this.orderSvc.rejectOrder(this.orderId as string).subscribe({
+      next: res => {
+        this.messageSvc.setMessageReadById(this.messageId).subscribe({ next: res => console.log(res) })
+        this.socket.sendMessage(messageDTO).subscribe(ack => console.log(ack))
+        this.confirm = true
+        this.appRef.tick()
+      }
+    })
+
+  }
+
   protected performConfirm(): void {
 
     const confirmOrderDTO: ConfirmOrderDTO = {
@@ -162,7 +188,6 @@ export class FinalizzaOrdineComponent {
 
     this.orderSvc.confirmOrder(confirmOrderDTO).subscribe({
       next: res => {
-        console.log(this.messageId)
         this.messageSvc.setMessageReadById(this.messageId).subscribe({ next: res => console.log(res) })
         this.socket.sendMessage(messageDTO).subscribe(ack => console.log(ack))
         this.confirm = true

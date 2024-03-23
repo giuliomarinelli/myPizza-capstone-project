@@ -50,6 +50,7 @@ export interface Order {
   status: string
   deliveryCost: number
   user: User
+  completedAt: number
 }
 
 export interface SendOrderDTO {

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { Observable, map } from 'rxjs';
 import { DeliveryTimeRes, IsThereAnActiveSessionRes, StartSessionDTO, TimeIntervalsRes, _Session } from '../Models/i_session';
+import { ConfirmRes } from '../Models/confirm-res';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +29,10 @@ export class SessionService {
 
   public getActiveSessionTimeIntervals(): Observable<TimeIntervalsRes> {
     return this.http.get<TimeIntervalsRes>(`${this.backendUrl}/api/work-session/get-active-session-time-intervals`, { withCredentials: true })
+  }
+
+  public closeActiveSession(): Observable<ConfirmRes> {
+    return this.http.get<ConfirmRes>(`${this.backendUrl}/api/work-session/close`, { withCredentials: true })
   }
 
 }

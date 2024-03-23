@@ -1,6 +1,7 @@
 package backendapp.myPizza.SocketIO.services;
 
 import backendapp.myPizza.Models.entities.TimeInterval;
+import backendapp.myPizza.Models.entities.User;
 import backendapp.myPizza.Models.entities.WorkSession;
 import backendapp.myPizza.SocketIO.ClientNotification;
 import backendapp.myPizza.SocketIO.entities.Message;
@@ -8,6 +9,7 @@ import backendapp.myPizza.SocketIO.repositories.MessageRepository;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.exceptions.NotFoundException;
 import backendapp.myPizza.exceptions.UnauthorizedException;
+import backendapp.myPizza.repositories.UserRepository;
 import backendapp.myPizza.repositories.WorkSessionRepository;
 import backendapp.myPizza.security.JwtUtils;
 import backendapp.myPizza.services.ProfileService;
@@ -45,11 +47,36 @@ public class MessageService {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Autowired
+    private UserRepository userRp;
+
     public Message getMessageById(UUID id) throws NotFoundException {
         return messageRp.findById(id).orElseThrow(
                 () -> new NotFoundException("Message with id ='" + id + "' not found")
         );
     }
+
+    public Message getReceivedMessageByIdForUser(UUID id) throws UnauthorizedException, NotFoundException {
+        UUID userId = jwtUtils.extractUserIdFromReq();
+        assert userRp.findById(userId).isPresent();
+        User user = userRp.findById(userId).get();
+        Message message = getMessageById(id);
+        if (!message.getRecipientUser().equals(user))
+            throw new UnauthorizedException("You don't have permissions to access this resource");
+        return message;
+    }
+
+    public List<Message> getAllReceivedForUser() throws UnauthorizedException {
+        UUID userId = jwtUtils.extractUserIdFromReq();
+        assert userRp.findById(userId).isPresent();
+        User user = userRp.findById(userId).get();
+        return user.getReceivedMessages();
+    }
+
+    public List<Message> getAllReceivedUnreadForUser() throws UnauthorizedException {
+        return getAllReceivedForUser().stream().filter(m -> !m.isRead()).toList();
+    }
+
 
     public Message setMessageAsReadById(UUID id) throws NotFoundException, UnauthorizedException {
         Message m = getMessageById(id);

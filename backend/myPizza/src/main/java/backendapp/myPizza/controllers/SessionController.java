@@ -2,6 +2,7 @@ package backendapp.myPizza.controllers;
 
 import backendapp.myPizza.Models.entities.WorkSession;
 import backendapp.myPizza.Models.reqDTO.StartSessionDTO;
+import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.Models.resDTO.DeliveryTimeRes;
 import backendapp.myPizza.Models.resDTO.IsThereAnActiveSessionRes;
 import backendapp.myPizza.Models.resDTO.TimeIntervalsRes;
@@ -45,6 +46,13 @@ public class SessionController {
     public TimeIntervalsRes getActiveSessionTimeIntervals() {
         return new TimeIntervalsRes(_sessionSvc.getActiveSessionTimeIntervals());
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/close")
+    public ConfirmRes closeActiveSession() throws BadRequestException {
+        return _sessionSvc.closeActiveSession();
+    }
+
 
 
 

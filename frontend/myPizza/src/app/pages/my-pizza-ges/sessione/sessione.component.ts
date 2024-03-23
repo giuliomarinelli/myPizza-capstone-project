@@ -9,7 +9,10 @@ import { SessionService } from '../../../services/session.service';
 import { NavigationEnd, Router } from '@angular/router';
 import { Order } from '../../../Models/i-order';
 import { MessageService } from '../../../services/message.service';
-
+import { PublicApiService } from '../../../services/public-api.service';
+import { OrderService } from '../../../services/order.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmOrderDialogComponent } from './confirm-order-dialog/confirm-order-dialog.component';
 
 @Component({
   selector: 'app-sessione',
@@ -21,7 +24,8 @@ export class SessioneComponent {
   constructor(private authSvc: AuthService, private productSvc: ProductService,
     @Inject(PLATFORM_ID) private platformId: string, private socket: SocketService,
     private appRef: ApplicationRef, private _session: SessionService, private router: Router,
-    private ngZone: NgZone, private messageSvc: MessageService) {
+    private ngZone: NgZone, private messageSvc: MessageService, private publicApi: PublicApiService,
+    private orderSvc: OrderService, public dialog: MatDialog) {
 
     afterNextRender(() => {
       if (localStorage != undefined) {
@@ -72,6 +76,21 @@ export class SessioneComponent {
     })
   }
 
+  protected closeSession(): void {
+    // poi metteremo un alert
+    this._session.closeActiveSession().subscribe({next: res => console.log(res)})
+  }
+
+  protected countOrdersWithStatus(status: string, timeIntervals: TimeInterval[]): number {
+    let count: number = 0
+    timeIntervals.forEach(ti => count += ti.orders.filter(o => o.status === status).length)
+    return count
+  }
+
+  protected getOrdersWithStatus(status: string, orders: Order[]): Order[] {
+    return orders.filter(o => o.status === status)
+  }
+
   protected timeIntervals: TimeInterval[] = []
 
   protected messageIds: string[] = []
@@ -93,7 +112,7 @@ export class SessioneComponent {
       - dropdown notifiche con ultime 3 notifiche
       - message by id con controllo su autorizzazione
       - all messages con possibilità di contrassegnare come letto
-      - storico ordini client
+      - storico ordini cliente
       - storico ordini admin
       - server exception handling e validation
       - not logged e accesso negato
@@ -111,23 +130,43 @@ export class SessioneComponent {
 
 
     this.socket.onReceiveMessage().subscribe(message => {
-      if (!this.messageIds.includes(message.id)/* && (message.recipientUser).... admin user id escludi i messaggi con order CONFIRMED */) {
-        this.messageIds.push(message.id)
-        this.realTimeMessages.unshift({
+      this.publicApi.getAdminUserId().subscribe(adminUserId => {
+        if (!this.messageIds.includes(message.id)) {
+          console.log(message.recipientUser.authorities)
+          if (!(message.senderUser.id === adminUserId && message.order?.status !== 'INIT')) {
+            this.messageIds.push(message.id)
+            this.realTimeMessages.unshift({
 
-          message,
-          add: true,
-          delete: false
+              message,
+              add: true,
+              delete: false
+            })
+
+            this.appRef.tick()
+          }
+        }
+      })
+
+    })
+  }
+
+
+
+  protected setCompleted(order: Order): void {
+    this.orderSvc.completeOrder(order.id).subscribe({
+      next: res => {
+
+        this.socket.sendMessage({
+          recipientUserId: order.user.id,
+          message: 'Il tuo ordine è pronto e lo riceverai a brevissimo. A presto, grazie - Lo staff di MyPizza',
+          orderId: order.id
+        }).subscribe(ack => {
+          this.ngZone.run(() =>this.dialog.open(ConfirmOrderDialogComponent, { data: { order } }))
         })
-
-        this.appRef.tick()
       }
     })
   }
 
-  ngAfterContentInit() {
-
-  }
 
   protected finalizeOrder(orderId: string, act: string, messageId: string, i: number): void {
     switch (act) {

@@ -55,6 +55,7 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private long completedAt;
 
     private boolean guest;
 

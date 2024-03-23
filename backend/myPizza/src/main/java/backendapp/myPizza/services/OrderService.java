@@ -8,7 +8,9 @@ import backendapp.myPizza.Models.reqDTO.SendOrderDTO;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.Models.resDTO.OrderCheckoutInfo;
 import backendapp.myPizza.Models.resDTO.OrderInitRes;
+import backendapp.myPizza.SocketIO.services.MessageService;
 import backendapp.myPizza.exceptions.BadRequestException;
+import backendapp.myPizza.exceptions.NotFoundException;
 import backendapp.myPizza.exceptions.UnauthorizedException;
 import backendapp.myPizza.repositories.*;
 import backendapp.myPizza.security.JwtUtils;
@@ -49,6 +51,9 @@ public class OrderService {
 
     @Autowired
     private TimeIntervalRepository timeIntervalRp;
+
+    @Autowired
+    private MessageService messageSvc;
 
     public OrderInitRes orderInit(OrderInitDTO orderInitDTO) throws BadRequestException {
         Order order = new Order();
@@ -154,9 +159,22 @@ public class OrderService {
         );
         if (!order.getStatus().equals(OrderStatus.PENDING))
             throw new BadRequestException("An order must have PENDING status to be confirmed or rejected");
-        order.setStatus(OrderStatus.PENDING);
+        order.setStatus(OrderStatus.REJECTED);
         orderRp.save(order);
         return new ConfirmRes("Order with id='" + orderId + " rejected", HttpStatus.OK);
+    }
+
+    public ConfirmRes completeOrder(UUID orderId) throws BadRequestException, NotFoundException {
+        Order order = orderRp.findById(orderId).orElseThrow(
+                () -> new BadRequestException("Order you're trying to confirm doesn't exist")
+        );
+        if (!order.getStatus().equals(OrderStatus.ACCEPTED))
+            throw new BadRequestException("An order must have ACCEPTED status to be confirmed or rejected");
+        order.setStatus(OrderStatus.COMPLETED);
+        order.setCompletedAt(System.currentTimeMillis());
+        orderRp.save(order);
+        messageSvc.pushTimeIntervals();
+        return new ConfirmRes("Order with id='" + orderId + "' has been setted as COMPLETED successfully", HttpStatus.OK);
     }
 
 

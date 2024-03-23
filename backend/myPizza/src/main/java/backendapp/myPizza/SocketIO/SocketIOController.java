@@ -71,6 +71,7 @@ public class SocketIOController {
          */
         this.socketServer.addEventListener("messageSendToUser", MessageDTO.class, onSendMessage);
         this.socketServer.addEventListener("restore_messages", RestoreMessageDTO.class, onRestoreMessage);
+        this.socketServer.addEventListener("restore_all_messages", RestoreMessageDTO.class, onRestoreAllMessages);
         this.socketServer.addEventListener("restore_time_intervals", Object.class, onRestoreTimeIntervals);
     }
 
@@ -187,6 +188,22 @@ public class SocketIOController {
              * After sending message to target user we can send acknowledge to sender
              */
             acknowledge.sendAckData("User " + recipientUser.getId() + " restored unread messages");
+        }
+    };
+    public DataListener<RestoreMessageDTO> onRestoreAllMessages = new DataListener<>() {
+        @Override
+        public void onData(SocketIOClient client, RestoreMessageDTO rest, AckRequest acknowledge) throws Exception {
+
+
+            assert userRp.findById(getUserId(client)).isPresent();
+            User recipientUser = userRp.findById(getUserId(client)).get();
+
+            messageSvc.restoreAllMessages(recipientUser.getId());
+
+            /**
+             * After sending message to target user we can send acknowledge to sender
+             */
+            acknowledge.sendAckData("User " + recipientUser.getId() + " restored all messages");
         }
     };
 

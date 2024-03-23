@@ -1,0 +1,17 @@
+<mat-dialog-content class="mat-typography">
+  <h3>Ordine confermato con successo</h3>
+  <p>L'ordine è stato settato come completato con successo e potrai trovarlo ora nella sezione "Ordini completati". Il cliente <strong>{{data.order.user.messagingUsername}}</strong>
+   ha già ricevuto una notifica istantanea che lo avvisa che il suo ordine è pronto e a breve verrà consegnato.</p>
+   @if(data.order) {
+   <p><strong>Ordine {{data.order.id}}</strong></p>
+   <p class="text-mp-primary">@for(os of data.order.orderSets; track os; let i = $index) {
+    <span>{{os.quantity}} x {{os.productRef.name}}</span>@if(i < data.order.orderSets.length - 1) {
+      <span>, </span>
+    }
+  }</p>
+}
+</mat-dialog-content>
+<mat-dialog-actions [align]="'center'">
+  <button mat-raised-button  [mat-dialog-close]="true">Ok</button>
+</mat-dialog-actions>
+

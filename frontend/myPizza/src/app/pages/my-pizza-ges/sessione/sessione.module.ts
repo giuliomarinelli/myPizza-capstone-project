@@ -7,11 +7,13 @@ import { SharedComponentsModule } from '../../../shared-components/shared-compon
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MyPizzaGesShComponentsModule } from '../../../my-pizza-ges-sh-components/my-pizza-ges-sh-components.module';
-
+import { ConfirmOrderDialogComponent } from './confirm-order-dialog/confirm-order-dialog.component';
+import { CdkAccordionModule } from '@angular/cdk/accordion';
 
 @NgModule({
   declarations: [
-    SessioneComponent
+    SessioneComponent,
+    ConfirmOrderDialogComponent
   ],
   imports: [
     CommonModule,
@@ -20,7 +22,8 @@ import { MyPizzaGesShComponentsModule } from '../../../my-pizza-ges-sh-component
     SharedComponentsModule,
     MatIconModule,
     MatDialogModule,
-    MyPizzaGesShComponentsModule
+    MyPizzaGesShComponentsModule,
+    CdkAccordionModule
   ]
 })
 export class SessioneModule { }

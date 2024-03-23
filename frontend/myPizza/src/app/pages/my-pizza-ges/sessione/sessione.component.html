@@ -5,9 +5,40 @@
   <div class="bg-mp-primary py-3 text-center">
     <h1 class="h1">Sessione lavorativa</h1>
   </div>
+  <div class="bg-dark py-2">
+    <cdk-accordion class="example-accordion">
 
+      <cdk-accordion-item #accordionItem="cdkAccordionItem" class="example-accordion-item" role="button" tabindex="0"
+        [attr.id]="'accordion-header-0'" [attr.aria-expanded]="accordionItem.expanded"
+        [attr.aria-controls]="'accordion-body-0'">
+        <div class="container-sm" (click)="accordionItem.toggle()">
+          La sessione permette la lavorazione di ordini nelle seguenti fasce orarie:
+          <span class="text-mp-primary">
+            Clicca per to {{ !accordionItem.expanded ? 'visualizzare' : 'nascondere' }}
+          </span>
+        </div>
+        <div class="example-accordion-item-body" role="region" [style.display]="accordionItem.expanded ? '' : 'none'"
+          [attr.id]="'accordion-body-0'" [attr.aria-labelledby]="'accordion-header-0'">
+          <div class="container-sm">
+            <ul>
+              @for(ti of timeIntervals; track ti; let i = $index) {
+              <li><strong>{{ti.startsAt | date : 'HH:mm'}} - {{ti.endsAt | date : 'HH:mm'}}</strong>
+                @if(i < timeIntervals.length - 1) { <span>; </span>
+                  } @else {<span>.</span>}</li>
+              }
+            </ul>
+          </div>
+        </div>
+      </cdk-accordion-item>
+
+    </cdk-accordion>
+    <div class="container-sm d-flex justify-content-center mt-3">
+      <button class="btn btn-accent" (click)="closeSession()">Termina sessione</button>
+    </div>
+    <hr class="hr text-secondary">
+  </div>
   <div class="bg-dark py-2 d-flex justify-content-center align-items-center">
-    <h3 class="h3">Nuovi ordini</h3>
+    <h3 class="h3">Nuovi ordini in arrivo</h3>
   </div>
   @if (realTimeMessages.length === 0) {
   <div class="col bg-accent h d-flex justify-content-center align-items-center fs-3">
@@ -31,6 +62,9 @@
 
 
       <div class="mt-2"><em>{{message.message.message}}</em></div>
+      <div class="mt-2"><strong>Orario di consegna richiesto: {{message.message.order?.expectedDeliveryTime | date :
+          'HH:mm'}}</strong></div>
+
       @if(message.message.order)
       {
       <hr class="hr">
@@ -81,46 +115,99 @@
   <div class="container-lg">
     <div class="row dark-design align-items-stretch">
       @if (timeIntervals) {
+        @if(countOrdersWithStatus('ACCEPTED', timeIntervals)) {
       @for(ti of timeIntervals; track ti) {
+      @if (getOrdersWithStatus('ACCEPTED', ti.orders).length > 0) {
       <div class="col-12 col-md-6 col-xxl-4 p-3">
         <div class="my-pizza-card h-100">
           <h5 class="h5 text-accent">
             Ore {{ti.startsAt | date : 'HH:mm'}} - {{ti.endsAt | date : 'HH:mm'}}
           </h5>
           <hr class="hr text-secondary">
-          @if (ti.orders.length === 0) {
+          @if (getOrdersWithStatus('ACCEPTED', ti.orders).length === 0) {
           <p class="text-white">Non ci sono ordini</p>
           } @else {
-          @for(o of ti.orders; track o; let ind = $index) {
+          @for(o of getOrdersWithStatus('ACCEPTED', ti.orders); track o; let ind = $index) {
           <h6 class="h6 text-accent">Ordine da {{o.user.messagingUsername}}</h6>
-            <p class="m-0 mb-2 text-mp-primary mt-1">id: {{o.id}}</p>
+          <p><strong>{{o.address.road}} {{o.address.civic}}, {{o.address.city.name}} ({{o.address.city.provinceCode}}),
+              {{o.address.city.region}}</strong></p>
+          <p class="m-0 mb-2 text-mp-primary mt-1">id: {{o.id}}</p>
           <ul>
             @for(os of o.orderSets; track os) {
             <li>{{os.quantity}} x {{os.productRef.name}}</li>
             }
           </ul>
+
           <div class="row btn-set">
             <div class="col">
-              <button class="btn-primary d-flex justify-content-center align-items-center gap-3">
+              <button (click)="setCompleted(o)"
+                class="btn-primary d-flex justify-content-center align-items-center gap-3">
                 <i class="bi bi-check-circle-fill"></i>
                 <span>Completa ordine</span>
               </button>
             </div>
           </div>
-          @if(ind < ti.orders.length - 1) {
-            <hr class="hr text-secondary">
-          }
+          @if (ind < getOrdersWithStatus('ACCEPTED', ti.orders).length - 1) { <hr class="hr text-secondary">
+            }
 
-          }
-          }
+
+
+            }
+            }
         </div>
       </div>
       }
       }
-
+      } @else {
+        <p class="text-center">Non ci sono ordini in lavorazione</p>
+      }
+    }
     </div>
   </div>
 
+</div>
+<div class="col-12 bg-dark py-3 mb-4 d-flex justify-content-center align-items-center">
+  <h3 class="h3">Ordini completati</h3>
+</div>
+<div class="container-lg">
+  <div class="row dark-design align-items-stretch">
+    @if (timeIntervals) {
+      @if (countOrdersWithStatus('COMPLETED', timeIntervals)) {
+    @for(ti of timeIntervals; track ti) {
+      @if (getOrdersWithStatus('COMPLETED', ti.orders).length > 0) {
+        <div class="col-12 col-md-6 col-xxl-4 p-3">
+      <div class="my-pizza-card h-100">
+        <h5 class="h5 text-accent">
+          Ore {{ti.startsAt | date : 'HH:mm'}} - {{ti.endsAt | date : 'HH:mm'}}
+        </h5>
+        <hr class="hr text-secondary">
+        @if (getOrdersWithStatus('COMPLETED', ti.orders).length === 0) {
+        <p class="text-white">Non ci sono ordini completati</p>
+        } @else {
+        @for(o of getOrdersWithStatus('COMPLETED', ti.orders); track o; let ind = $index) {
+        @if (ti.orders) {
+        <h6 class="h6 text-accent">Ordine da {{o.user.messagingUsername}}</h6>
+        <p class="fs-4 text-accent">Completato alle {{o.completedAt | date : 'HH:mm'}}</p>
+        <p class="m-0 mb-2 text-mp-primary mt-1">id: {{o.id}}</p>
+        <ul>
+          @for(os of o.orderSets; track os) {
+          <li>{{os.quantity}} x {{os.productRef.name}}</li>
+          }
+        </ul>
+        }
+
+
+        }
+        }
+      </div>
+    </div>
+    }
+    }
+    } @else {
+      <p class="text-center">Non ci sono ordini completati</p>
+    }
+  }
+  </div>
 </div>
 } @else if (isLoggedIn && res) {
 <app-access-denied></app-access-denied>

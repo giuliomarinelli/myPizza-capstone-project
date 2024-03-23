@@ -4,6 +4,8 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete'
 import { RegistratiRoutingModule } from './registrati-routing.module';
 import { RegistratiComponent } from './registrati.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MatDialogModule } from '@angular/material/dialog';
+
 
 
 @NgModule({
@@ -14,7 +16,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     CommonModule,
     RegistratiRoutingModule,
     ReactiveFormsModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatDialogModule
   ]
 })
 export class RegistratiModule { }

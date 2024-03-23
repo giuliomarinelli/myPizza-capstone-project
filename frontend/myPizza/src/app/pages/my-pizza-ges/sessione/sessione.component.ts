@@ -77,8 +77,7 @@ export class SessioneComponent {
   }
 
   protected closeSession(): void {
-    // poi metteremo un alert
-    this._session.closeActiveSession().subscribe({next: res => console.log(res)})
+    this._session.closeActiveSession().subscribe({ next: res => location.href = location.href })
   }
 
   protected countOrdersWithStatus(status: string, timeIntervals: TimeInterval[]): number {
@@ -107,22 +106,22 @@ export class SessioneComponent {
 
     // per accesso negato chiamata diretta a is admin senza subject e redirect
     /* mancano
-      - rifiuta ordine
-      - conferma completamento ordine
-      - dropdown notifiche con ultime 3 notifiche
-      - message by id con controllo su autorizzazione
-      - all messages con possibilità di contrassegnare come letto
-      - storico ordini cliente
-      - storico ordini admin
+      - rifiuta ordine FATTO
+      - conferma completamento ordine FATTO
+      - dropdown notifiche con ultime 3 notifiche NON SI FA PIU
+      - message by id con controllo su autorizzazione NON SI FA PIU
+      - all messages con possibilità di contrassegnare come letto FATTO
+      - storico ordini cliente NON SI FA PIU
+      - storico ordini admin NON SI FA PIU
       - server exception handling e validation
       - not logged e accesso negato
       - home con slider
       - ordina con login/registrati
-      -eliminare la nostra pizzeria e il nostro menu
-      - notifiche via mail
-      - sistemare registrazione
-      - crud profilo
-      -impostazioni globali
+      - eliminare la nostra pizzeria e il nostro menu
+      - notifiche via mail VEDREMO
+      - sistemare registrazione FATTO
+      - crud profilo NO
+      - impostazioni globali
 
     7 GIORNI
 
@@ -161,7 +160,7 @@ export class SessioneComponent {
           message: 'Il tuo ordine è pronto e lo riceverai a brevissimo. A presto, grazie - Lo staff di MyPizza',
           orderId: order.id
         }).subscribe(ack => {
-          this.ngZone.run(() =>this.dialog.open(ConfirmOrderDialogComponent, { data: { order } }))
+          this.ngZone.run(() => this.dialog.open(ConfirmOrderDialogComponent, { data: { order } }))
         })
       }
     })

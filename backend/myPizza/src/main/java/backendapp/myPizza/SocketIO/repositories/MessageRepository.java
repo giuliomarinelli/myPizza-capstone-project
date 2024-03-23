@@ -11,15 +11,15 @@ import java.util.UUID;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, UUID> {
-    @Query("SELECT m FROM Message m WHERE recipientUser.id = :recipientUserId")
+    @Query("SELECT m FROM Message m WHERE recipientUser.id = :recipientUserId ORDER BY m.sentAt ASC")
     public List<Message> findAllMessagesByRecipientUserId(UUID recipientUserId);
-    @Query("SELECT m FROM Message m WHERE m.recipientUser.id = :recipientUserId AND m.read = false")
+    @Query("SELECT m FROM Message m WHERE m.recipientUser.id = :recipientUserId AND m.read = false ORDER BY m.sentAt ASC")
     public List<Message> findAllUnreadMessagesByRecipientUserId(UUID recipientUserId);
 
-    @Query("SELECT m FROM Message m WHERE m.recipientUser.id = :recipientUserId AND m.wasUserOnLine = false AND m.read = false")
+    @Query("SELECT m FROM Message m WHERE m.recipientUser.id = :recipientUserId AND m.wasUserOnLine = false AND m.read = false ORDER BY m.sentAt ASC")
     public List<Message> findAllWasOffLineMessagesByRecipientUserId(UUID recipientUserId);
 
-    @Query("SELECT m FROM Message m WHERE m.recipientUser.id = :recipientUserId AND m.read = true")
+    @Query("SELECT m FROM Message m WHERE m.recipientUser.id = :recipientUserId AND m.read = true ORDER BY m.sentAt ASC")
     public List<Message> findAllReadMessagesByRecipientUserId(UUID recipientUserId);
 
 

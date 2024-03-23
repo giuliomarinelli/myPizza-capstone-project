@@ -71,7 +71,7 @@ export class LoginComponent {
             if (res) {
               this.path === '/login' ? this.router.navigate(['/my-pizza-ges/prodotti']) : location.href = location.href
             } else {
-              this.path === '/login' ? this.router.navigate(['/my-pizza']) : location.href = location.href
+              this.path === '/login' ? this.router.navigate(['/ordina-a-domicilio']) : location.href = location.href
             }
           })
 

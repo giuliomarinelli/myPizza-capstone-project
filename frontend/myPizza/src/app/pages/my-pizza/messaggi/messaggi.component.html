@@ -1,1 +1,67 @@
-<p>messaggi works!</p>
+<div class="footer-bottom dark design">
+  <h1 class="h1 text-accent text-center my-3">
+    Messaggi
+  </h1>
+  <nav mat-tab-nav-bar [tabPanel]="tabPanel" [mat-stretch-tabs]="false" mat-align-tabs="center" mat-align>
+    @for (tab of tabs; track tab; let i = $index) {
+    <a mat-tab-link (click)="activeTab = tab; perform(i)" [active]="activeTab === tab"> {{tab}} </a>
+    }
+  </nav>
+  <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
+  <div class="max-w mt-5">
+    @if(messages.length) {
+    @for(message of messages; track message; let i = $index) {
+
+    <div [ngClass]="{'alert w-100 transition': true, 'alert-success': message.read, 'alert-danger': !message.read}"
+      role="alert">
+      <div>
+        <span>Da <strong>{{message._from}}</strong></span><span> a
+          <strong>{{message._to}}</strong></span>
+        <span class="d-inline-block ms-3 text-success"> <i class="bi bi-clock"></i> {{message.sentAt | date
+          :
+          'dd/MM/y ore HH:mm:ss' }}</span>
+      </div>
+
+
+      <div class="mt-2"><em>{{message.message}}</em></div>
+
+
+
+      @if(message.order)
+      {
+      <hr class="hr">
+      <h5 class="h5">Ordine {{message.order.id}}</h5>
+
+
+
+      <div class="order-sets-col">
+        @for(o of message.order.orderSets; track o; let j = $index) {
+        <span><em>{{o.productRef.name}} ({{o.productRef.price.toFixed(2)}}€) x {{o.quantity}}</em>
+          @if(j < message.order.orderSets.length - 1) { <span>, </span>
+        }
+        </span>
+        }
+      </div>
+
+
+
+
+      }
+
+    @if(!message.read){<div class="btn-set">
+      <button (click)="setAsRead(message.id)" class="mt-4 btn btn-primary btn-400 d-flex justify-content-center align-items-center gap-3">
+        <i class="bi bi-check-circle-fill"></i>
+        <span>Contrassegna come letto</span>
+      </button>
+    </div>
+}
+    </div>
+    }
+    } @else {
+      <p class="fs-2 text-center">
+        Non ci sono messaggi
+      </p>
+    }
+  </div>
+
+</div>

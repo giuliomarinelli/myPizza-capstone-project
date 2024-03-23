@@ -69,8 +69,7 @@ public class MessageService {
     public List<Message> getAllReceivedForUser() throws UnauthorizedException {
         UUID userId = jwtUtils.extractUserIdFromReq();
         assert userRp.findById(userId).isPresent();
-        User user = userRp.findById(userId).get();
-        return user.getReceivedMessages();
+        return messageRp.findAllMessagesByRecipientUserId(userId);
     }
 
     public List<Message> getAllReceivedUnreadForUser() throws UnauthorizedException {

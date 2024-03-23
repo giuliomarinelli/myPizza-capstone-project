@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import { MatTabsModule } from '@angular/material/tabs';
 import { MessaggiRoutingModule } from './messaggi-routing.module';
 import { MessaggiComponent } from './messaggi.component';
 
@@ -11,7 +11,8 @@ import { MessaggiComponent } from './messaggi.component';
   ],
   imports: [
     CommonModule,
-    MessaggiRoutingModule
+    MessaggiRoutingModule,
+    MatTabsModule
   ]
 })
 export class MessaggiModule { }

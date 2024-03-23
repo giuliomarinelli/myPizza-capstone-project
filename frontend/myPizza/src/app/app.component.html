@@ -114,18 +114,20 @@
           @if(isLoggedIn && res) {
           <div class="d-flex justify-content-center align-items-center gap-3">
             @if(!isSessionPath) {
-            <button class="bell-size fake-btn bell">
+            <a routerLink="/my-pizza/messaggi" class="bell-size fake-btn bell">
               <div class="position-relative text-white">
                 <i class="bi bi-bell-fill fs-icon"></i>
-                @if (messages.length > 0) {
+
+                @if (count > 0) {
                 <span
-                  class="position-absolute animated fs-sm top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                  {{messages.length}}
+                  class="position-absolute animated fs-sm top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  [ngClass]="{'d-none': count === 0}">
+                  {{count}}
                   <span class="visually-hidden"></span>
                 </span>
                 }
               </div>
-            </button>
+            </a>
             }
             @if(userProfile && res) {<button (click)="logout()" class="avatar fake-btn d-none d-xsmb-block m-xsmb-none">
               <img [src]="userProfile.profileImage" class="img-fluid">
@@ -156,11 +158,11 @@
     </footer>
   </mat-sidenav-content>
 </mat-sidenav-container>
-@if(newMessage && !isAdminPath) {<div class="alert-notification">
+@if(newMessage && !isAdminPath && !isMessagePath) {<div class="alert-notification">
   <div class="fade-in alert alert-dismissible w-100 backdr"
     [ngClass]="{'fade-out': newMessage.delete === true, 'alert-success': count % 2 === 0, 'alert-primary': count % 2 !== 0}"
     role="alert">
-
+    <a class="message-link" routerLink="/my-pizza/messaggi">
     <div>Da <strong>{{newMessage.message._from}}</strong></div>
     <div>A <strong>{{newMessage.message._to}}</strong></div>
     <div>{{newMessage.message.sentAt | date : 'dd/MM/y ore HH:mm:ss' }}</div>
@@ -169,6 +171,7 @@
     {
     <div [innerHTML]="orderToString(newMessage.message.order)"></div>
     }
+  </a>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
       (click)="removeMessage()"></button>
 

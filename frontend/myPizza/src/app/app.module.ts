@@ -15,6 +15,7 @@ import { AuthComponentsModule } from './auth-components/auth-components.module';
 import { RouteConfigComponent } from './route-config/route-config.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
+import { NgxRerenderModule } from 'ngx-rerender';
 
 //I keep the new line
 
@@ -37,7 +38,8 @@ import { provideRouter } from '@angular/router';
     HttpClientModule,
     MyPizzaGesShComponentsModule,
     AuthComponentsModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    NgxRerenderModule
   ],
   providers: [
     provideClientHydration(),

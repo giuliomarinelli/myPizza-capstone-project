@@ -66,6 +66,10 @@ export class RegistratiComponent {
 
     }
 
+    protected name: string = ''
+
+    protected confirm: boolean = false
+
     protected onCityInput() {
         const q: string = this.registerForm.value['address']['cityAutocomplete']
         if (q.length > 1) {
@@ -206,15 +210,16 @@ export class RegistratiComponent {
 
 
 
-            this.authSvc.register(userPostDTO).subscribe(
+            this.authSvc.register(userPostDTO).subscribe({
 
-                res => {
-                    console.log(res)
+                next: res => {
+                    this.name = res.firstName
+                    this.confirm = true
                 },
-                err => {
+                error: err => {
                     console.log(err.error)
                 }
-            )
+              })
         } else {
             this.markAll()
 

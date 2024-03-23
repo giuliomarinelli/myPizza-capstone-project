@@ -1,0 +1,94 @@
+.max-w {
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+.h {
+  min-height: 150px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.transition {
+  animation: 0.2s ease-in-out forwards fade-in;
+}
+
+.delete {
+  animation: 0.5s ease-in-out forwards go-up, 0.35s ease-in-out forwards fade-out;
+}
+
+.fade-out-animation {
+  animation: 0.5s ease-in-out forwards fade-out;
+}
+
+.fade-in-animation {
+  animation: 0.5s ease-in-out forwards fade-in;
+}
+
+@keyframes go-down {
+  from {
+    max-height: 0;
+  }
+
+  to {
+    max-height: 400px;
+  }
+}
+
+@keyframes go-up {
+  from {
+    max-height: 400px;
+  }
+
+  to {
+    max-height: 0;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.btn-400 {
+  max-width: 400px;
+  width: 96%;
+}
+
+.order-sets-container {
+  display: flex;
+  align-items: baseline;
+}
+
+.icon-col {
+  flex-basis: 50px;
+}
+
+.order-sets-col {
+  flex: 0 0 calc(100% - 100px)
+}
+
+.max-w {
+  max-width: 768px;
+  width: 96%;
+  margin: 0 auto;
+}
+
+.letter-spacing {
+  letter-spacing: 1.5;
+}

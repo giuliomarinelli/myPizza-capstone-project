@@ -1,4 +1,4 @@
-import { ApplicationRef, ChangeDetectionStrategy, Component, Inject, NgZone, PLATFORM_ID, SimpleChanges, ViewChild, afterNextRender, inject } from '@angular/core';
+import { ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, NgZone, PLATFORM_ID, SimpleChanges, ViewChild, afterNextRender, inject } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { iLink, iRouteConfig } from './Models/i-link';
 import { ThemePalette } from '@angular/material/core';
@@ -10,6 +10,7 @@ import { SocketService } from './services/socket.service';
 import { Message, MessageMng } from './Models/i-message';
 import { application } from 'express';
 import { Order } from './Models/i-order';
+import { MessageService } from './services/message.service';
 
 @Component({
   selector: '#root',
@@ -19,7 +20,8 @@ import { Order } from './Models/i-order';
 export class AppComponent {
 
   constructor(@Inject(PLATFORM_ID) private platformId: string,
-    private authSvc: AuthService, private socket: SocketService, private appRef: ApplicationRef, private ngZone: NgZone
+    private authSvc: AuthService, private socket: SocketService, private appRef: ApplicationRef, private ngZone: NgZone,
+    private messageSvc: MessageService, private change: ChangeDetectorRef
   ) {
 
     afterNextRender(() => {
@@ -30,33 +32,40 @@ export class AppComponent {
           if (!socket.connected) {
 
             if (!this.isSessionPath)
-
               this.authSvc.isWsAuthValidOrRefresh().subscribe(res => {
                 socket.connect()
+
                 socket.onReceiveMessage().subscribe(message => {
-                  if (!this.messageIds.includes(message.id)) {
+                  if (!this.messageIds.includes(message.id) && !message.read) {
                     this.messageIds.push(message.id)
                     this.count++
-                    appRef.tick()
-                    ngZone.runOutsideAngular(() => {
-                      setTimeout(() => {
-                        if (message.restore === false) {
+                    this.messageSvc.messages$.subscribe(n => {
+                      if (n !== -1) this.count = n
+                      appRef.tick()
+
+
+                    })
+
+                    if (message.restore === false) {
+                      ngZone.runOutsideAngular(() => {
+                        setTimeout(() => {
+
                           this.newMessage = {
                             delete: false,
                             add: true,
                             message
                           }
+
+
+                          this.messages.unshift(message)
                           appRef.tick()
-                        }
-                        this.messages.unshift(message)
-                        appRef.tick()
 
-                      }, 100)
-                      ngZone.runOutsideAngular(() => {
-                        setTimeout(() => this.removeMessage(), 6000)
+                        }, 100)
+                        ngZone.runOutsideAngular(() => {
+                          setTimeout(() => this.removeMessage(), 6000)
+                        })
                       })
-                    })
-
+                    }
                   }
 
                 })
@@ -114,9 +123,19 @@ export class AppComponent {
 
   }
 
+  public trigger: number = 0;
+
+  public rerender(): void {
+    this.count = 0
+    this.change.detectChanges();
+    this.count = 1000
+  }
+
   protected res: boolean = false
   protected res1: boolean = false
   protected res2: boolean = true
+
+
 
   protected orderToString(order: Order): string {
     let str: string = `<h6><strong>Ordine ${order.id}: </strong></h6><p>`
@@ -145,6 +164,7 @@ export class AppComponent {
     this.activeAdminLink = this.myPizzaGesLinks[c.activeMyPizzaGesLinkIndex]
     this.resMenu = true
     this.isLoginPath = c.isLoginPath
+    this.isMessagePath = c.isMessagePath
     this.appRef.tick()
   }
 
@@ -162,8 +182,8 @@ export class AppComponent {
       this.appRef.tick()
       this.newMessage.delete = true
       this.ngZone.runOutsideAngular(() => setTimeout(() => {
-        this.appRef.tick()
         this.newMessage = undefined
+        this.appRef.tick()
       }, 500))
 
     }
@@ -180,6 +200,8 @@ export class AppComponent {
   protected brand: string = 'MyPizza'
 
   isLoginPath = false
+
+  isMessagePath = false
 
   protected showLogIn = true
 

@@ -1,4 +1,4 @@
-import { Component, Inject, PLATFORM_ID, afterNextRender, afterRender } from '@angular/core';
+import { ApplicationRef, Component, Inject, NgZone, PLATFORM_ID, afterNextRender, afterRender } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { ProductService } from '../../../services/product.service';
 import { isPlatformBrowser } from '@angular/common';
@@ -15,26 +15,25 @@ import { Router } from '@angular/router';
   styleUrl: './aggiungi-prodotti.component.scss'
 })
 export class AggiungiProdottiComponent {
-  constructor(private authSvc: AuthService, private productSvc: ProductService,
-    @Inject(PLATFORM_ID) private platformId: string, public dialog: MatDialog, private router: Router) {
+  constructor(private authSvc: AuthService, private productSvc: ProductService, private ngZone: NgZone,
+    @Inject(PLATFORM_ID) private platformId: string, public dialog: MatDialog, private router: Router, private appRef: ApplicationRef) {
     afterNextRender(() => {
-      this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
-        if (isLoggedIn) {
-          this.authSvc.isAdmin$.subscribe(isAdmin => {
-            if (isAdmin) {
-              console.log('accesso admin concesso')
-              this.isAdmin = true
-              this.res = true
-            } else {
-              this.isAdmin = false
-              this.res = true
-            }
+      this.productSvc.getCategories().subscribe(res => {
+        this.categories = res.categories
+        this.productSvc.getProductNames().subscribe(res => {
+          this.productNames = res
+          this.productSvc.getToppings('TOPPING').subscribe(res => {
+            this.toppings = res
+            this.toppingDescriptions = this.toppings.toppings.map(t => t.description)
+            this.isLoading = false
+            appRef.tick()
+            ngZone.runOutsideAngular(() => setTimeout(() => this.onlyOnceAnimated = false, 500))
           })
-        } else {
-          this.res = true
-          this.isLoading = false
-        }
+        })
+
       })
+
+
 
     })
   }
@@ -67,20 +66,7 @@ export class AggiungiProdottiComponent {
   public toppingDescriptions!: string[]
 
 
-  ngDoCheck() {
-    if (this.isAdmin && this.onlyOnce) {
-      this.onlyOnce = false
-      this.productSvc.getCategories().subscribe(res => this.categories = res.categories)
-      this.productSvc.getProductNames().subscribe(res => this.productNames = res)
-      this.productSvc.getToppings('TOPPING').subscribe(res => {
-        this.toppings = res
-        this.toppingDescriptions = this.toppings.toppings.map(t => t.description)
-        this.isLoading = false
-        setTimeout(() => this.onlyOnceAnimated = false, 500)
-      })
 
-    }
-  }
 
   protected onDelete: number = -1
 
@@ -113,6 +99,7 @@ export class AggiungiProdottiComponent {
 
   protected addForm(): void {
     this.onAdd = true
+    this.appRef.tick()
     setTimeout(() => {
       this.addProductForms.push(true)
       this.onAdd = false
@@ -121,6 +108,7 @@ export class AggiungiProdottiComponent {
 
   protected delete(e: number): void {
     this.onDelete = e
+    this.appRef.tick()
     setTimeout(() => {
       this.addProductForms[e] = false
       this.addProductData[e].deleted = true
@@ -136,6 +124,7 @@ export class AggiungiProdottiComponent {
   }
 
   protected performSubmit() {
+    this.appRef.tick()
     this.isLoading = true
     let isAllValid: boolean = true
     const addProductDataActive = this.addProductData.filter(p => p.deleted === false)

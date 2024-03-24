@@ -1,3 +1,5 @@
+import { TimeInterval } from './Models/i_session';
+import { IsLoggedIn } from './Models/is-logged-in';
 import { ApplicationRef, ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, NgZone, PLATFORM_ID, SimpleChanges, ViewChild, afterNextRender, inject } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { iLink, iRouteConfig } from './Models/i-link';
@@ -24,103 +26,66 @@ export class AppComponent {
     private messageSvc: MessageService, private change: ChangeDetectorRef
   ) {
 
-    afterNextRender(() => {
+    afterNextRender(async () => {
 
-      this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
-        if (isLoggedIn) {
+      this._isLoggedIn()
 
-          if (!socket.connected) {
 
-            if (!this.isSessionPath)
-              this.authSvc.isWsAuthValidOrRefresh().subscribe(res => {
-                socket.connect()
+      if (!socket.connected) {
 
-                socket.onReceiveMessage().subscribe(message => {
-                  if (!this.messageIds.includes(message.id) && !message.read) {
-                    this.messageIds.push(message.id)
-                    this.count++
-                    this.messageSvc.messages$.subscribe(n => {
-                      if (n !== -1) this.count = n
+        if (!this.isSessionPath)
+          this.authSvc.isWsAuthValidOrRefresh().subscribe(res => {
+            socket.connect()
+
+            socket.onReceiveMessage().subscribe(message => {
+              if (!this.messageIds.includes(message.id) && !message.read) {
+                this.messageIds.push(message.id)
+                this.count++
+                this.messageSvc.messages$.subscribe(n => {
+                  if (n !== -1) this.count = n
+                  appRef.tick()
+
+
+                })
+
+                if (message.restore === false) {
+                  ngZone.runOutsideAngular(() => {
+                    setTimeout(() => {
+
+                      this.newMessage = {
+                        delete: false,
+                        add: true,
+                        message
+                      }
+
+
+                      this.messages.unshift(message)
                       appRef.tick()
 
-
+                    }, 100)
+                    ngZone.runOutsideAngular(() => {
+                      setTimeout(() => this.removeMessage(), 6000)
                     })
-
-                    if (message.restore === false) {
-                      ngZone.runOutsideAngular(() => {
-                        setTimeout(() => {
-
-                          this.newMessage = {
-                            delete: false,
-                            add: true,
-                            message
-                          }
-
-
-                          this.messages.unshift(message)
-                          appRef.tick()
-
-                        }, 100)
-                        ngZone.runOutsideAngular(() => {
-                          setTimeout(() => this.removeMessage(), 6000)
-                        })
-                      })
-                    }
-                  }
-
-                })
-              })
-            socket.restoreMessages().subscribe(ack => {
-              console.log(ack)
-
-            })
-          }
-
-          this.isLoggedIn = true
-          this.showLogIn = false
-          this.getProfile()
-          this.authSvc.isAdmin().subscribe({
-            next: isAdmin => {
-              this.authSvc.adminSbj.next(isAdmin)
-              this.isAdmin = true
-              this.res = true
-            },
-            error: err => this.res = true
-          }
-          )
-        } else {
-          this.authSvc.isLoggedInQuery().subscribe({
-            next: res => {
-              if (!socket.connected) {
-                this.authSvc.isWsAuthValidOrRefresh().subscribe(res => {
-                  socket.connect()
-                })
+                  })
+                }
               }
 
-              this.showLogIn = false
-              this.isLoggedIn = res.loggedIn
-              this.authSvc.loggedInSbj.next(res.loggedIn)
-              this.authSvc.isAdmin().subscribe({
-                next: isAdmin => {
-                  this.authSvc.adminSbj.next(isAdmin)
-                  this.accessDenied = true
-                  this.res1 = true
-                },
-                error: err => this.res1 = true
-              })
-              this.getProfile()
-            },
-            error: err => {
-              this.res = true
-
-            }
+            })
           })
-        }
-      })
+        socket.restoreMessages().subscribe(ack => {
+          console.log(ack)
+
+        })
+      }
+
+
+
+
+
+
+
+
     })
-
-
-
   }
 
   public trigger: number = 0;
@@ -135,7 +100,24 @@ export class AppComponent {
   protected res1: boolean = false
   protected res2: boolean = true
 
+  private async _isLoggedIn(): Promise<void> {
+    {
+      this.authSvc.isLoggedIn$.subscribe((res) => {
+        if (res === true) {
+          this.isLoggedIn = true
+          this.getProfile()
+        } else {
+          this.authSvc.isLoggedInQuery().subscribe(res => {
+            this.isLoggedIn = true
+            this.getProfile()
+            this.authSvc.loggedInSbj.next(true)
+          })
 
+        }
+      })
+
+    }
+  }
 
   protected orderToString(order: Order): string {
     let str: string = `<h6><strong>Ordine ${order.id}: </strong></h6><p>`
@@ -177,6 +159,7 @@ export class AppComponent {
   protected resMenu: boolean = false
 
 
+
   protected removeMessage() {
     if (this.newMessage) {
       this.appRef.tick()
@@ -189,7 +172,9 @@ export class AppComponent {
     }
   }
 
-
+  ngAfterContentInit() {
+    this._isLoggedIn()
+  }
 
   protected newMessage: MessageMng | undefined = undefined
 

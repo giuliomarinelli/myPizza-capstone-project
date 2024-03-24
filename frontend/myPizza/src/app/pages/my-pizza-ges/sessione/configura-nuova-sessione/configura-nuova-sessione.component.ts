@@ -2,7 +2,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../../services/auth.service';
 import { SessionService } from '../../../../services/session.service';
 import { IsThereAnActiveSessionRes, StartSessionDTO, TimeInterval } from './../../../../Models/i_session';
-import { Component, Inject, NgZone, PLATFORM_ID, afterNextRender } from '@angular/core';
+import { ApplicationRef, Component, Inject, NgZone, PLATFORM_ID, afterNextRender } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 
@@ -14,32 +14,25 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 export class ConfiguraNuovaSessioneComponent {
   constructor(private authSvc: AuthService,
     private _session: SessionService, private router: Router,
-    private ngZone: NgZone, private fb: FormBuilder) {
+    private ngZone: NgZone, private fb: FormBuilder, private appRef: ApplicationRef) {
 
     afterNextRender(() => {
 
-      this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
-        if (isLoggedIn) {
-          this.authSvc.isAdmin$.subscribe(isAdmin => {
-            if (isAdmin) {
-              _session.isThereAnActiveSession().subscribe(res => {
-                this.isThereAnActiveSession = res
-                console.log('sessione attiva? ', res)
-                if (res === true) {
-                  ngZone.run(() => router.navigate(['my-pizza-ges/sessione']))
-                }
-              })
-
-              console.log('accesso admin concesso')
-              this.isAdmin = true
 
 
-            } else {
-              console.log('accesso negato, miss permissions')
-            }
-          })
-        } else (console.log('accesso negato: non loggato'))
+      _session.isThereAnActiveSession().subscribe(res => {
+        this.isThereAnActiveSession = res
+        if (res === true) {
+          this.isLoading = false
+          appRef.tick()
+          ngZone.run(() => router.navigate(['my-pizza-ges/sessione']))
+        } else {
+          this.isLoading = false
+          appRef.tick()
+        }
       })
+
+
 
     })
   }
@@ -54,7 +47,9 @@ export class ConfiguraNuovaSessioneComponent {
     type: this.fb.control('none')
   })
 
-  protected timeIntervals: TimeInterval[] =[]
+  protected isLoading: boolean = true
+
+  protected timeIntervals: TimeInterval[] = []
 
   protected isOk: boolean = false
 
@@ -72,7 +67,7 @@ export class ConfiguraNuovaSessioneComponent {
   protected hours: number[] = []
 
   ngOnInit() {
-    for (let i: number = 0; i <= 24; i++) {
+    for (let i: number = 0; i < 24; i++) {
       this.hours.push(i)
     }
   }
@@ -117,8 +112,8 @@ export class ConfiguraNuovaSessioneComponent {
       const submit: StartSessionDTO = {
         openTime,
         closeTime,
-        cookCount: <number> this.startSessionForm.get('cookCount')?.value,
-        ridersCount: <number> this.startSessionForm.get('ridersCount')?.value,
+        cookCount: <number>this.startSessionForm.get('cookCount')?.value,
+        ridersCount: <number>this.startSessionForm.get('ridersCount')?.value,
         type: this.startSessionForm.get('type')?.value
       }
       this._session.startNewSession(submit).subscribe({

@@ -18,8 +18,7 @@
     data-bs-theme="dark">
     <div class="col-12 col-sm-6"><label class="mb-2">Orario inizio ordini</label></div>
     <div class="col col-sm-6 m-0 mb-sm-3 d-flex gap-4 form-group mb-4">
-      <select class="form-select date-w ù" onfocus='this.size=10;' onblur='this.size=1;'
-        onchange='this.size=1; this.blur();' formControlName="openH">
+      <select class="form-select date-w ù" formControlName="openH">
         <option value="HH">(ore)</option>
         @for(h of hours; track h) {
         <option [value]="h" [innerHTML]="generateNumberValue(h)"></option>
@@ -71,3 +70,4 @@
     </div>
   </form>
 </div>}
+<app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>

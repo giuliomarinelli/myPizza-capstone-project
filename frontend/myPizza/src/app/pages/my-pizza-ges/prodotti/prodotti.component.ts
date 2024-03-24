@@ -20,21 +20,29 @@ export class ProdottiComponent {
     @Inject(PLATFORM_ID) private platformId: string, private socket: SocketService, private appRef: ApplicationRef) {
 
     afterNextRender(() => {
-
-
-      this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
-        if (isLoggedIn && this._onlyOnce) {
-          this.authSvc.isAdmin$.subscribe(isAdmin => {
-            if (isAdmin) {
-              console.log('accesso admin concesso')
-              this.isAdmin = true
-            } else {
-              this.isAdmin = false
-            }
+      this.productSvc.getCategories().subscribe(res => {
+        this.categories = res.categories
+        this.productSvc.getProductNames().subscribe(res => {
+          this.productNames = res
+          this.productSvc.getToppings('TOPPING').subscribe(res => {
+            this.toppings = res
+            this.toppingDescriptions = this.toppings.toppings.map(t => t.description)
+            this.isLoading = false
+            appRef.tick()
           })
-        } else (console.log('accesso negato: non loggato'))
+        })
       })
 
+
+      this.productSvc.getProducts(6).subscribe(res => {
+        this.lastPage = res.totalPages - 1
+        res.content.forEach(p => {
+          this.products.push(p)
+          this.edit.push(false)
+          this.onlyOnce.push(true)
+        })
+        this.isLoading = false
+      })
     })
   }
 
@@ -74,26 +82,12 @@ export class ProdottiComponent {
     return this.products[i].toppings.map(t => t.description)
   }
 
-  ngDoCheck() {
-    if (this.isAdmin && this._onlyOnce) {
-      this._onlyOnce = false
-      this.productSvc.getCategories().subscribe(res => this.categories = res.categories)
-      this.productSvc.getProductNames().subscribe(res => this.productNames = res)
-      this.productSvc.getToppings('TOPPING').subscribe(res => {
-        this.toppings = res
-        this.toppingDescriptions = this.toppings.toppings.map(t => t.description)
-      })
-      this.productSvc.getProducts(6).subscribe(res => {
-        this.lastPage = res.totalPages - 1
-        res.content.forEach(p => {
-          this.products.push(p)
-          this.edit.push(false)
-          this.onlyOnce.push(true)
-        })
-        this.isLoading = false
-      })
-    }
+
+  protected setUpdate(i: number): void {
+    this.edit[i] = true
+    this.appRef.tick()
   }
+
 
   protected get useClient(): boolean {
     return isPlatformBrowser(this.platformId)
@@ -103,11 +97,13 @@ export class ProdottiComponent {
     this.onDelete = true
     this.isLoading = true
     const name: string = this.products.map(p => p.name)[i]
+    this.appRef.tick()
     this.productSvc.deleteProductByName(name).subscribe(res => {
       setTimeout(() => {
         this.onDelete = false
         this.products.splice(i, 1)
         this.isLoading = false
+        this.appRef.tick()
       }, 500)
     })
     this.productSvc.getCategories().subscribe(res => this.categories = res.categories)
@@ -118,6 +114,7 @@ export class ProdottiComponent {
     this.onDisappear = true
     this.isLoading = true
     const product = this.products[e.i]
+    this.appRef.tick()
     console.log(e)
     this.productSvc.updateProductByName(product.name, e.product).subscribe(res => {
       setTimeout(() => {
@@ -128,6 +125,7 @@ export class ProdottiComponent {
         this.isLoading = false
         this.productSvc.getCategories().subscribe(res => this.categories = res.categories)
         this.onDisappear = false
+        this.appRef.tick()
       }, 500)
 
     })

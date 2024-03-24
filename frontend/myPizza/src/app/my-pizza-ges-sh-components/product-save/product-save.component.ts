@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
+import { ApplicationRef, Component, ElementRef, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { CategoriesRes, Category, OnProductUpdate, Product, ProductNamesRes, ProductValidation, Topping, ToppingRes } from '../../Models/i-product';
 import { ProductErrorMessage } from '../../classes/product-error-message';
@@ -16,7 +16,7 @@ import { ProductDTO } from '../../Models/i-product-dto';
 })
 export class ProductSaveComponent {
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private appRef: ApplicationRef) {
 
   }
 
@@ -81,10 +81,12 @@ export class ProductSaveComponent {
 
   protected onCancelEmit() {
     this.onCancel.emit(false)
+    this.appRef.tick()
   }
 
   protected onProductUpdateEmit() {
     if (this.productForm.valid) {
+      this.appRef.tick()
       const toppings: string[] = []
       this.addedToppingDescriptions.forEach(desc => {
         const topping: Topping | undefined = this.toppings?.toppings.find(t => t.description === desc)

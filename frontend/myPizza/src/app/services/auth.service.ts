@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, map, tap } from 'rxjs';
 import { environment } from '../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
@@ -7,13 +7,17 @@ import { UserLogin, UserPostDTO } from '../Models/user-dto';
 import { ConfirmRes } from '../Models/confirm-res';
 import { AddressesRes, AuthoritiesRes, User } from '../Models/i-user';
 import { IsWsAuthValid } from '../Models/i-IsWsAuthValid';
+import { isPlatformBrowser } from '@angular/common';
+import { error } from 'console';
+import { HttpErrorRes } from '../Models/i-http-error-res';
+import { RouterStateSnapshot } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, @Inject(PLATFORM_ID) private platformId: string) { }
 
   public loggedInSbj = new BehaviorSubject<boolean>(false)
   public isLoggedIn$ = this.loggedInSbj.asObservable()
@@ -22,6 +26,27 @@ export class AuthService {
   public isAdmin$ = this.adminSbj.asObservable()
 
   private backendUrl = environment.backendUrl;
+
+  public previousState = new BehaviorSubject<RouterStateSnapshot | null>(null)
+  public previousState$ = this.previousState.asObservable()
+
+
+  public async isLoggedInCheck(): Promise<boolean> {
+
+
+    let isLoggedIn: boolean = false
+    const res = await fetch(`${this.backendUrl}/api/user-profile/is-logged-in`, { credentials: 'include' })
+    const data: IsLoggedIn | HttpErrorRes = await res.json()
+    if (res.status === 200) {
+      const OkRes: IsLoggedIn = <IsLoggedIn>data
+      if (OkRes.loggedIn) isLoggedIn = true
+    } else if (res.status === 401) {
+      const errRes: HttpErrorRes = <HttpErrorRes>data
+      if (errRes.error === 'Unauthorized') isLoggedIn = false
+    }
+    return isLoggedIn
+
+  }
 
   public isLoggedInQuery(): Observable<IsLoggedIn> {
     return this.http.get<IsLoggedIn>(`${this.backendUrl}/api/user-profile/is-logged-in`, { withCredentials: true })
@@ -56,6 +81,10 @@ export class AuthService {
 
   public getAddresses(): Observable<AddressesRes> {
     return this.http.get<AddressesRes>(`${this.backendUrl}/api/user-profile/addresses`, { withCredentials: true })
+  }
+
+  public getAuthorities(): Observable<string[]> {
+    return this.http.get<AuthoritiesRes>(`${this.backendUrl}/api/user-profile/get-authorities`, { withCredentials: true }).pipe(map(res => res.authorities))
   }
 
 }

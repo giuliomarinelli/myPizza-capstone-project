@@ -1,4 +1,4 @@
-import { Component, Inject, PLATFORM_ID, afterNextRender } from '@angular/core';
+import { ApplicationRef, Component, Inject, PLATFORM_ID, afterNextRender } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { ProductService } from '../../../services/product.service';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop'
@@ -14,22 +14,20 @@ import { isPlatformBrowser } from '@angular/common';
 export class GestisciVisualizzazioneMenuComponent {
 
   constructor(private authSvc: AuthService, private productSvc: ProductService, private menuSvc: MenuService,
-    @Inject(PLATFORM_ID) private platformId: string) {
+    @Inject(PLATFORM_ID) private platformId: string, private appRef: ApplicationRef) {
 
     afterNextRender(() => {
-      this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
-        if (isLoggedIn && this._onlyOnce) {
-          this.authSvc.isAdmin$.subscribe(isAdmin => {
-            if (isAdmin) {
-              console.log('accesso admin concesso')
-              this.isAdmin = true
-            } else {
-              isAdmin = false
-            }
-          })
-        } else (console.log('accesso negato: non loggato'))
-      })
+      this.menuSvc.getMenu(25).subscribe(res => {
 
+        res.content.forEach(m => {
+          this.menu.push(m)
+          this.onlyOnce.push(true)
+        })
+
+        this.isLoading = false
+        appRef.tick()
+
+      })
     })
   }
 
@@ -71,23 +69,7 @@ export class GestisciVisualizzazioneMenuComponent {
     })
   }
 
-  ngDoCheck() {
-    if (this.isAdmin && this._onlyOnce) {
 
-      this._onlyOnce = false
-
-      this.menuSvc.getMenu(25).subscribe(res => {
-
-        res.content.forEach(m => {
-          this.menu.push(m)
-          this.onlyOnce.push(true)
-        })
-
-        this.isLoading = false
-
-      })
-    }
-  }
 
   protected drop(event: CdkDragDrop<Menu[]>) {
     moveItemInArray(this.menu, event.previousIndex, event.currentIndex)

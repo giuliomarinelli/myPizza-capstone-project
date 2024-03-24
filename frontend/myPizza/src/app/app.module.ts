@@ -11,11 +11,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { HomeModule } from './pages/home/home.module';
 import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
-import { AuthComponentsModule } from './auth-components/auth-components.module';
 import { RouteConfigComponent } from './route-config/route-config.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { provideRouter } from '@angular/router';
-import { NgxRerenderModule } from 'ngx-rerender';
+
+
 
 //I keep the new line
 
@@ -37,9 +36,7 @@ import { NgxRerenderModule } from 'ngx-rerender';
     HomeModule,
     HttpClientModule,
     MyPizzaGesShComponentsModule,
-    AuthComponentsModule,
-    BrowserAnimationsModule,
-    NgxRerenderModule
+    BrowserAnimationsModule
   ],
   providers: [
     provideClientHydration(),

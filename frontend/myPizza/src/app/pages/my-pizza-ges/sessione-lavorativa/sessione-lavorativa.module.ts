@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { SessioneLavorativaRoutingModule } from './sessione-lavorativa-routing.module';
 import { SessioneLavorativaComponent } from './sessione-lavorativa.component';
 import { NgxRerenderModule } from 'ngx-rerender';
-import { AuthComponentsModule } from '../../../auth-components/auth-components.module';
+
 
 
 @NgModule({
@@ -14,8 +14,7 @@ import { AuthComponentsModule } from '../../../auth-components/auth-components.m
   imports: [
     CommonModule,
     SessioneLavorativaRoutingModule,
-    NgxRerenderModule,
-    AuthComponentsModule
+    NgxRerenderModule
   ]
 })
 export class SessioneLavorativaModule { }

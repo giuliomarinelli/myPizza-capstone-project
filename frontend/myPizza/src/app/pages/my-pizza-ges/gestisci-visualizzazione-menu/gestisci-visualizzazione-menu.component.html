@@ -1,6 +1,5 @@
-<app-access-denied *ngIf="isAdmin === false && useClient"></app-access-denied>
-<app-full-screen-loader [isLoading]="isLoading && isAdmin === true"></app-full-screen-loader>
-<ng-container *ngIf="isAdmin && useClient">
+<app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>
+<ng-container *ngIf="useClient">
   <app-product-manager-nav></app-product-manager-nav>
   <div class="dark-design w-max">
 

@@ -1,7 +1,7 @@
 <div *ngFor="let message of realTimeMessages; track message; let i = index">
   <mc-rerender [(trigger)]="trigger">
     <ng-template mcRerenderContent>
-      <app-login *mcRerender="trigger">{{message | json}}</app-login>
+
     </ng-template>
   </mc-rerender>
 

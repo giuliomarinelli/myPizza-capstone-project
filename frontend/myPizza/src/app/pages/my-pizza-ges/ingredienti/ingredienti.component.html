@@ -1,6 +1,5 @@
-<app-full-screen-loader [isLoading]="isLoading && isAdmin === true"></app-full-screen-loader>
-<app-access-denied *ngIf="isAdmin === false && useClient"></app-access-denied>
-<ng-container *ngIf="isAdmin && useClient">
+<app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>
+<ng-container *ngIf="useClient">
   <app-product-manager-nav></app-product-manager-nav>
   <div class="container-lg dark-design">
     <div class="my-pizza-card my-5 max-width">
@@ -38,7 +37,7 @@
             <div
               class="offset-mb-5 offset-sm-6 offset-md-4 offset-lg-6 offset-xl-8 offste-xxl-9 col align-self-center row">
               <div class="col">
-                <button class="btn btn-primary" (click)="edit[i] = true"><i class="bi bi-pencil-fill"></i></button>
+                <button class="btn btn-primary" (click)="edit[i] = true; refresh()"><i class="bi bi-pencil-fill"></i></button>
               </div>
               <div class="col">
                 <button class="btn btn-danger" (click)="outsideDeleteManage(i)"><i class="bi bi-trash"></i></button>

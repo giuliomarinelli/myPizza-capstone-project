@@ -1,4 +1,4 @@
-<ng-container *ngIf="isAdmin">
+
   <app-product-manager-nav></app-product-manager-nav>
   @if(products.length === 0) {
   <div class="container-lg footer-bottom d-flex justify-content-center align-items-center text-white">
@@ -37,7 +37,7 @@
           <div class="btn-set row g-0">
             <div class="col-12 col-sm-6 pe-sm-1 mb-3 mb-sm-0">
               <button class="btn btn-primary d-flex justify-content-center align-items-center gap-3"
-                (click)="edit[i] = true">
+                (click)="setUpdate(i)">
                 <span>
                   <i class="bi bi-pencil-fill"></i>
                 </span>
@@ -88,5 +88,4 @@
     </div>
   </div>
   }
-</ng-container>
-<app-full-screen-loader [isLoading]="isLoading && isAdmin === true"></app-full-screen-loader>
+<app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>

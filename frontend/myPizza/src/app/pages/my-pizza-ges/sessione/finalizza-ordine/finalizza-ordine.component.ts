@@ -26,11 +26,6 @@ export class FinalizzaOrdineComponent {
 
     afterNextRender(() => {
 
-      this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
-        if (isLoggedIn) {
-          this.authSvc.isAdmin$.subscribe(isAdmin => {
-            if (isAdmin) {
-              this.res = true
               this.route.queryParams.subscribe(params => {
                 let valid: boolean = true
                 const orderId = <string>params['order_id']
@@ -83,17 +78,6 @@ export class FinalizzaOrdineComponent {
               })
 
 
-
-              console.log('accesso admin concesso')
-              this.isAdmin = true
-
-
-            } else {
-              console.log('accesso negato, miss permissions')
-            }
-          })
-        } else (console.log('accesso negato: non loggato'))
-      })
 
     })
   }

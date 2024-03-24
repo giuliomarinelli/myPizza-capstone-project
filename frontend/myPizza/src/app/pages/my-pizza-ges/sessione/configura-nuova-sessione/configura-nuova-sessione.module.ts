@@ -5,6 +5,7 @@ import { ConfiguraNuovaSessioneRoutingModule } from './configura-nuova-sessione-
 import { ConfiguraNuovaSessioneComponent } from './configura-nuova-sessione.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IgxTimePickerModule } from 'igniteui-angular';
+import { SharedComponentsModule } from '../../../../shared-components/shared-components.module';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,8 @@ import { IgxTimePickerModule } from 'igniteui-angular';
     CommonModule,
     ConfiguraNuovaSessioneRoutingModule,
     NgxMaterialTimepickerModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SharedComponentsModule
   ]
 })
 export class ConfiguraNuovaSessioneModule { }

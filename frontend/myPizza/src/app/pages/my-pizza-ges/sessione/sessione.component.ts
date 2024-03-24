@@ -37,43 +37,37 @@ export class SessioneComponent {
           localStorage.setItem('refresh', 'must-refresh')
         }
       }
-      router.events.subscribe(e => {
-        if (e instanceof NavigationEnd) this.setSocket()
+      this.setSocket()
+
+
+
+
+      _session.isThereAnActiveSession().subscribe(res => {
+        this._session.getActiveSessionTimeIntervals().subscribe(res => {
+          this.timeIntervals = res.timeIntervals
+          this.isLoading = false
+          appRef.tick()
+
+        })
+        this.isThereAnActiveSession = res
+        if (!res) ngZone.run(() => router.navigate(['my-pizza-ges/sessione/configura-nuova-sessione']))
+
       })
 
-      this.authSvc.isLoggedIn$.subscribe(isLoggedIn => {
-        if (isLoggedIn) {
-          this.isLoggedIn = true
-          this.authSvc.isAdmin$.subscribe(isAdmin => {
-            if (isAdmin) {
 
-              this.setSocket()
-              this.isLoading = false
-              this.res = true
-
-              _session.isThereAnActiveSession().subscribe(res => {
-                this._session.getActiveSessionTimeIntervals().subscribe(res => {
-                  this.timeIntervals = res.timeIntervals
-                  console.log(res)
-                })
-                this.isThereAnActiveSession = res
-                if (!res) ngZone.run(() => router.navigate(['my-pizza-ges/sessione/configura-nuova-sessione']))
-
-              })
-
-              console.log('accesso admin concesso')
-              this.isAdmin = true
-
-
-            } else {
-              this.isLoading = false
-              this.res = true
-            }
-          })
-        } this.isLoading = false
-      })
 
     })
+
+
+
+
+  }
+
+
+
+
+  protected refreshDataBinding() {
+    this.appRef.tick()
   }
 
   protected closeSession(): void {
@@ -98,6 +92,7 @@ export class SessioneComponent {
 
     this.socket.restoreTimeIntervals().subscribe(ack => {
       console.log(ack)
+
     })
     this.socket.onTimeIntervalsChange().subscribe(ti => {
       this.timeIntervals = ti
@@ -123,7 +118,7 @@ export class SessioneComponent {
       - crud profilo NO
       - impostazioni globali
 
-    7 GIORNI
+    5 GIORNI
 
     */
 

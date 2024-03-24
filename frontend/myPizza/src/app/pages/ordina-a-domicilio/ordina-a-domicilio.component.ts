@@ -1,5 +1,5 @@
 import { IsLoggedIn } from './../../Models/is-logged-in';
-import { ApplicationRef, Component, afterNextRender } from '@angular/core';
+import { ApplicationRef, Component, afterNextRender, NgZone } from '@angular/core';
 import { MenuService } from '../../services/menu.service';
 import { Menu } from '../../Models/i-menu';
 import { Category, Product } from '../../Models/i-product';
@@ -7,6 +7,7 @@ import { OrderCheckModel, OrderInitDTO } from '../../Models/i-order';
 import { OrderService } from '../../services/order.service';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { error } from 'console';
 
 @Component({
   selector: 'main#ordina-a-domicilio',
@@ -15,13 +16,14 @@ import { Router } from '@angular/router';
 })
 export class OrdinaADomicilioComponent {
 
-  constructor(private menuSvc: MenuService, private orderSvc: OrderService, private authSvc: AuthService, private router: Router) {
+  constructor(private menuSvc: MenuService, private orderSvc: OrderService, private authSvc: AuthService, private router: Router,
+    private ngZone: NgZone, private appRef: ApplicationRef) {
     afterNextRender(() => {
-      authSvc.isLoggedIn$.subscribe(res => this.IsLoggedIn = res)
+
     })
   }
 
-  protected isLoading = false
+  protected isLoading = true
 
   protected menuItems: Menu[] = []
 
@@ -44,6 +46,7 @@ export class OrdinaADomicilioComponent {
           quantity: null
         })
       })
+      this.isLoading = false
       this.lastPage = res.totalPages - 1
     })
   }
@@ -77,23 +80,30 @@ export class OrdinaADomicilioComponent {
       // gestisci con un messaggio i problemi di validazione
       console.log(isNotValidMessages.join('\n'))
     } else {
+      this.isLoading = true
       const orderInitDTO: OrderInitDTO = {
         orderSetsDTO: orderInit.map(ocm => {
           return {
             productId: ocm.productId,
-            quantity: <number> ocm.quantity
+            quantity: <number>ocm.quantity
           }
         })
       }
       console.log('order', orderInitDTO)
       this.orderSvc.orderInit(orderInitDTO).subscribe(res => {
-        if (this.IsLoggedIn)  {
+        this.authSvc.isLoggedInQuery().subscribe({
+          next: res => location.href = '/ordina-a-domicilio/checkout',
+          error: err => {
+            const ref: string = btoa('/ordina-a-domicilio/checkout')
+            location.href = `/login?ref=${ref}`
+          }
+        })
 
-          location.href = '/ordina-a-domicilio/checkout'
-        }
 
 
-          // se loggato => checkout, se non loggato form con i dati e chiede se vuole registrarsi o ordinare come ospite o loggarsi
+
+
+        // se loggato => checkout, se non loggato form con i dati e chiede se vuole registrarsi o ordinare come ospite o loggarsi
         //per ora gestisco il caso in cui l'utente è registrato
       })
     }
@@ -101,15 +111,15 @@ export class OrdinaADomicilioComponent {
   }
 
   protected findOrderModelByProductId(productId: string): OrderCheckModel {
-    return <OrderCheckModel> this.orderCheckModels.find(ocm => ocm.productId === productId)
+    return <OrderCheckModel>this.orderCheckModels.find(ocm => ocm.productId === productId)
   }
 
   protected castItemToProduct(item: Category | Product): Product {
-    return <Product> item
+    return <Product>item
   }
 
   protected castItemToCategory(item: Category | Product): Category {
-    return <Category> item
+    return <Category>item
   }
 
 

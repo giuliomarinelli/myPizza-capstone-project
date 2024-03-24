@@ -1,4 +1,4 @@
-@if(isAdmin) {
+
 <div class="footer-bottom">
 
 
@@ -11,7 +11,7 @@
       <cdk-accordion-item #accordionItem="cdkAccordionItem" class="example-accordion-item" role="button" tabindex="0"
         [attr.id]="'accordion-header-0'" [attr.aria-expanded]="accordionItem.expanded"
         [attr.aria-controls]="'accordion-body-0'">
-        <div class="container-sm" (click)="accordionItem.toggle()">
+        <div class="container-sm" (click)="accordionItem.toggle(); refreshDataBinding()">
           La sessione permette la lavorazione di ordini nelle seguenti fasce orarie:
           <span class="text-mp-primary">
             Clicca per to {{ !accordionItem.expanded ? 'visualizzare' : 'nascondere' }}
@@ -209,9 +209,4 @@
   }
   </div>
 </div>
-} @else if (isLoggedIn && res) {
-<app-access-denied></app-access-denied>
-} @else {
-<div class="footer-bottom"></div>
-}
 <app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>

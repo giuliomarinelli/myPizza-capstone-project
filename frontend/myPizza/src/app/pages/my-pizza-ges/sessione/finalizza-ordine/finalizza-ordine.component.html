@@ -1,12 +1,12 @@
 <div class="footer-bottom dark-design">
-  @if(!confirm && isAdmin) {
+  @if(!confirm) {
   <div class="my-pizza-card mt-5">
     @if(act === 'CONFIRM') {
     <h1 class="h1 text-accent mb-3">Conferma ordine</h1>
     <div [formGroup]="confirmOrderForm">
       <div class="form-group">
         <p>Il cliente <strong>{{order.user.messagingUsername}}</strong> ha richiesto la consegna per le <strong>{{order.expectedDeliveryTime | date : 'HH:mm'}}</strong>. Verifica se è possibile confermare per quall'ora. Eventualmente puoi lasciare un messaggio al cliente con delle spiegazioni.</p>
-        <p>Indirizzo: {{order.address.road}} {{order.address.civic}} {{order.address.city}}, {{order.address.city.name}} ({{order.address.city.provinceCode}}), {{order.address.city.region}}</p>
+        <p>Indirizzo: {{order.address.road}} {{order.address.civic}}, {{order.address.city.name}} ({{order.address.city.provinceCode}}), {{order.address.city.region}}</p>
         <select class="form-select" (change)="setDisabled()" formControlName="timeIntervalId" data-bs-theme="dark">
           <option value="none">(orario in cui consegneremo)</option>
           @for (ti of timeIntervals; track ti) {
@@ -30,7 +30,7 @@
       <div [formGroup]="rejectOrderForm">
         <div class="form-group">
           <p>Il cliente <strong>{{order.user.messagingUsername}}</strong> ha richiesto la consegna per le <strong>{{order.expectedDeliveryTime | date : 'HH:mm'}}</strong>. Puoi lasciare un messaggio in cui spieghi le ragioni per cui non è possibile accettare l'ordine.</p>
-          <p>Indirizzo: {{order.address.road}} {{order.address.civic}} {{order.address.city}}, {{order.address.city.name}} ({{order.address.city.provinceCode}}), {{order.address.city.region}}</p>
+          <p>Indirizzo: {{order.address.road}} {{order.address.civic}}, {{order.address.city.name}} ({{order.address.city.provinceCode}}), {{order.address.city.region}}</p>
         </div>
 
         <div class="form-group mb-3" [formGroup]="confirmOrderForm">
@@ -77,9 +77,4 @@
   </div>
   }
 </div>
-@if (!isAdmin) {
-  <div class="footer-bottom">
-
-  </div>
-}
 <app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>

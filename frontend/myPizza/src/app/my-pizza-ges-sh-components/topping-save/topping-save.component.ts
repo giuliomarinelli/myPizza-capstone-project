@@ -1,5 +1,5 @@
 import { OnToppingCreate } from './../../Models/i-product';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ApplicationRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { OnToppingUpdate, Topping, ToppingDTO } from '../../Models/i-product';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ProductService } from '../../services/product.service';
@@ -12,7 +12,7 @@ import { OnViewRemove } from '../../Models/i-product-dto';
 })
 export class ToppingSaveComponent {
 
-  constructor(private fb: FormBuilder, private productSvc: ProductService) { }
+  constructor(private fb: FormBuilder, private productSvc: ProductService, private appRef: ApplicationRef) { }
 
   @Input() public topping!: Topping
 
@@ -73,27 +73,33 @@ export class ToppingSaveComponent {
     console.log('stop')
 
     this.onLoading.emit(false)
+    this.appRef.tick()
   }
 
   protected delete() {
     this.onLoading.emit(true)
+    this.appRef.tick()
     this.productSvc.deleteToppingByName(this.topping.name).subscribe(res => {
       this.onDelete.emit(this.i)
       this.onLoading.emit(false)
+      this.appRef.tick()
     })
   }
 
   protected viewRemove() {
+    this.appRef.tick()
     this.onLoading.emit(true)
     this.onViewRemove.emit({
       i: this.i,
       type: this.type
     })
+    this.appRef.tick()
     this.onLoading.emit(false)
   }
 
   protected performSubmit(): void {
     if (this.toppingForm.valid) {
+      this.appRef.tick()
       this.onLoading.emit(true)
       const name: string = this.toppingForm.get('name')?.value
       const price: number = Number(this.toppingForm.get('price')?.value)
@@ -121,6 +127,7 @@ export class ToppingSaveComponent {
               i: this.i
             })
             this.onLoading.emit(false)
+            this.appRef.tick()
           })
       }
     } else {

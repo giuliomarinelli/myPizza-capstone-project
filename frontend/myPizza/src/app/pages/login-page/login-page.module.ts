@@ -4,8 +4,7 @@ import { CommonModule } from '@angular/common';
 
 import { LoginPageRoutingModule } from './login-page-routing.module';
 import { LoginPageComponent } from './login-page.component';
-import { AppModule } from '../../app.module';
-import { AuthComponentsModule } from '../../auth-components/auth-components.module';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 
@@ -17,7 +16,7 @@ import { AuthComponentsModule } from '../../auth-components/auth-components.modu
   imports: [
     CommonModule,
     LoginPageRoutingModule,
-    AuthComponentsModule
+    ReactiveFormsModule
   ]
 })
 export class LoginPageModule { }

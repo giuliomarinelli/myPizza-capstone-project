@@ -63,8 +63,11 @@ public class ProfileController {
 
     @GetMapping("/is-logged-in")
     public IsLoggedInRes isLoggedIng() {
+        System.out.println("================= CALL TO IS LOGGED IN ====================");
         return new IsLoggedInRes(true);
     }
+
+
 
     @GetMapping("get-authorities")
     public AuthoritiesRes getAuthorities() throws UnauthorizedException {

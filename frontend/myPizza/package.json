@@ -32,6 +32,7 @@
     "fflate": "^0.8.1",
     "igniteui-angular": "^17.1.5",
     "luxon": "^3.4.4",
+    "ngx-cookie-service-ssr": "^17.1.0",
     "ngx-infinite-scroll": "^17.0.0",
     "ngx-material-timepicker": "^13.0.0",
     "ngx-rerender": "^1.4.0",

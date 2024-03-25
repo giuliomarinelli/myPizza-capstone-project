@@ -79,7 +79,6 @@ public class JwtUtils {
                             getPayload().
                             getSubject());
             User u = authUserSvc.findUserById(userId);
-            System.out.println("Refresh");
             switch (type) {
                 case TokenPairType.HTTP -> {
                     return new TokenPair(generateToken(u, TokenType.ACCESS), generateToken(u, TokenType.REFRESH), type);

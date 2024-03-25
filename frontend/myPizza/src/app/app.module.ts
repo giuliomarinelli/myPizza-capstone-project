@@ -13,7 +13,7 @@ import { HomeModule } from './pages/home/home.module';
 import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
 import { RouteConfigComponent } from './route-config/route-config.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
+import { MatMenuModule } from '@angular/material/menu';
 
 
 //I keep the new line
@@ -36,7 +36,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     HomeModule,
     HttpClientModule,
     MyPizzaGesShComponentsModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MatMenuModule
   ],
   providers: [
     provideClientHydration(),

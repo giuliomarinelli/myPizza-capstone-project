@@ -42,9 +42,7 @@ const routes: Routes = [
   },
   {
     path: 'my-pizza-ges',
-    loadChildren: () => import('./pages/my-pizza-ges/my-pizza-ges.module').then(m => m.MyPizzaGesModule),
-    canActivate: [IsLoggedInGuard, AdminGuard],
-    canActivateChild: [IsLoggedInGuard, AdminGuard]
+    redirectTo: 'my-pizza-ges/prodotti'
   },
   {
     path: 'my-pizza-ges/aggiungi-prodotti',

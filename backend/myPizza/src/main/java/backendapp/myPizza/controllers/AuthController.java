@@ -8,11 +8,14 @@ import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.Models.resDTO.TokenPair;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.exceptions.UnauthorizedException;
+import backendapp.myPizza.exceptions.Validation;
 import backendapp.myPizza.services.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -27,16 +30,14 @@ public class AuthController {
     private AuthService authSvc;
 
     @PostMapping("/register")
-    public User register(@RequestBody UserPostDTO userPostDTO) throws BadRequestException {
+    public User register(@RequestBody @Validated UserPostDTO userPostDTO, BindingResult validation) throws BadRequestException {
+        Validation.validate(validation);
         return authSvc.register(userPostDTO);
     }
 
-
-
-
-
     @PostMapping("/login")
-    public ConfirmRes login(@RequestBody LoginDTO loginDTO, HttpServletResponse res) throws UnauthorizedException, NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+    public ConfirmRes login(@RequestBody @Validated LoginDTO loginDTO, BindingResult validation, HttpServletResponse res) throws UnauthorizedException, NoSuchAlgorithmException, InvalidKeySpecException, IOException, BadRequestException {
+        Validation.validate(validation);
         Map<TokenPairType, TokenPair> tokenMap = authSvc.login(loginDTO.email(), loginDTO.password());
         TokenPair httpTokens = tokenMap.get(TokenPairType.HTTP);
         TokenPair wsTokens = tokenMap.get(TokenPairType.WS);

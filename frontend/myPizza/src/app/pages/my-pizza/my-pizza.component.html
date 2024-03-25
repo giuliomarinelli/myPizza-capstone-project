@@ -1,1 +1,45 @@
-<p>my-pizza works!</p>
+<div class="footer-bottom dark-design">
+@if(profile && address) {
+  <h1 class="text-center h1 text-accent mt-3 mb-4">
+    <span>Benvenut</span>
+    <span>{{suffix}}</span>
+    <span>&nbsp;{{profile.firstName}}</span>
+  </h1>
+  <div class="my-pizza-card max-width row">
+    <div class="col-12">
+      <h2 class="h2 text-mp-primary mb-4"><i class="bi bi-person-square me-3"></i>Il tuo profilo<button class="fake-btn text-accent ms-3"><i class="bi bi-pencil-fill"></i></button></h2>
+    </div>
+    <hr class="hr text-secondary">
+    <div class="col-12 col-md-6 mb-3">
+      <span><i class="bi bi-person-circle d-inline-block me-4"></i>Nome</span><span class="text-mp-primary d-inline-block ms-4">{{profile.firstName}}</span>
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+      <i class="bi bi-person-circle d-inline-block me-4"></i><span>Cognome</span><span class="d-inline-block ms-4 text-mp-primary">{{profile.lastName}}</span>
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+      <i class="bi bi-envelope-check-fill d-inline-block me-4"></i><span>Email</span><span class="d-inline-block ms-4 text-mp-primary">{{profile.email}}</span>
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+
+      <i class="bi bi-telephone-fill d-inline-block me-4"></i><span>Telefono</span><span class="d-inline-block ms-4 text-mp-primary">{{profile.phoneNumber}}</span>
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+      <i class="bi bi-gender-neuter d-inline-block me-4"></i><span>Genere</span><span class="d-inline-block ms-4 text-mp-primary">@if(profile.gender === 'M') {uomo} @else {donna}</span>
+    </div>
+    <div class="col-12 col-md-6 mb-3">
+      <i class="bi bi-calendar-check-fill d-inline-block me-4"></i><span>Iscritt<span>{{suffix}} il</span></span><span class="d-inline-block ms-4 text-mp-primary">{{profile.createdAt | date : 'dd/MM/y'}}</span>
+    </div>
+    <hr class="hr text-secondary">
+    <div class="col-12">
+      <h2 class="h2 text-mp-primary mb-4"><i class="bi bi-house-fill me-3"></i>Il tuo indirizzo<button class="fake-btn text-accent ms-3"><i class="bi bi-pencil-fill"></i></button></h2>
+    </div>
+    <hr class="hr text-secondary">
+    <div class="col-12">
+      <p>
+        {{address.road}} {{address.civic}}, {{address.city.name}} ({{address.city.provinceCode}}), {{address.city.region}}
+      </p>
+    </div>
+  </div>
+}
+<app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>
+</div>

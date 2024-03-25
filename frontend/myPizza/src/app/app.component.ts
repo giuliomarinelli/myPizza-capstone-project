@@ -23,61 +23,63 @@ export class AppComponent {
 
   constructor(@Inject(PLATFORM_ID) private platformId: string,
     private authSvc: AuthService, private socket: SocketService, private appRef: ApplicationRef, private ngZone: NgZone,
-    private messageSvc: MessageService, private change: ChangeDetectorRef
+    private messageSvc: MessageService, private change: ChangeDetectorRef, private router: Router
   ) {
 
     afterNextRender(async () => {
 
-      this._isLoggedIn()
+
 
 
       if (!socket.connected) {
 
-        if (!this.isSessionPath)
-          this.authSvc.isWsAuthValidOrRefresh().subscribe(res => {
-            socket.connect()
+        if (!this.isSessionPath) {
+          socket.connect()
+          socket.getUnreadMessagesCount().subscribe(ack => console.log(ack))
 
-            socket.onReceiveMessage().subscribe(message => {
-              if (!this.messageIds.includes(message.id) && !message.read) {
-                this.messageIds.push(message.id)
-                this.count++
-                this.messageSvc.messages$.subscribe(n => {
-                  if (n !== -1) this.count = n
-                  appRef.tick()
+        }
+          socket.onGetUnreadMessagesCount().subscribe(count =>{
+             this.count += count
+              console.log('count', count)
+            })
 
+        socket.onReceiveMessage().subscribe(message => {
+          if (!this.messageIds.includes(message.id) && !message.read) {
+            this.messageIds.push(message.id)
+            this.count++
+            this.messageSvc.messages$.subscribe(n => {
+              if (n !== -1) this.count = n
+              appRef.tick()
 
-                })
-
-                if (message.restore === false) {
-                  ngZone.runOutsideAngular(() => {
-                    setTimeout(() => {
-
-                      this.newMessage = {
-                        delete: false,
-                        add: true,
-                        message
-                      }
-
-
-                      this.messages.unshift(message)
-                      appRef.tick()
-
-                    }, 100)
-                    ngZone.runOutsideAngular(() => {
-                      setTimeout(() => this.removeMessage(), 6000)
-                    })
-                  })
-                }
-              }
 
             })
-          })
-        socket.restoreMessages().subscribe(ack => {
-          console.log(ack)
+
+            if (message.restore === false) {
+              ngZone.runOutsideAngular(() => {
+                setTimeout(() => {
+
+                  this.newMessage = {
+                    delete: false,
+                    add: true,
+                    message
+                  }
+
+
+                  this.messages.unshift(message)
+                  appRef.tick()
+
+                }, 100)
+                ngZone.runOutsideAngular(() => {
+                  setTimeout(() => this.removeMessage(), 6000)
+                })
+              })
+            }
+          }
 
         })
-      }
 
+
+      }
 
 
 
@@ -100,18 +102,40 @@ export class AppComponent {
   protected res1: boolean = false
   protected res2: boolean = true
 
-  private async _isLoggedIn(): Promise<void> {
+
+  private _isAdmin(): void {
+    this.authSvc.isUserAdmin$.subscribe(isAdmin => {
+      if (isAdmin === true) {
+        console.log('is admin', isAdmin)
+        this.isAdmin = true
+      } else {
+        this.authSvc.isAdmin().subscribe({
+          next: res => {
+            this.isAdmin = res
+            this.authSvc.adminSbj.next(true)
+          },
+          error: err => err
+        })
+      }
+    })
+  }
+
+  private _isLoggedIn():void {
     {
       this.authSvc.isLoggedIn$.subscribe((res) => {
         if (res === true) {
           this.isLoggedIn = true
           this.getProfile()
+          this._isAdmin()
         } else {
-          this.authSvc.isLoggedInQuery().subscribe(res => {
+          this.authSvc.isLoggedInQuery().subscribe({next: res => {
             this.isLoggedIn = true
             this.getProfile()
+            this._isAdmin()
             this.authSvc.loggedInSbj.next(true)
-          })
+          },
+            error: err => err
+        })
 
         }
       })
@@ -147,6 +171,7 @@ export class AppComponent {
     this.resMenu = true
     this.isLoginPath = c.isLoginPath
     this.isMessagePath = c.isMessagePath
+    this.path = c.path
     this.appRef.tick()
   }
 
@@ -174,13 +199,14 @@ export class AppComponent {
 
   ngAfterContentInit() {
     this._isLoggedIn()
+
   }
+
+  private path: string = ''
 
   protected newMessage: MessageMng | undefined = undefined
 
   protected messages: Message[] = []
-
-  private path = ''
 
   protected brand: string = 'MyPizza'
 
@@ -202,10 +228,16 @@ export class AppComponent {
   protected isAdmin = false
 
   protected logout(): void {
-    this.authSvc.logout().subscribe(res => {
-      this.isLoggedIn = false
-      location.href = location.href
-    })
+
+        this.authSvc.logout().subscribe(res => {
+          this.authSvc.loggedInSbj.next(false)
+          this.isLoggedIn = false
+          // redirect a delle rotte in base a this.path in alcunoi casi specifici
+          location.href = location.href
+        })
+
+
+
   }
 
   protected get useClient(): boolean {
@@ -271,12 +303,7 @@ export class AppComponent {
       linkPath: '/ordina-a-domicilio'
     },
     {
-      name: 'la pizzeria',
-      paths: ['/la-nostra-pizzeria'],
-      linkPath: '/la-nostra-pizzeria'
-    },
-    {
-      name: 'il menu',
+      name: 'il nostro menu',
       paths: ['/il-nostro-menu'],
       linkPath: '/il-nostro-menu'
     }

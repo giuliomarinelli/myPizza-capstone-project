@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { IsLoggedIn } from '../Models/is-logged-in';
 import { UserLogin, UserPostDTO } from '../Models/user-dto';
 import { ConfirmRes } from '../Models/confirm-res';
-import { AddressesRes, AuthoritiesRes, User } from '../Models/i-user';
+import { Address, AddressesRes, AuthoritiesRes, User } from '../Models/i-user';
 import { IsWsAuthValid } from '../Models/i-IsWsAuthValid';
 import { isPlatformBrowser } from '@angular/common';
 import { error } from 'console';
@@ -22,8 +22,11 @@ export class AuthService {
   public loggedInSbj = new BehaviorSubject<boolean>(false)
   public isLoggedIn$ = this.loggedInSbj.asObservable()
 
-  public adminSbj = new BehaviorSubject<boolean>(false)
+  public adminSbj = new BehaviorSubject<boolean>(false) // sono buggati, da rimuovere
   public isAdmin$ = this.adminSbj.asObservable()
+
+  public isUserAdmin = new BehaviorSubject<boolean>(false)
+  public isUserAdmin$ = this.isUserAdmin.asObservable()
 
   private backendUrl = environment.backendUrl;
 
@@ -79,8 +82,8 @@ export class AuthService {
     return this.http.get<IsWsAuthValid>(`${this.backendUrl}/ws/is-ws-auth-valid-or-refresh`, { withCredentials: true })
   }
 
-  public getAddresses(): Observable<AddressesRes> {
-    return this.http.get<AddressesRes>(`${this.backendUrl}/api/user-profile/addresses`, { withCredentials: true })
+  public getAddresses(): Observable<Address[]> {
+    return this.http.get<Address[]>(`${this.backendUrl}/api/user-profile/addresses`, { withCredentials: true })
   }
 
   public getAuthorities(): Observable<string[]> {

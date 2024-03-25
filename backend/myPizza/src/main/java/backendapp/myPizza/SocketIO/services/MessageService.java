@@ -106,7 +106,7 @@ public class MessageService {
     public void restoreMessages(UUID recipientUserId) {
         if (sessionSvc.isOnLine(recipientUserId)) {
             List<Message> messages = messageRp.findAllUnreadMessagesByRecipientUserId(recipientUserId);
-            messages = messages.stream().peek(m -> {
+            messages = messages.parallelStream().peek(m -> {
                 m.setRestore(true);
             }).toList();
             messageRp.saveAll(messages);
@@ -116,11 +116,28 @@ public class MessageService {
         }
     }
 
+    public void getUnreadMessageCount(UUID userId) {
+        Set<UUID> clientIds = sessionSvc.getClientIdsFromUserId(userId);
+        Long count = messageRp.getUnreadMessagesCountByRecipientUserId(userId);
+        for (UUID clientId : clientIds) {
+            SocketIOClient client = clientSvc.getClient(clientId);
+            if (client != null) {
+                client.sendEvent("unread_messages_count", count);
+            }
+        }
+
+    }
+
+    public void setAllMessagesAsRestored(UUID userId) {
+        List<Message> messages = messageRp.findAllUnreadMessagesByRecipientUserId(userId);
+        messageRp.saveAll(messages.parallelStream().peek(m -> m.setRestore(true)).toList());
+    }
+
 
 public void restoreAllMessages(UUID recipientUserId) {
         if (sessionSvc.isOnLine(recipientUserId)) {
             List<Message> messages = messageRp.findAllMessagesByRecipientUserId(recipientUserId);
-            messages = messages.stream().peek(m -> {
+            messages = messages.parallelStream().peek(m -> {
                 m.setRestore(true);
             }).toList();
             messageRp.saveAll(messages);

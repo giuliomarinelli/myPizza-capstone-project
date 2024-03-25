@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { MyPizzaRoutingModule } from './my-pizza-routing.module';
 import { MyPizzaComponent } from './my-pizza.component';
 import { MessageCComponent } from './message-c/message-c.component';
+import { SharedComponentsModule } from '../../shared-components/shared-components.module';
 
 
 @NgModule({
@@ -13,7 +14,8 @@ import { MessageCComponent } from './message-c/message-c.component';
   ],
   imports: [
     CommonModule,
-    MyPizzaRoutingModule
+    MyPizzaRoutingModule,
+    SharedComponentsModule
   ]
 })
 export class MyPizzaModule { }

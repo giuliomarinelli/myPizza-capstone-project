@@ -1,0 +1,31 @@
+.max-width {
+  max-width: 768px;
+  font-size: .8rem;
+
+  @media screen and (min-width: 376px) {
+    font-size: 1rem;
+  }
+
+  @media screen and (min-width: 426px) {
+    font-size: 1.125rem;
+  }
+}
+
+button.fake-btn {
+  background-color: transparent;
+  border: none;
+  color: white;
+  position: absolute;
+  right: 0;
+  font-size: 1rem;
+  top: 0;
+  bottom: 0;
+  margin: auto 0;
+}
+
+h2 {
+  position: relative;
+  @media screen and (max-width: 380px) {
+    font-size: 1rem;
+  }
+}

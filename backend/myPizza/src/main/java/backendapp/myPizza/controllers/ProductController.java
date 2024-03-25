@@ -11,12 +11,15 @@ import backendapp.myPizza.Models.resDTO.ProductNamesRes;
 import backendapp.myPizza.Models.resDTO.ToppingsRes;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.exceptions.NotFoundException;
+import backendapp.myPizza.exceptions.Validation;
 import backendapp.myPizza.services.MenuService;
 import backendapp.myPizza.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,12 +55,14 @@ public class ProductController {
     }
 
     @PostMapping("/toppings")
-    public Topping addTopping(@RequestBody ToppingDTO toppingDTO) throws BadRequestException {
+    public Topping addTopping(@RequestBody @Validated ToppingDTO toppingDTO, BindingResult validation) throws BadRequestException {
+        Validation.validate(validation);
         return productSvc.addTopping(toppingDTO);
     }
 
     @PutMapping("/toppings/{name}")
-    public Topping updateToppingByName(@PathVariable String name, @RequestBody ToppingDTO toppingDTO) throws BadRequestException {
+    public Topping updateToppingByName(@PathVariable String name, @RequestBody @Validated ToppingDTO toppingDTO, BindingResult validation) throws BadRequestException {
+        Validation.validate(validation);
         return productSvc.updateToppingByName(name, toppingDTO);
     }
 
@@ -85,18 +90,20 @@ public class ProductController {
     }
 
     @PostMapping("/products")
-    public Product addProduct(@RequestBody ProductDTO productDTO) throws BadRequestException {
+    public Product addProduct(@RequestBody @Validated ProductDTO productDTO, BindingResult validation) throws BadRequestException {
+        Validation.validate(validation);
         return productSvc.addProduct(productDTO);
     }
 
     @PostMapping("/products/add-many")
-    public List<Product> addManyProducts(@RequestBody ManyProductsPostDTO manyProductsPostDTO) throws BadRequestException {
+    public List<Product> addManyProducts(@RequestBody @Validated ManyProductsPostDTO manyProductsPostDTO, BindingResult validation) throws BadRequestException {
+        Validation.validate(validation);
         return productSvc.addManyProducts(manyProductsPostDTO);
     }
 
     @PutMapping("/products/{name}")
-    public Product updateProduct(@PathVariable String name, @RequestBody ProductDTO productDTO) throws BadRequestException, NotFoundException {
-        System.out.println("ciao");
+    public Product updateProduct(@PathVariable String name, @RequestBody @Validated ProductDTO productDTO, BindingResult validation) throws BadRequestException, NotFoundException {
+        Validation.validate(validation);
         return productSvc.updateProductByName(name, productDTO);
     }
 
@@ -106,7 +113,8 @@ public class ProductController {
     }
 
     @PostMapping("/set-menu")
-    public ConfirmRes setMenu(@RequestBody MenuDTO menuDTO) throws BadRequestException {
+    public ConfirmRes setMenu(@RequestBody @Validated MenuDTO menuDTO, BindingResult validation) throws BadRequestException {
+        Validation.validate(validation);
         return menuSvc.saveMenu(menuDTO.menuIds());
     }
 

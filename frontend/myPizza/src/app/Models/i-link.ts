@@ -14,5 +14,6 @@ export interface iRouteConfig {
   brand: string
   isLoginPath: boolean
   isMessagePath: boolean
+  path: string
 
 }

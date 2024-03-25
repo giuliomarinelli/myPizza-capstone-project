@@ -45,7 +45,6 @@ public class WsController {
         if (wsAccessToken.isEmpty() || wsRefreshToken.isEmpty()) return new IsWsAuthValid(false);
         boolean isWsAccessTokenValid = jwtUtils.verifyWsAccessToken(wsAccessToken);
         if (isWsAccessTokenValid) {
-            log.info("ws-access-token is valid");
             return new IsWsAuthValid(true);
         } else {
             if (jwtUtils.verifyWsRefreshToken(wsRefreshToken)) {
@@ -55,6 +54,7 @@ public class WsController {
                         jwtUtils.generateToken(u, TokenType.WS_REFRESH), TokenPairType.WS);
                 Cookie c_wsAccessToken = new Cookie("__ws_access_tkn", newTokens.getAccessToken());
                 Cookie c_wsRefreshToken = new Cookie("__ws_refresh_tkn", newTokens.getRefreshToken());
+                log.info("refreshed web socket auth for userId=" + userId);
                 c_wsAccessToken.setPath("/");
                 c_wsAccessToken.setHttpOnly(true);
                 c_wsAccessToken.setDomain("localhost");

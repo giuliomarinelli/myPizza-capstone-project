@@ -19,6 +19,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,6 +35,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 @Component
+@Log4j2
 public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -42,18 +44,14 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private AuthUserService authUserSvc;
 
-    private static int count = 0;
-
     @Override
-    protected void doFilterInternal(HttpServletRequest req, @NonNull HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest req, @NonNull HttpServletResponse res, @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
 
             if (req.getCookies() == null) {
                 throw new UnauthorizedException("No provided access and refresh tokens");
             }
             Cookie[] cookies = req.getCookies();
-
-            Arrays.stream(cookies).forEach(c -> System.out.println(c.getValue()));
             TokenPair tokens = new TokenPair();
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("__access_tkn")) tokens.setAccessToken(cookie.getValue());
@@ -61,11 +59,11 @@ public class JwtFilter extends OncePerRequestFilter {
             }
             if (tokens.getAccessToken() == null) throw new UnauthorizedException("No provided access token");
             if (tokens.getRefreshToken() == null) throw new UnauthorizedException("No provided refresh token");
-            System.out.println(tokens);
             try {
                 jwtUtils.verifyAccessToken(tokens.getAccessToken());
                 UUID userId = jwtUtils.extractUserIdFromAccessToken(tokens.getAccessToken());
                 User u = authUserSvc.findUserById(userId);
+                log.info("Authorized userId=" + userId);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(u, cookies, u.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 filterChain.doFilter(req, res);
@@ -83,6 +81,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 res.addCookie(refreshToken);
                 UUID userId = jwtUtils.extractUserIdFromAccessToken(newTokens.getAccessToken());
                 User u = authUserSvc.findUserById(userId);
+                log.info("Authorized userId=" + userId + " after refresh");
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(u, cookies, u.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 filterChain.doFilter(req, res);

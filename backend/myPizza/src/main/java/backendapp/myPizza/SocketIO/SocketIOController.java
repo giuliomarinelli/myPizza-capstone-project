@@ -9,6 +9,7 @@ import backendapp.myPizza.SocketIO.repositories.MessageRepository;
 import backendapp.myPizza.SocketIO.services.MessageService;
 import backendapp.myPizza.SocketIO.services.SessionTrackingService;
 import backendapp.myPizza.SocketIO.services.SocketIOClientService;
+import backendapp.myPizza.exceptions.UnauthorizedException;
 import backendapp.myPizza.repositories.OrderRepository;
 import backendapp.myPizza.repositories.UserRepository;
 import backendapp.myPizza.security.JwtUtils;
@@ -73,6 +74,7 @@ public class SocketIOController {
         this.socketServer.addEventListener("restore_messages", RestoreMessageDTO.class, onRestoreMessage);
         this.socketServer.addEventListener("restore_all_messages", RestoreMessageDTO.class, onRestoreAllMessages);
         this.socketServer.addEventListener("restore_time_intervals", Object.class, onRestoreTimeIntervals);
+        this.socketServer.addEventListener("get_unread_messages_count", Object.class, onGetUnreadMessagesCount);
     }
 
     private UUID getUserId(SocketIOClient client) {
@@ -104,8 +106,7 @@ public class SocketIOController {
             sessionSvc.addSession(userId, client.getSessionId());
             log.info(sessionSvc.getSessionTracker());
             assert userRp.findById(userId).isPresent();
-            User u = userRp.findById(userId).get();
-            client.sendEvent("connection_ok", "Connected to Socket.IO server.");
+            
         }
     };
 
@@ -146,11 +147,7 @@ public class SocketIOController {
             Order order = orderRp.findById(messageDTO.orderId()).orElse(null);
 
 
-
-
             Message message = new Message(senderUser, recipientUser, order, messageDTO.message(), isRecipientUserOnLine);
-
-
 
 
             messageRp.save(message);
@@ -161,7 +158,6 @@ public class SocketIOController {
 
 
             log.info(message.getSenderUser().getId() + " user sent message to user " + message.getRecipientUser().getId() + " and message is " + message.getMessage());
-
 
 
             /**
@@ -211,10 +207,19 @@ public class SocketIOController {
 
             messageSvc.pushTimeIntervals();
 
-            /**
-             * After sending message to target user we can send acknowledge to sender
-             */
+
             acknowledge.sendAckData("Restore time intervals ok");
+        }
+    };
+
+    public DataListener<Object> onGetUnreadMessagesCount = new DataListener<>() {
+        @Override
+        public void onData(SocketIOClient client, Object args, AckRequest acknowledge) throws Exception {
+            UUID userId = getUserId(client);
+            messageSvc.getUnreadMessageCount(userId);
+
+
+            acknowledge.sendAckData("Get unread messages count ok");
         }
     };
 

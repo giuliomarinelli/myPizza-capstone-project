@@ -133,6 +133,18 @@ export class SocketService {
     })
   }
 
+  public onGetUnreadMessagesCount(): Observable<number> {
+    return new Observable<number>(observer => {
+      socket.on('unread_messages_count', ((count: number) => observer.next(count)))
+    })
+  }
+
+  public getUnreadMessagesCount(): Observable<string> {
+    return new Observable<string>(observer => {
+      socket.emit('get_unread_messages_count', {}, (ack: string) => observer.next(ack))
+    })
+  }
+
   public sendMessage(messageDTO: MessageDTO): Observable<string> {
     return new Observable<string>(observer => {
       socket.on('disconnect', () => this.messageSentPending.push(messageDTO))

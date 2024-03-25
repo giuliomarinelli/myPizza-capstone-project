@@ -13,12 +13,12 @@ public class SessionTrackingService {
     private final Set<SessionManager> sessionTracker = new HashSet<>();
 
     public boolean isOnLine(UUID userId) {
-        return sessionTracker.stream().anyMatch(sm -> sm.getUserId().equals(userId));
+        return sessionTracker.parallelStream().anyMatch(sm -> sm.getUserId().equals(userId));
     }
 
     public void addSession(UUID userId, UUID sessionId) {
         Optional<SessionManager> userSession =
-                sessionTracker.stream().filter(sm -> sm.getUserId().equals(userId)).findFirst();
+                sessionTracker.parallelStream().filter(sm -> sm.getUserId().equals(userId)).findFirst();
         if (userSession.isPresent()) {
             userSession.get().getSessionIds().add(sessionId);
         } else {
@@ -30,18 +30,18 @@ public class SessionTrackingService {
     }
 
     public UUID getUserIdFromSessionId(UUID sessionId) {
-        Optional<SessionManager> opt = sessionTracker.stream().filter(sm -> sm.getSessionIds().contains(sessionId))
+        Optional<SessionManager> opt = sessionTracker.parallelStream().filter(sm -> sm.getSessionIds().contains(sessionId))
                 .findFirst();
         return opt.map(SessionManager::getUserId).orElse(null);
     }
 
     public Set<UUID> getClientIdsFromUserId(UUID userId) {
-        return sessionTracker.stream().filter(sm -> sm.getUserId().equals(userId))
+        return sessionTracker.parallelStream().filter(sm -> sm.getUserId().equals(userId))
                 .map(SessionManager::getSessionIds).findFirst().orElse(null);
     }
 
     public void removeSession(UUID sessionId) {
-        Optional<SessionManager> opt = sessionTracker.stream()
+        Optional<SessionManager> opt = sessionTracker.parallelStream()
                 .filter(sm -> sm.getSessionIds().contains(sessionId)).findFirst();
         if (opt.isPresent()) {
             SessionManager sessionManager = opt.get();

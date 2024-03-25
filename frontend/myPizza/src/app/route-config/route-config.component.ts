@@ -76,7 +76,8 @@ export class RouteConfigComponent {
           brand,
           isSessionPath,
           isLoginPath,
-          isMessagePath
+          isMessagePath,
+          path
         })
 
       }

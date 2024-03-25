@@ -37,12 +37,6 @@ export class CheckoutComponent {
           this.orderSets = res.orderSets
           this.totalAmount = res.totalAmount
           this.isLoading = false
-          console.log(res)
-          if (!this.isGuest) authSvc.getAddresses().subscribe(addRes => {
-            this.addresses = addRes.addresses
-            console.log(addRes)
-          })
-
         },
         error: err => ngZone.run(() => router.navigate(['/ordina-a-domicilio']))
       })

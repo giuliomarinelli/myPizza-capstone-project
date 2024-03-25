@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MessaggiRoutingModule } from './messaggi-routing.module';
 import { MessaggiComponent } from './messaggi.component';
+import { SharedComponentsModule } from '../../../shared-components/shared-components.module';
 
 
 @NgModule({
@@ -12,7 +13,8 @@ import { MessaggiComponent } from './messaggi.component';
   imports: [
     CommonModule,
     MessaggiRoutingModule,
-    MatTabsModule
+    MatTabsModule,
+    SharedComponentsModule
   ]
 })
 export class MessaggiModule { }

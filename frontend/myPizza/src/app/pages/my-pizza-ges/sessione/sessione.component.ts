@@ -38,7 +38,7 @@ export class SessioneComponent {
         }
       }
       this.setSocket()
-
+      this.socket.restoreMessages().subscribe(ack => console.log(ack))
 
 
 
@@ -149,13 +149,13 @@ export class SessioneComponent {
   protected setCompleted(order: Order): void {
     this.orderSvc.completeOrder(order.id).subscribe({
       next: res => {
-
+        this.ngZone.run(() => this.dialog.open(ConfirmOrderDialogComponent, { data: { order } }))
         this.socket.sendMessage({
           recipientUserId: order.user.id,
           message: 'Il tuo ordine è pronto e lo riceverai a brevissimo. A presto, grazie - Lo staff di MyPizza',
           orderId: order.id
         }).subscribe(ack => {
-          this.ngZone.run(() => this.dialog.open(ConfirmOrderDialogComponent, { data: { order } }))
+          console.log(ack)
         })
       }
     })

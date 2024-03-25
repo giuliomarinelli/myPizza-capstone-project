@@ -19,8 +19,7 @@ export class LoginPageComponent {
           if (params['ref']) {
             const ref = <string> params['ref']
             this.refUrl = atob(ref)
-            console.log(this.refUrl)
-            console.log(params)
+
           }
         })
       })
@@ -86,6 +85,7 @@ export class LoginPageComponent {
             this.authSvc.getAuthorities().subscribe(auth => {
               if (auth.includes('ADMIN')) {
                 this.authSvc.adminSbj.next(true)
+                console.log('è admin')
                 this.refUrl ? this.router.navigate([this.refUrl]) : this.router.navigate(['/my-pizza-ges/prodotti'])
               } else {
                 this.refUrl ? this.router.navigate([this.refUrl]) : this.router.navigate(['/ordina-a-domicilio'])
@@ -98,7 +98,7 @@ export class LoginPageComponent {
         },
         error: err => {
           this.validLogin = false
-          console.log(err.error.message)
+          this.submit = false
           if (err.error.message === 'Email and/or password are incorrect') this.loginErrorMsg = 'Email o password errate'
         }
       })

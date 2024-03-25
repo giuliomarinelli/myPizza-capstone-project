@@ -11,6 +11,7 @@ import backendapp.myPizza.Models.reqDTO.SendOrderDTO;
 import backendapp.myPizza.Models.resDTO.*;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.exceptions.UnauthorizedException;
+import backendapp.myPizza.exceptions.Validation;
 import backendapp.myPizza.repositories.OrderRepository;
 import backendapp.myPizza.security.JwtUtils;
 import backendapp.myPizza.services.*;
@@ -21,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -73,7 +76,8 @@ public class PublicController {
     // -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
     // ORDER
     @PostMapping("/order-init")
-    public OrderInitRes orderInit(@RequestBody OrderInitDTO orderInitDTO, HttpServletResponse res) throws BadRequestException {
+    public OrderInitRes orderInit(@RequestBody @Validated OrderInitDTO orderInitDTO, BindingResult validation, HttpServletResponse res) throws BadRequestException {
+        Validation.validate(validation);
         OrderInitRes _res = orderSvc.orderInit(orderInitDTO);
         Cookie cookie = new Cookie("__order_id", _res.getOrderId().toString());
         cookie.setPath("/");
@@ -126,7 +130,9 @@ public class PublicController {
     }
 
     @PostMapping("/send-order")
-    public ConfirmRes sendOrder(@RequestParam(required = false) Boolean guest, @RequestBody  SendOrderDTO sendOrderDTO, HttpServletResponse res) throws UnauthorizedException, BadRequestException {
+    public ConfirmRes sendOrder(@RequestParam(required = false) Boolean guest,
+                                @RequestBody @Validated SendOrderDTO sendOrderDTO, BindingResult validation, HttpServletResponse res) throws UnauthorizedException, BadRequestException {
+        Validation.validate(validation);
         boolean _guest = Objects.requireNonNullElse(guest, false);
         ConfirmRes conf = orderSvc.sendOrder(sendOrderDTO, _guest);
         Cookie cookie = new Cookie("__order_id", null);

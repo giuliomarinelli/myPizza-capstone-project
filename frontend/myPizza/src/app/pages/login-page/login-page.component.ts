@@ -81,6 +81,7 @@ export class LoginPageComponent {
 
       this.authSvc.login(this.loginForm.value).subscribe({
         next: res => {
+            this.socket.connect()
             this.authSvc.loggedInSbj.next(true)
             this.authSvc.getAuthorities().subscribe(auth => {
               if (auth.includes('ADMIN')) {

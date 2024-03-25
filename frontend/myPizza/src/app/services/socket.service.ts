@@ -36,6 +36,8 @@ export class SocketService {
     publicApi.getAdminUserId().subscribe(res => this.adminUserId = res)
   }
 
+  private messageSentPending: MessageDTO[] = []
+
   private adminUserId!: string
   private socket!: Socket
 
@@ -46,21 +48,36 @@ export class SocketService {
     return socket.connected
   }
 
+
   public connect(): void {
     socket.connect()
-    socket.on('connect_error', (err) => {
-      console.log('errore di connessione, verifico l\'autorizzazione e se l\'access token è scaduto, faccio il refresh e ritento la connessione')
-      this.authSvc.isWsAuthValidOrRefresh().subscribe(res => {
-        console.log(res)
-        if (res.valid === false) {
-          console.log('refresh impossibile, bisogna rifare il login')
-        } else {
-          console.log('refresh fatto, ritento la connessione')
+    socket.on('connect', () => {
+      this.messageSentPending.forEach(m => this.sendMessage(m).subscribe(ack => undefined))
+    })
+    socket.on('connect',() => console.log('connect'))
+    socket.on('connect_error', () => {
+      console.log('socket disconnesso, verifico l\'autenticazione e eventualmente faccio il refresh, poi mi riconnetto')
+      this.authSvc.isWsAuthValidOrRefresh().subscribe({
+        next: res => {
           socket.connect()
         }
       })
+
     })
+    socket.on('disconnect', () => {
+      console.log('socket disconnesso, verifico l\'autenticazione e eventualmente faccio il refresh, poi mi riconnetto')
+      this.authSvc.isWsAuthValidOrRefresh().subscribe({
+        next: res => {
+          socket.connect()
+        }
+      })
+
+    })
+
+
   }
+
+
 
   onTimeIntervalsChange(): Observable<TimeInterval[]> {
     return new Observable<TimeInterval[]>(observer => {
@@ -103,7 +120,7 @@ export class SocketService {
       socket.on('connection_ok', (data: string) => {
         observer.next(data);
       })
-      console.log('connesso')
+      console.log('socket connesso')
     })
 
   }
@@ -118,11 +135,13 @@ export class SocketService {
 
   public sendMessage(messageDTO: MessageDTO): Observable<string> {
     return new Observable<string>(observer => {
+      socket.on('disconnect', () => this.messageSentPending.push(messageDTO))
       socket.emit('messageSendToUser', {
         ...messageDTO
       }, function (ack: string) {
         observer.next(ack)
       })
+
     })
 
   }

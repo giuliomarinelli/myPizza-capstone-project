@@ -14,8 +14,11 @@ import backendapp.myPizza.SocketIO.services.MessageService;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.exceptions.NotFoundException;
 import backendapp.myPizza.exceptions.UnauthorizedException;
+import backendapp.myPizza.exceptions.Validation;
 import backendapp.myPizza.services.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,13 +40,9 @@ public class ProfileController {
     }
 
     @PutMapping("")
-    public User put(@RequestBody UserPutDTO userPutDTO) throws UnauthorizedException, BadRequestException {
+    public User put(@RequestBody @Validated UserPutDTO userPutDTO, BindingResult validation) throws UnauthorizedException, BadRequestException {
+        Validation.validate(validation);
         return profileSvc.put(userPutDTO);
-    }
-
-    @DeleteMapping("")
-    public ConfirmRes delete() throws UnauthorizedException, BadRequestException {
-        return profileSvc.delete();
     }
 
     @GetMapping("/orders")
@@ -57,17 +56,15 @@ public class ProfileController {
     }
 
     @PatchMapping("/change-password")
-    public ConfirmRes changePassword(@RequestBody ChangePasswordDTO changePasswordDTO) throws UnauthorizedException, BadRequestException {
+    public ConfirmRes changePassword(@RequestBody @Validated ChangePasswordDTO changePasswordDTO, BindingResult validation) throws UnauthorizedException, BadRequestException {
+        Validation.validate(validation);
         return profileSvc.changePassword(changePasswordDTO.oldPassword(), changePasswordDTO.newPassword());
     }
 
     @GetMapping("/is-logged-in")
     public IsLoggedInRes isLoggedIng() {
-        System.out.println("================= CALL TO IS LOGGED IN ====================");
         return new IsLoggedInRes(true);
     }
-
-
 
     @GetMapping("get-authorities")
     public AuthoritiesRes getAuthorities() throws UnauthorizedException {

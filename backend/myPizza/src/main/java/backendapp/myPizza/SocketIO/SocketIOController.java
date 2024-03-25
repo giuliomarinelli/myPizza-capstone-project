@@ -92,8 +92,6 @@ public class SocketIOController {
         } catch (Exception e) {
             client.disconnect();
         }
-        System.out.println(accessToken.getValue());
-        System.out.println(userId);
         if (userId == null) client.disconnect();
         return userId;
     }

@@ -34,8 +34,9 @@ export class AppComponent {
       if (!socket.connected) {
 
         if (!this.isSessionPath)
-          this.authSvc.isWsAuthValidOrRefresh().subscribe(res => {
+
             socket.connect()
+
 
             socket.onReceiveMessage().subscribe(message => {
               if (!this.messageIds.includes(message.id) && !message.read) {
@@ -71,7 +72,7 @@ export class AppComponent {
               }
 
             })
-          })
+
         socket.restoreMessages().subscribe(ack => {
           console.log(ack)
 

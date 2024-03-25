@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 
 import { IlNostroMenuRoutingModule } from './il-nostro-menu-routing.module';
 import { IlNostroMenuComponent } from './il-nostro-menu.component';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { SharedComponentsModule } from '../../shared-components/shared-components.module';
 
 
 @NgModule({
@@ -11,7 +13,9 @@ import { IlNostroMenuComponent } from './il-nostro-menu.component';
   ],
   imports: [
     CommonModule,
-    IlNostroMenuRoutingModule
+    IlNostroMenuRoutingModule,
+    InfiniteScrollModule,
+    SharedComponentsModule
   ]
 })
 export class IlNostroMenuModule { }

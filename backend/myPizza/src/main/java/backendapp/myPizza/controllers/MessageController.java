@@ -24,15 +24,6 @@ public class MessageController {
         return messageSvc.getReceivedMessageByIdForUser(id);
     }
 
-//    @GetMapping("")
-//    public List<Message> getAll(@RequestParam(required = false) Boolean only_read) throws UnauthorizedException {
-//        if (only_read == null) {
-//            return messageSvc.getAllReceivedForUser();
-//        }
-//            return only_read ? messageSvc.getAllReceivedUnreadForUser() : messageSvc.getAllReceivedForUser();
-//
-//
-//    }
 
     @GetMapping("/{id}/set-unread")
     public Message setUnread(@PathVariable UUID id) throws UnauthorizedException, NotFoundException {

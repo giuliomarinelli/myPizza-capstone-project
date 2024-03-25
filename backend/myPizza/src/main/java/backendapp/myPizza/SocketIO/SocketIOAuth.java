@@ -12,10 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.net.HttpCookie;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Component
 @Log4j2
@@ -37,7 +34,6 @@ public class SocketIOAuth implements AuthorizationListener {
 
     @Override
     public boolean isAuthorized(HandshakeData data) {
-        log.info("auth socket");
         String cookies = data.getHttpHeaders().get("Cookie");
         log.info(cookies);
         if (cookies == null) return false;
@@ -51,8 +47,13 @@ public class SocketIOAuth implements AuthorizationListener {
             return false;
         }
         boolean isValid = jwtUtils.verifyWsAccessToken(accessToken.getValue());
-        if (isValid) log.info("access token valido");
-        else log.info("access token non valido");
+        try {
+            UUID userId = jwtUtils.extractUserIdFromWsAccessToken(accessToken.getValue());
+            log.info("SOCKET: authenticated userId=" + userId);
+        } catch (UnauthorizedException e) {
+            return false;
+        }
+
 
         return isValid;
 

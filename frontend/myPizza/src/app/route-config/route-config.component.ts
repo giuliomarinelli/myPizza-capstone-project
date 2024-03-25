@@ -30,14 +30,13 @@ export class RouteConfigComponent {
         let isSessionPath: boolean = false
         let isLoginPath: boolean = false
         let isMessagePath: boolean = false
-
-        if (path.startsWith('/my-pizza-ges')) {
-          brand = 'MyPizzaGes'
-          isAdminPath = true
-        }
         if (path.startsWith('/my-pizza')) {
           brand = 'MyPizza'
           isLoginPath = true
+        }
+        if (path.startsWith('/my-pizza-ges')) {
+          brand = 'MyPizzaGes'
+          isAdminPath = true
         }
         if (path.includes('my-pizza-ges/sessione')) isSessionPath = true
         if (path.includes('my-pizza/messaggi')) isMessagePath = true

@@ -6,10 +6,13 @@ import backendapp.myPizza.Models.reqDTO.ConfirmOrderDTO;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.exceptions.BadRequestException;
 import backendapp.myPizza.exceptions.NotFoundException;
+import backendapp.myPizza.exceptions.Validation;
 import backendapp.myPizza.services.OrderService;
 import jakarta.persistence.Access;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -29,7 +32,8 @@ public class OrderController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/confirm")
-    public ConfirmRes confirmOrder(@RequestBody ConfirmOrderDTO confirmOrderDTO) throws BadRequestException {
+    public ConfirmRes confirmOrder(@RequestBody @Validated ConfirmOrderDTO confirmOrderDTO, BindingResult validation) throws BadRequestException {
+        Validation.validate(validation);
         return orderSvc.confirmOrder(confirmOrderDTO.orderId(), confirmOrderDTO.timeIntervalId());
     }
 

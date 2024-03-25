@@ -7,9 +7,12 @@ import backendapp.myPizza.Models.resDTO.DeliveryTimeRes;
 import backendapp.myPizza.Models.resDTO.IsThereAnActiveSessionRes;
 import backendapp.myPizza.Models.resDTO.TimeIntervalsRes;
 import backendapp.myPizza.exceptions.BadRequestException;
+import backendapp.myPizza.exceptions.Validation;
 import backendapp.myPizza.services._SessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,7 +36,8 @@ public class SessionController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/start-new-session")
-    public WorkSession startNewSession(@RequestBody StartSessionDTO startSessionDTO) throws BadRequestException {
+    public WorkSession startNewSession(@RequestBody @Validated StartSessionDTO startSessionDTO, BindingResult validation) throws BadRequestException {
+        Validation.validate(validation);
         return _sessionSvc.startNewSession(startSessionDTO);
     }
 

@@ -33,4 +33,5 @@ export type AddressDTO = Omit<AddressRegisterDTO, 'cityAutocomplete'>
 export interface UserLogin {
   email: string
   password: string
+  restore: boolean
 }

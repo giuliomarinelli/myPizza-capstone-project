@@ -38,7 +38,8 @@ public class AuthController {
     @PostMapping("/login")
     public ConfirmRes login(@RequestBody @Validated LoginDTO loginDTO, BindingResult validation, HttpServletResponse res) throws UnauthorizedException, NoSuchAlgorithmException, InvalidKeySpecException, IOException, BadRequestException {
         Validation.validate(validation);
-        Map<TokenPairType, TokenPair> tokenMap = authSvc.login(loginDTO.email(), loginDTO.password());
+        boolean restore = loginDTO.restore();
+        Map<TokenPairType, TokenPair> tokenMap = authSvc.login(loginDTO.email(), loginDTO.password(), loginDTO.restore());
         TokenPair httpTokens = tokenMap.get(TokenPairType.HTTP);
         TokenPair wsTokens = tokenMap.get(TokenPairType.WS);
         Cookie accessToken = new Cookie("__access_tkn", httpTokens.getAccessToken());
@@ -57,6 +58,12 @@ public class AuthController {
         wsRefreshToken.setHttpOnly(true);
         wsRefreshToken.setDomain("localhost");
         wsRefreshToken.setPath("/");
+        if (restore) {
+            accessToken.setMaxAge(15778800);
+            refreshToken.setMaxAge(15778800);
+            wsAccessToken.setMaxAge(15778800);
+            wsRefreshToken.setMaxAge(15778800);
+        }
         res.addCookie(accessToken);
         res.addCookie(refreshToken);
         res.addCookie(wsAccessToken);

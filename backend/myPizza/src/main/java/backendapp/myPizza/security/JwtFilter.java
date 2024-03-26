@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -43,6 +44,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
     private AuthUserService authUserSvc;
+
+
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest req, @NonNull HttpServletResponse res, @NonNull FilterChain filterChain) throws ServletException, IOException {
@@ -68,7 +71,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 filterChain.doFilter(req, res);
             } catch (ExpiredJwtException e) {
-                TokenPair newTokens = jwtUtils.generateTokenPair(tokens.getRefreshToken(), TokenPairType.HTTP);
+                boolean restore = jwtUtils.verifyRefreshToken(tokens.getRefreshToken());
+                TokenPair newTokens = jwtUtils.generateTokenPair(tokens.getRefreshToken(), TokenPairType.HTTP, restore);
                 Cookie accessToken = new Cookie("__access_tkn", newTokens.getAccessToken());
                 accessToken.setHttpOnly(true);
                 accessToken.setDomain("localhost");
@@ -77,6 +81,10 @@ public class JwtFilter extends OncePerRequestFilter {
                 refreshToken.setHttpOnly(true);
                 refreshToken.setDomain("localhost");
                 refreshToken.setPath("/");
+                if (restore) {
+                    accessToken.setMaxAge(15778800);
+                    refreshToken.setMaxAge(15778800);
+                }
                 res.addCookie(accessToken);
                 res.addCookie(refreshToken);
                 UUID userId = jwtUtils.extractUserIdFromAccessToken(newTokens.getAccessToken());

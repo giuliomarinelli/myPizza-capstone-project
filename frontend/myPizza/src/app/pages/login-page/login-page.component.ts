@@ -48,7 +48,8 @@ export class LoginPageComponent {
 
   protected loginForm: FormGroup = this.fb.group({
     email: [null, [Validators.required, Validators.pattern(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)]],
-    password: [null, [Validators.required]]
+    password: [null, [Validators.required]],
+    restore: [false]
   })
 
   private setInvalidMessages(fieldName: string): string {
@@ -77,7 +78,7 @@ export class LoginPageComponent {
     if (this.loginForm.valid) {
       this.submit = true
 
-
+      console.log(this.loginForm.value)
       this.authSvc.login(this.loginForm.value).subscribe({
         next: res => {
             this.socket.connect()
@@ -85,7 +86,6 @@ export class LoginPageComponent {
             this.authSvc.getAuthorities().subscribe(auth => {
               if (auth.includes('ADMIN')) {
                 this.authSvc.adminSbj.next(true)
-                console.log('è admin')
                 this.refUrl ? this.router.navigate([this.refUrl]) : this.router.navigate(['/my-pizza-ges/prodotti'])
               } else {
                 this.refUrl ? this.router.navigate([this.refUrl]) : this.router.navigate(['/ordina-a-domicilio'])

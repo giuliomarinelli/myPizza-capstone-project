@@ -63,7 +63,7 @@ public class JwtUtils {
     private String wsAccessExp;
 
 
-    public TokenPair generateTokenPair(String refreshToken, TokenPairType type) throws UnauthorizedException {
+    public TokenPair generateTokenPair(String refreshToken, TokenPairType type, boolean restore) throws UnauthorizedException {
         try {
             String secret = "";
             switch (type) {
@@ -81,10 +81,10 @@ public class JwtUtils {
             User u = authUserSvc.findUserById(userId);
             switch (type) {
                 case TokenPairType.HTTP -> {
-                    return new TokenPair(generateToken(u, TokenType.ACCESS), generateToken(u, TokenType.REFRESH), type);
+                    return new TokenPair(generateToken(u, TokenType.ACCESS, restore), generateToken(u, TokenType.REFRESH, restore), type);
                 }
                 case TokenPairType.WS -> {
-                    return new TokenPair(generateToken(u, TokenType.WS_ACCESS), generateToken(u, TokenType.WS_REFRESH), type);
+                    return new TokenPair(generateToken(u, TokenType.WS_ACCESS, restore), generateToken(u, TokenType.WS_REFRESH, restore), type);
                 }
                 default -> throw new Exception();
             }
@@ -110,6 +110,17 @@ public class JwtUtils {
         }
 
     }
+    public boolean verifyRefreshToken(String refreshToken) throws UnauthorizedException {
+        Claims claims;
+        try {
+            claims = Jwts.parser().verifyWith(Keys.hmacShaKeyFor(refreshSecret.getBytes())).build()
+                    .parseSignedClaims(refreshToken).getPayload();
+            return (Boolean) claims.get("restore");
+        } catch (Exception e) {
+            throw new UnauthorizedException("Invalid refresh token");
+        }
+
+    }
 
     public boolean verifyWsAccessToken(String wsAccessToken) {
         try {
@@ -122,6 +133,7 @@ public class JwtUtils {
     }
 
     public boolean verifyWsRefreshToken(String wsRefreshToken) {
+
         try {
             Jwts.parser().verifyWith(Keys.hmacShaKeyFor(wsRefreshSecret.getBytes())).build()
                     .parseSignedClaims(wsRefreshToken).getPayload();
@@ -131,10 +143,20 @@ public class JwtUtils {
         }
     }
 
-    public String generateToken(User u, TokenType type) {
+    public boolean getRestoreFromWsRefreshToken(String wsRefreshToken) throws UnauthorizedException {
+        Claims claims;
+        try {
+            claims = Jwts.parser().verifyWith(Keys.hmacShaKeyFor(wsRefreshSecret.getBytes())).build()
+                    .parseSignedClaims(wsRefreshToken).getPayload();
+            return (Boolean) claims.get("restore");
+        } catch (Exception e) {
+            throw new UnauthorizedException("Invalid ws_refresh_token");
+        }
+    }
+
+    public String generateToken(User u, TokenType type, boolean restore) {
         long exp = 1;
         String secret = accessSecret;
-        boolean restore = false;
         switch (type) {
             case TokenType.ACCESS -> {
                 exp = Long.parseLong(accessExp);
@@ -161,7 +183,7 @@ public class JwtUtils {
                 .subject(u.getId().toString())
                 .claim("scope", u.getScope().stream().map(Enum::name)
                         .collect(Collectors.joining(" ")))
-                .claim("restore", false)
+                .claim("restore", restore)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + exp))
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()))

@@ -31,7 +31,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Component
-@Log4j2
+//@Log4j2
 @CrossOrigin(origins = "http://localhost:4200")
 public class SocketIOController {
 
@@ -104,7 +104,7 @@ public class SocketIOController {
             UUID userId = getUserId(client);
             clientSvc.addClient(client.getSessionId(), client);
             sessionSvc.addSession(userId, client.getSessionId());
-            log.info(sessionSvc.getSessionTracker());
+//            log.info(sessionSvc.getSessionTracker());
             assert userRp.findById(userId).isPresent();
             
         }
@@ -117,7 +117,7 @@ public class SocketIOController {
             UUID userId = getUserId(client);
             clientSvc.removeClient(client.getSessionId());
             sessionSvc.removeSession(client.getSessionId());
-            log.info(sessionSvc.getSessionTracker());
+//            log.info(sessionSvc.getSessionTracker());
         }
     };
 
@@ -139,9 +139,9 @@ public class SocketIOController {
 
 
             boolean isRecipientUserOnLine = sessionSvc.isOnLine(recipientUser.getId());
-            log.info(isRecipientUserOnLine);
+//            log.info(isRecipientUserOnLine);
 
-            log.info(senderUser.getId() + " " + recipientUser.getId());
+//            log.info(senderUser.getId() + " " + recipientUser.getId());
 
 
             Order order = orderRp.findById(messageDTO.orderId()).orElse(null);
@@ -157,7 +157,7 @@ public class SocketIOController {
             }
 
 
-            log.info(message.getSenderUser().getId() + " user sent message to user " + message.getRecipientUser().getId() + " and message is " + message.getMessage());
+//            log.info(message.getSenderUser().getId() + " user sent message to user " + message.getRecipientUser().getId() + " and message is " + message.getMessage());
 
 
             /**

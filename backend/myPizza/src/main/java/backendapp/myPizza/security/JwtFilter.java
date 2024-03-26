@@ -35,7 +35,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 @Component
-@Log4j2
+//@Log4j2
 public class JwtFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -63,7 +63,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 jwtUtils.verifyAccessToken(tokens.getAccessToken());
                 UUID userId = jwtUtils.extractUserIdFromAccessToken(tokens.getAccessToken());
                 User u = authUserSvc.findUserById(userId);
-                log.info("Authorized userId=" + userId);
+//                log.info("Authorized userId=" + userId);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(u, cookies, u.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 filterChain.doFilter(req, res);
@@ -81,7 +81,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 res.addCookie(refreshToken);
                 UUID userId = jwtUtils.extractUserIdFromAccessToken(newTokens.getAccessToken());
                 User u = authUserSvc.findUserById(userId);
-                log.info("Authorized userId=" + userId + " after refresh");
+//                log.info("Authorized userId=" + userId + " after refresh");
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(u, cookies, u.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 filterChain.doFilter(req, res);

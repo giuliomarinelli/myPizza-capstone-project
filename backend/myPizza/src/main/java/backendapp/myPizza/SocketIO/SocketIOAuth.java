@@ -15,7 +15,7 @@ import java.net.HttpCookie;
 import java.util.*;
 
 @Component
-@Log4j2
+//@Log4j2
 public class SocketIOAuth implements AuthorizationListener {
 
     @Autowired
@@ -35,7 +35,7 @@ public class SocketIOAuth implements AuthorizationListener {
     @Override
     public boolean isAuthorized(HandshakeData data) {
         String cookies = data.getHttpHeaders().get("Cookie");
-        log.info(cookies);
+//        log.info(cookies);
         if (cookies == null) return false;
         if (cookies.isBlank()) return false;
         List<Cookie> parsedCookies = cookieParser(cookies);
@@ -49,7 +49,7 @@ public class SocketIOAuth implements AuthorizationListener {
         boolean isValid = jwtUtils.verifyWsAccessToken(accessToken.getValue());
         try {
             UUID userId = jwtUtils.extractUserIdFromWsAccessToken(accessToken.getValue());
-            log.info("SOCKET: authenticated userId=" + userId);
+//            log.info("SOCKET: authenticated userId=" + userId);
         } catch (UnauthorizedException e) {
             return false;
         }

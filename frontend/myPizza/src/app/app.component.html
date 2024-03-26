@@ -133,17 +133,21 @@
             </a>
             }
 
-            @if(isLoggedIn && userProfile) {<button mat-button class="avatar fake-btn" mat-button [matMenuTriggerFor]="menu">
+            @if(isLoggedIn && userProfile) {<button mat-button class="avatar fake-btn" mat-button
+              [matMenuTriggerFor]="menu">
               <img [src]="userProfile.profileImage" class="img-fluid">
             </button>
             <mat-menu #menu="matMenu">
               <a routerLink="/my-pizza" mat-menu-item><i class="bi bi-person-circle me-3"></i>Il mio profilo</a>
-              <button mat-menu-item (click)="logout()"><i class="bi bi-box-arrow-left me-3"></i>Logout</button>
+
+              <a mat-menu-item routerLink="/login"  [queryParams]="{ ref: _btoa(path), act: _btoa('LOGOUT') }"><i
+                  class="bi bi-box-arrow-left me-3"></i>Logout</a>
+
               @if (isAdmin) {
-                <a routerLink="/my-pizza-ges" mat-menu-item><i class="bi bi-gear me-3"></i>MyPizzaGes</a>
+              <a routerLink="/my-pizza-ges" mat-menu-item><i class="bi bi-gear me-3"></i>MyPizzaGes</a>
               }
             </mat-menu>
-          }
+            }
           </div>
           } @else {
           <div class="d-none d-lg-flex align-items-center">

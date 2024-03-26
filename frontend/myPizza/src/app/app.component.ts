@@ -38,10 +38,11 @@ export class AppComponent {
           socket.getUnreadMessagesCount().subscribe(ack => console.log(ack))
 
         }
-          socket.onGetUnreadMessagesCount().subscribe(count =>{
-             this.count += count
-              console.log('count', count)
-            })
+        socket.onGetUnreadMessagesCount().subscribe(count => {
+          this.count += count
+          socket.setOff()
+
+        })
 
         socket.onReceiveMessage().subscribe(message => {
           if (!this.messageIds.includes(message.id) && !message.read) {
@@ -50,6 +51,7 @@ export class AppComponent {
             this.messageSvc.messages$.subscribe(n => {
               if (n !== -1) this.count = n
               appRef.tick()
+              socket.setOff()
 
 
             })
@@ -120,7 +122,7 @@ export class AppComponent {
     })
   }
 
-  private _isLoggedIn():void {
+  private _isLoggedIn(): void {
     {
       this.authSvc.isLoggedIn$.subscribe((res) => {
         if (res === true) {
@@ -128,14 +130,15 @@ export class AppComponent {
           this.getProfile()
           this._isAdmin()
         } else {
-          this.authSvc.isLoggedInQuery().subscribe({next: res => {
-            this.isLoggedIn = true
-            this.getProfile()
-            this._isAdmin()
-            this.authSvc.loggedInSbj.next(true)
-          },
+          this.authSvc.isLoggedInQuery().subscribe({
+            next: res => {
+              this.isLoggedIn = true
+              this.getProfile()
+              this._isAdmin()
+              this.authSvc.loggedInSbj.next(true)
+            },
             error: err => err
-        })
+          })
 
         }
       })
@@ -202,7 +205,11 @@ export class AppComponent {
 
   }
 
-  private path: string = ''
+  _btoa(arg: string): string {
+    return btoa(arg)
+  }
+
+  protected path: string = ''
 
   protected newMessage: MessageMng | undefined = undefined
 
@@ -229,12 +236,10 @@ export class AppComponent {
 
   protected logout(): void {
 
-        this.authSvc.logout().subscribe(res => {
-          this.authSvc.loggedInSbj.next(false)
-          this.isLoggedIn = false
-          // redirect a delle rotte in base a this.path in alcunoi casi specifici
-          location.href = location.href
-        })
+    this.authSvc.logout().subscribe(res => {
+      this.authSvc.loggedInSbj.next(false)
+      this.isLoggedIn = false
+    })
 
 
 

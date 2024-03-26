@@ -13,7 +13,7 @@ export class AdminGuard {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-      console.log('admin guard')
+
     return this.authSvc.isAdmin().pipe(map(res => res), catchError(err => {
       return of(false)
     }))

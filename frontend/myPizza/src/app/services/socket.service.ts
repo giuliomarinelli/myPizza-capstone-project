@@ -125,10 +125,16 @@ export class SocketService {
 
   }
 
+  public setOff(): void {
+    socket.off('messsage')
+    socket.off('unread_messages_count')
+    socket.off('time_intervals')
+  }
+
   public onReceiveMessage(): Observable<Message> {
     return new Observable<Message>(observer => {
       socket.on('message', (data: Message) => {
-        observer.next(data);
+        observer.next(data)
       })
     })
   }

@@ -1,3 +1,4 @@
+import { AdminUserIdRes } from './../../../Models/i-user';
 import { DeliveryTimeRes } from './../../../Models/i_session';
 import { OrderSet, SendOrderDTO } from './../../../Models/i-order';
 import { Component, NgZone, afterNextRender } from '@angular/core';
@@ -27,7 +28,7 @@ export class CheckoutComponent {
         this.isLoading = false
         this._session.getDeliveryTimes().subscribe(res => this.deliveryTimes = res.deliveryTimes)
       })
-      publicApi.getAdminUserId().subscribe(res => this.adminUserId = res)
+
       authSvc.isLoggedIn$.subscribe(res => {
         this.isGuest = !res
         orderSvc.getOrderInit().subscribe({next: res => {
@@ -64,7 +65,6 @@ export class CheckoutComponent {
 
   protected isThereAnActiveSession!: boolean
 
-  private adminUserId!: string
 
   protected isLoading: boolean = true
 
@@ -85,12 +85,15 @@ export class CheckoutComponent {
   protected sent: boolean = false
 
   protected sendOrder(): void {
-    console.log(this.orderId)
-    this.socket.sendMessage({
-      recipientUserId: this.adminUserId,
-      message: 'Nuova richiesta di ordine inviata',
-      orderId: this.orderId
-    }).subscribe(ack => console.log(ack))
+    this.publicApi.getAdminUserId().subscribe(adminUserId => {
+      this.socket.sendMessage({
+        recipientUserId: adminUserId,
+        message: 'Nuova richiesta di ordine inviata',
+        orderId: this.orderId
+      }).subscribe(ack => console.log(ack))
+    })
+
+
     const sendOrderDTO: SendOrderDTO = {
       asap: <boolean>this.checkoutForm.get('asap')?.value,
       expectedDeliveryTime: <number>this.checkoutForm.get('deliveryTime')?.value,

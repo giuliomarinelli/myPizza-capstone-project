@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 @CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4000"})
 @Component
-@Log4j2
+//@Log4j2
 public class SocketIOConfig {
 
     @Autowired
@@ -39,7 +39,7 @@ public class SocketIOConfig {
         server.addConnectListener(new ConnectListener() {
             @Override
             public void onConnect(SocketIOClient client) {
-                log.info("new user connected with socket " + client.getSessionId());
+//                log.info("new user connected with socket " + client.getSessionId());
             }
         });
 
@@ -47,9 +47,9 @@ public class SocketIOConfig {
         server.addDisconnectListener(new DisconnectListener() {
             @Override
             public void onDisconnect(SocketIOClient client) {
-                client.getNamespace().getAllClients().forEach(data -> {
-                    log.info("user disconnected " + data.getSessionId().toString());
-                });
+//                client.getNamespace().getAllClients().forEach(data -> {
+//                    log.info("user disconnected " + data.getSessionId().toString());
+//                });
             }
         });
         return server;

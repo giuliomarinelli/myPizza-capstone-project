@@ -24,6 +24,8 @@ export class IsLoggedInGuard {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
+
+
     return this.authSvc.isLoggedInQuery().pipe(map(res => {
       if (res.loggedIn === true) {
         return true

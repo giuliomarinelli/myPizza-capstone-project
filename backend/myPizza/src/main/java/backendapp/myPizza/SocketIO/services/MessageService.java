@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-@Log4j2
+//@Log4j2
 public class MessageService {
 
     @Autowired
@@ -91,12 +91,12 @@ public class MessageService {
 
 
         Set<UUID> clientIds = sessionSvc.getClientIdsFromUserId(message.getRecipientUser().getId());
-        log.info(message.getRecipientUser().getId() + " receiving message");
+//        log.info(message.getRecipientUser().getId() + " receiving message");
         for (UUID clientId : clientIds) {
             SocketIOClient client = clientSvc.getClient(clientId);
-            log.info(client);
+//            log.info(client);
             if (client != null) {
-                log.info("send message");
+//                log.info("send message");
                 client.sendEvent("message", message);
             }
 
@@ -154,9 +154,9 @@ public void restoreAllMessages(UUID recipientUserId) {
         List<TimeInterval> timeIntervals = _session.getActiveSessionTimeIntervals();
         for (UUID clientId : adminClientIds) {
             SocketIOClient client = clientSvc.getClient(clientId);
-            log.info(client);
+//            log.info(client);
             if (client != null) {
-                log.info("send active session");
+//                log.info("send active session");
                 client.sendEvent("time_intervals", timeIntervals);
             }
 

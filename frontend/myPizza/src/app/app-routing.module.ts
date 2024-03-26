@@ -53,26 +53,26 @@ const routes: Routes = [
   {
     path: 'my-pizza-ges/prodotti',
     loadChildren: () => import('./pages/my-pizza-ges/prodotti/prodotti.module').then(m => m.ProdottiModule),
-    canActivate: [IsLoggedInGuard],
-    canActivateChild: [IsLoggedInGuard]
+    canActivate: [IsLoggedInGuard, AdminGuard],
+    canActivateChild: [IsLoggedInGuard, AdminGuard]
   },
   {
     path: 'my-pizza-ges/ingredienti',
     loadChildren: () => import('./pages/my-pizza-ges/ingredienti/ingredienti.module').then(m => m.IngredientiModule),
-    canActivate: [IsLoggedInGuard],
-    canActivateChild: [IsLoggedInGuard]
+    canActivate: [IsLoggedInGuard, AdminGuard],
+    canActivateChild: [IsLoggedInGuard, AdminGuard]
   },
   {
     path: 'my-pizza-ges/sessione',
     loadChildren: () => import('./pages/my-pizza-ges/sessione/sessione.module').then(m => m.SessioneModule),
-    canActivate: [IsLoggedInVariantGuard],
-    canActivateChild: [IsLoggedInVariantGuard]
+    canActivate: [IsLoggedInVariantGuard, AdminGuard],
+    canActivateChild: [IsLoggedInVariantGuard, AdminGuard]
   },
   {
     path: 'my-pizza-ges/gestisci-visualizzazione-menu',
     loadChildren: () => import('./pages/my-pizza-ges/gestisci-visualizzazione-menu/gestisci-visualizzazione-menu.module').then(m => m.GestisciVisualizzazioneMenuModule),
-    canActivate: [IsLoggedInGuard],
-    canActivateChild: [IsLoggedInGuard]
+    canActivate: [IsLoggedInGuard, AdminGuard],
+    canActivateChild: [IsLoggedInGuard, AdminGuard]
   },
   {
     path: 'ordina-a-domicilio/checkout',
@@ -82,19 +82,21 @@ const routes: Routes = [
   },
   {
     path: 'my-pizza-ges/sessione-lavorativa',
-    loadChildren: () => import('./pages/my-pizza-ges/sessione-lavorativa/sessione-lavorativa.module').then(m => m.SessioneLavorativaModule)
+    loadChildren: () => import('./pages/my-pizza-ges/sessione-lavorativa/sessione-lavorativa.module').then(m => m.SessioneLavorativaModule),
+    canActivate: [IsLoggedInGuard, AdminGuard],
+    canActivateChild: [IsLoggedInGuard, AdminGuard]
   },
   {
     path: 'my-pizza-ges/sessione/configura-nuova-sessione',
     loadChildren: () => import('./pages/my-pizza-ges/sessione/configura-nuova-sessione/configura-nuova-sessione.module').then(m => m.ConfiguraNuovaSessioneModule),
-    canActivate: [IsLoggedInGuard],
-    canActivateChild: [IsLoggedInGuard]
+    canActivate: [IsLoggedInGuard, AdminGuard],
+    canActivateChild: [IsLoggedInGuard, AdminGuard]
   },
   {
     path: 'my-pizza-ges/sessione/finalizza-ordine',
     loadChildren: () => import('./pages/my-pizza-ges/sessione/finalizza-ordine/finalizza-ordine.module').then(m => m.FinalizzaOrdineModule),
-    canActivate: [IsLoggedInGuard],
-    canActivateChild: [IsLoggedInGuard]
+    canActivate: [IsLoggedInGuard, AdminGuard],
+    canActivateChild: [IsLoggedInGuard, AdminGuard]
   },
   {
     path: 'my-pizza/messaggi',

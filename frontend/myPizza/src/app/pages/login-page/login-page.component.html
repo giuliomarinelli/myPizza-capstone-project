@@ -23,11 +23,16 @@
         <p class="m-0 mb-2 feedback-h"></p>
         }
       </div>
-      <div class="form-group mb-2"><button class="btn btn-primary btn-block w-100" [disabled]="submit" type="submit">@if(submit){<div class="spinner-grow-sm spinner-border text-light" role="status">
+      <div class="form-group mb-3"><button class="btn btn-primary btn-block w-100" [disabled]="submit" type="submit">@if(submit){<div class="spinner-grow-sm spinner-border text-light" role="status">
         <span class="visually-hidden">Loading...</span>
       </div>}@else{Log In}</button></div>
       <div>
-        <a href="#" class="mb-2 forgot">Password dimenticata?</a>
+        <div class="form-check forgot d-flex justify-content-center gap-2">
+          <input class="form-check-input" type="checkbox" id="restore" formControlName="restore">
+          <label class="form-check-label" for="restore">
+            Ricordami
+          </label>
+        </div>
         <p class="m-0 mb-2 forgot">oppure</p>
         <div class="form-group m-0"><a class="btn btn-outline-info w-100 btn-block" href="/registrati">Registrati</a>
         </div>

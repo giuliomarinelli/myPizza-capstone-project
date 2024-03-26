@@ -1,5 +1,5 @@
 import { IsLoggedIn } from './../../Models/is-logged-in';
-import { ApplicationRef, Component, afterNextRender } from '@angular/core';
+import { ApplicationRef, Component, NgZone, afterNextRender } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,18 +12,27 @@ import { SocketService } from '../../services/socket.service';
 })
 export class LoginPageComponent {
 
-  constructor(private fb: FormBuilder, private authSvc: AuthService,
+  constructor(private fb: FormBuilder, private authSvc: AuthService, private ngZone: NgZone,
     private router: Router, private socket: SocketService, private appRef: ApplicationRef, private route: ActivatedRoute) {
-      afterNextRender(() => {
-        this.route.queryParams.subscribe(params => {
-          if (params['ref']) {
-            const ref = <string> params['ref']
-            this.refUrl = atob(ref)
-
+    afterNextRender(() => {
+      console.log('login page')
+      this.route.queryParams.subscribe(params => {
+        if (params['ref']) {
+          const ref = <string>params['ref']
+          this.refUrl = atob(ref)
+          if (params['act']) {
+            console.log('LOGOUT')
+            const act = <string>params['act']
+            if (atob(act) === 'LOGOUT') this.authSvc.logout().subscribe(res => {
+              ngZone.run(() => {
+                location.href = '/login?ref=' + ref
+             })
+            })
           }
-        })
+        }
       })
-    }
+    })
+  }
 
   protected submit: boolean = false
 
@@ -48,7 +57,8 @@ export class LoginPageComponent {
 
   protected loginForm: FormGroup = this.fb.group({
     email: [null, [Validators.required, Validators.pattern(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)]],
-    password: [null, [Validators.required]]
+    password: [null, [Validators.required]],
+    restore: [false]
   })
 
   private setInvalidMessages(fieldName: string): string {
@@ -77,22 +87,21 @@ export class LoginPageComponent {
     if (this.loginForm.valid) {
       this.submit = true
 
-
+      console.log(this.loginForm.value)
       this.authSvc.login(this.loginForm.value).subscribe({
         next: res => {
-            this.socket.connect()
-            this.authSvc.loggedInSbj.next(true)
-            this.authSvc.getAuthorities().subscribe(auth => {
-              if (auth.includes('ADMIN')) {
-                this.authSvc.adminSbj.next(true)
-                console.log('è admin')
-                this.refUrl ? this.router.navigate([this.refUrl]) : this.router.navigate(['/my-pizza-ges/prodotti'])
-              } else {
-                this.refUrl ? this.router.navigate([this.refUrl]) : this.router.navigate(['/ordina-a-domicilio'])
-              }
-            })
+          this.socket.connect()
+          this.authSvc.loggedInSbj.next(true)
+          this.authSvc.getAuthorities().subscribe(auth => {
+            if (auth.includes('ADMIN')) {
+              this.authSvc.adminSbj.next(true)
+              this.refUrl ? this.router.navigate([this.refUrl]) : this.router.navigate(['/my-pizza-ges/prodotti'])
+            } else {
+              this.refUrl ? this.router.navigate([this.refUrl]) : this.router.navigate(['/ordina-a-domicilio'])
+            }
+          })
 
-            this.appRef.tick()
+          this.appRef.tick()
 
 
         },

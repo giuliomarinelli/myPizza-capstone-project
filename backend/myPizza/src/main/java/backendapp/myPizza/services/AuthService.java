@@ -73,7 +73,7 @@ public class AuthService {
         return u;
     }
 
-    public Map<TokenPairType, TokenPair> login(String email, String password) throws UnauthorizedException, NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+    public Map<TokenPairType, TokenPair> login(String email, String password, boolean restore) throws UnauthorizedException, NoSuchAlgorithmException, InvalidKeySpecException, IOException {
         User u = userRp.findByEmail(email).orElseThrow(
                 () -> new UnauthorizedException("Email and/or password are incorrect")
         );
@@ -81,11 +81,11 @@ public class AuthService {
         if (!encoder.matches(password, u.getHashPassword()))
             throw new UnauthorizedException("Email and/or password are incorrect");
         Map<TokenPairType, TokenPair> tokenMap = new HashMap<>();
-        TokenPair httpTokenPair = new TokenPair(jwtUtils.generateToken(u, TokenType.ACCESS),
-                jwtUtils.generateToken(u, TokenType.REFRESH), TokenPairType.HTTP);
+        TokenPair httpTokenPair = new TokenPair(jwtUtils.generateToken(u, TokenType.ACCESS, restore),
+                jwtUtils.generateToken(u, TokenType.REFRESH, restore), TokenPairType.HTTP);
         tokenMap.put(TokenPairType.HTTP, httpTokenPair);
-        TokenPair wsTokenPair = new TokenPair(jwtUtils.generateToken(u, TokenType.WS_ACCESS),
-                jwtUtils.generateToken(u, TokenType.WS_REFRESH), TokenPairType.WS);
+        TokenPair wsTokenPair = new TokenPair(jwtUtils.generateToken(u, TokenType.WS_ACCESS, restore),
+                jwtUtils.generateToken(u, TokenType.WS_REFRESH, restore), TokenPairType.WS);
         tokenMap.put(TokenPairType.WS, wsTokenPair);
         return tokenMap;
     }

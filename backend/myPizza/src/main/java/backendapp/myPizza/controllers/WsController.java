@@ -48,10 +48,11 @@ public class WsController {
             return new IsWsAuthValid(true);
         } else {
             if (jwtUtils.verifyWsRefreshToken(wsRefreshToken)) {
+                boolean restore = jwtUtils.getRestoreFromWsRefreshToken(wsRefreshToken);
                 UUID userId = jwtUtils.extractUserIdFromWsRefreshToken(wsRefreshToken);
                 User u = authUserSvc.findUserById(userId);
-                TokenPair newTokens = new TokenPair(jwtUtils.generateToken(u, TokenType.WS_ACCESS),
-                        jwtUtils.generateToken(u, TokenType.WS_REFRESH), TokenPairType.WS);
+                TokenPair newTokens = new TokenPair(jwtUtils.generateToken(u, TokenType.WS_ACCESS, restore),
+                        jwtUtils.generateToken(u, TokenType.WS_REFRESH, restore), TokenPairType.WS);
                 Cookie c_wsAccessToken = new Cookie("__ws_access_tkn", newTokens.getAccessToken());
                 Cookie c_wsRefreshToken = new Cookie("__ws_refresh_tkn", newTokens.getRefreshToken());
                 log.info("refreshed web socket auth for userId=" + userId);
@@ -61,6 +62,10 @@ public class WsController {
                 c_wsRefreshToken.setPath("/");
                 c_wsRefreshToken.setHttpOnly(true);
                 c_wsRefreshToken.setDomain("localhost");
+                if (restore) {
+                    c_wsAccessToken.setMaxAge(15778800);
+                    c_wsRefreshToken.setMaxAge(15778800);
+                }
                 res.addCookie(c_wsAccessToken);
                 res.addCookie(c_wsRefreshToken);
                 return new IsWsAuthValid(true);

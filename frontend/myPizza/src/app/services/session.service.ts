@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment.production';
 import { Observable, map } from 'rxjs';
 import { DeliveryTimeRes, IsThereAnActiveSessionRes, StartSessionDTO, TimeIntervalsRes, _Session } from '../Models/i_session';
 import { ConfirmRes } from '../Models/confirm-res';

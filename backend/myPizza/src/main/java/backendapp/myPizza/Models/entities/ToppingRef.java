@@ -24,9 +24,9 @@ public class ToppingRef {
 
     private double price;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "toppingsRef", fetch = FetchType.EAGER)
-    private List<ProductRef> productsRef = new ArrayList<>();
+//    @JsonIgnore
+//    @ManyToMany(mappedBy = "toppingsRef", fetch = FetchType.EAGER)
+//    private List<ProductRef> productsRef = new ArrayList<>();
 
     public ToppingRef(String name, double price) {
         this.name = name;

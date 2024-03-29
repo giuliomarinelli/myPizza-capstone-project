@@ -31,10 +31,10 @@ public class TimeInterval {
     private long startsAt;
 
     private long endsAt;
-
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "timeIntervals")
-    private List<WorkSession> workSessions = new ArrayList<>();
+//
+//    @JsonIgnore
+//    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "timeIntervals")
+//    private List<WorkSession> workSessions = new ArrayList<>();
 
 
     private TimeInterval(long startsAt, long endsAt) {

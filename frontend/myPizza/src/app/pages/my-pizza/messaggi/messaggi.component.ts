@@ -48,7 +48,7 @@ export class MessaggiComponent {
 
 
   protected loader(): void {
-    this.ngZone.run(() => setTimeout(() => this.isLoading = false, 4000))
+    // this.ngZone.run(() => setTimeout(() => this.isLoading = false, 4000))
   }
 
   protected perform(i: number) {

@@ -36,7 +36,7 @@ public class Topping {
     private String description;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "toppings", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "toppings", fetch = FetchType.LAZY)
     private List<Product> products = new ArrayList<>();
 
     public Topping(String name, double price, ToppingType type) {

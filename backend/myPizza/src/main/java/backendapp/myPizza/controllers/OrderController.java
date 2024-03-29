@@ -2,6 +2,7 @@ package backendapp.myPizza.controllers;
 
 import backendapp.myPizza.Models.entities.Order;
 import backendapp.myPizza.Models.entities.OrderSet;
+import backendapp.myPizza.Models.entities.TimeInterval;
 import backendapp.myPizza.Models.reqDTO.ConfirmOrderDTO;
 import backendapp.myPizza.Models.resDTO.ConfirmRes;
 import backendapp.myPizza.exceptions.BadRequestException;
@@ -15,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -45,7 +47,7 @@ public class OrderController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/{orderId}/set-completed")
-    public ConfirmRes completeOrder(@PathVariable UUID orderId) throws BadRequestException, NotFoundException {
+    public List<TimeInterval> completeOrder(@PathVariable UUID orderId) throws BadRequestException, NotFoundException {
         return orderSvc.completeOrder(orderId);
     }
 

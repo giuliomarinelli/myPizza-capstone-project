@@ -1,9 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment.production';
 import { ConfirmOrderDTO, GetOrderIdRes, Order, OrderCheckoutInfo, OrderInitDTO, OrderInitRes, SendOrderDTO } from '../Models/i-order';
 import { Observable } from 'rxjs';
 import { ConfirmRes } from '../Models/confirm-res';
+import { TimeInterval } from '../Models/i_session';
+import { Time } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -42,8 +44,8 @@ export class OrderService {
     return this.http.get<ConfirmRes>(`${this.backendUrl}/api/order/${orderId}/reject`, { withCredentials: true })
   }
 
-  public completeOrder(orderId: string): Observable<ConfirmRes> {
-    return this.http.get<ConfirmRes>(`${this.backendUrl}/api/order/${orderId}/set-completed`, { withCredentials: true })
+  public completeOrder(orderId: string): Observable<TimeInterval[]> {
+    return this.http.get<TimeInterval[]>(`${this.backendUrl}/api/order/${orderId}/set-completed`, { withCredentials: true })
   }
 
 }

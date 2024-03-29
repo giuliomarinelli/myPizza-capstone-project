@@ -61,10 +61,10 @@
       </div>
 
 
-      <div class="mt-2"><em>{{message.message.message}}</em></div>
-      <div class="mt-2"><strong>Orario di consegna richiesto: {{message.message.order?.expectedDeliveryTime | date :
-          'HH:mm'}}</strong></div>
-
+      <p class="mt-2"><em>{{message.message.message}}</em></p>
+      <p class="mt-2"><strong>Orario di consegna richiesto: {{message.message.order?.expectedDeliveryTime | date :
+          'HH:mm'}}</strong></p>
+       <p><strong>Indirizzo:</strong> {{message.message.order?.address?.road}} {{message.message.order?.address?.civic}}, {{message.message.order?.address?.city?.name}} ({{message.message.order?.address?.city?.provinceCode}}), {{message.message.order?.address?.city?.region}}</p>
       @if(message.message.order)
       {
       <hr class="hr">
@@ -83,7 +83,6 @@
       </div>
       <p><strong>COSTO DELLA CONSEGNA: </strong><span>{{message.message.order.deliveryCost.toFixed(2)}}€</span></p>
       <p><strong>TOTALE: </strong><span [innerHTML]="calctTotalAmount(message.message.order)"></span></p>
-
       <div class="btn-set d-flex gap-3 justify-content-center flex-wrap max-w">
         <button (click)="finalizeOrder(message.message.order.id, 'CONFIRM', message.message.id,i)"
           class="btn btn-primary d-flex justify-content-center align-items-center gap-3">

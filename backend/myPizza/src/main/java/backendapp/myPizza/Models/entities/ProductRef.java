@@ -33,9 +33,9 @@ public class ProductRef {
     )
     private List<ToppingRef> toppingsRef = new ArrayList<>();
 
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "productRef")
-    private List<OrderSet> orderSets = new ArrayList<>();
+//    @JsonIgnore
+//    @OneToMany(fetch = FetchType.EAGER, mappedBy = "productRef")
+//    private List<OrderSet> orderSets = new ArrayList<>();
 
 
     private double price;

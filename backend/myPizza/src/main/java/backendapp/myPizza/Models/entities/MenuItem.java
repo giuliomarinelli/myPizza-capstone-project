@@ -16,8 +16,8 @@ public abstract class MenuItem {
     @Setter(AccessLevel.NONE)
     private UUID id;
 
-    @JsonIgnore
-    @OneToOne(mappedBy = "item")
-    private Menu menu;
+//    @JsonIgnore
+//    @OneToOne(mappedBy = "item")
+//    private Menu menu;
 
 }

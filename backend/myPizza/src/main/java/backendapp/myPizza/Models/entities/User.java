@@ -61,12 +61,12 @@ public class User implements UserDetails {
     private List<Address> addresses = new ArrayList<>();
 
     private _2FAStrategy _2FA;
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "senderUser")
-    List<Message> sentMessages;
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "recipientUser")
-    List<Message> receivedMessages;
+//    @JsonIgnore
+//    @OneToMany(fetch = FetchType.EAGER, mappedBy = "senderUser")
+//    List<Message> sentMessages;
+//    @JsonIgnore
+//    @OneToMany(fetch = FetchType.EAGER, mappedBy = "recipientUser")
+//    List<Message> receivedMessages;
 
     @JsonIgnore
     private List<UserScope> scope;

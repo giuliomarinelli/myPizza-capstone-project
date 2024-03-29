@@ -164,7 +164,7 @@ public class OrderService {
         return new ConfirmRes("Order with id='" + orderId + " rejected", HttpStatus.OK);
     }
 
-    public ConfirmRes completeOrder(UUID orderId) throws BadRequestException, NotFoundException {
+    public List<TimeInterval> completeOrder(UUID orderId) throws BadRequestException, NotFoundException {
         Order order = orderRp.findById(orderId).orElseThrow(
                 () -> new BadRequestException("Order you're trying to confirm doesn't exist")
         );
@@ -173,8 +173,8 @@ public class OrderService {
         order.setStatus(OrderStatus.COMPLETED);
         order.setCompletedAt(System.currentTimeMillis());
         orderRp.save(order);
-        messageSvc.pushTimeIntervals();
-        return new ConfirmRes("Order with id='" + orderId + "' has been setted as COMPLETED successfully", HttpStatus.OK);
+        return _session.getActiveSessionTimeIntervals();
+
     }
 
 

@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Table(name = "cities")
@@ -26,9 +25,9 @@ public class City {
 
     private String region;
 
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "city")
-    List<Address> addresses = new ArrayList<>();
+//    @JsonIgnore
+//    @OneToMany(fetch = FetchType.EAGER, mappedBy = "city")
+//    List<Address> addresses = new ArrayList<>();
 
     public City(int id, String name, String provinceCode, String provinceName, String region) {
         this.id = id;

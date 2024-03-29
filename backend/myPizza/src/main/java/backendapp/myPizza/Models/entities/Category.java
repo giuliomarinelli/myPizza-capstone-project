@@ -19,9 +19,9 @@ public class Category extends MenuItem {
     @Column(unique = true)
     private String name;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "category")
-    @JsonIgnore
-    private List<Product> products = new ArrayList<>();
+//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "category")
+//    @JsonIgnore
+//    private List<Product> products = new ArrayList<>();
 
     ItemType type = ItemType.CATEGORY;
 

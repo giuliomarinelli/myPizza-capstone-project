@@ -37,9 +37,9 @@ public class Order {
     private long deliveryTime;
 
     private boolean asap;
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "order")
-    private List<Message> messages;
+//    @JsonIgnore
+//    @OneToMany(fetch = FetchType.EAGER, mappedBy = "order")
+//    private List<Message> messages;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;

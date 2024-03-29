@@ -1,5 +1,6 @@
 package backendapp.myPizza.SocketIO.services;
 
+import backendapp.myPizza.Models.entities.Order;
 import backendapp.myPizza.Models.entities.TimeInterval;
 import backendapp.myPizza.Models.entities.User;
 import backendapp.myPizza.Models.entities.WorkSession;
@@ -152,6 +153,8 @@ public void restoreAllMessages(UUID recipientUserId) {
     public void pushTimeIntervals() throws NotFoundException {
         Set<UUID> adminClientIds = sessionSvc.getClientIdsFromUserId(profileSvc.getAdminUserId().getAdminUserId());
         List<TimeInterval> timeIntervals = _session.getActiveSessionTimeIntervals();
+        System.out.println("push time interval");
+
         for (UUID clientId : adminClientIds) {
             SocketIOClient client = clientSvc.getClient(clientId);
 //            log.info(client);

@@ -10,7 +10,7 @@ import { TimeInterval, _Session } from '../Models/i_session';
 
 
 
-const socket: Socket = io(`${environment.backendUrl}:8085`, {
+const socket: Socket = io(`${environment.backendUrl}`, {
   withCredentials: true,
   transports: ['websocket'],
   reconnection: false,
@@ -56,7 +56,7 @@ export class SocketService {
     socket.on('connect', () => {
       this.messageSentPending.forEach(m => this.sendMessage(m).subscribe(ack => undefined))
     })
-    socket.on('connect',() => console.log('connect'))
+    socket.on('connect', () => console.log('connect'))
     socket.on('connect_error', () => {
       console.log('socket disconnesso, verifico l\'autenticazione e eventualmente faccio il refresh, poi mi riconnetto')
       this.authSvc.isWsAuthValidOrRefresh().subscribe({

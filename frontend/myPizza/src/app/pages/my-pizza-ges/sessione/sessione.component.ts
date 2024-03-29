@@ -90,14 +90,6 @@ export class SessioneComponent {
 
   protected setSocket(): void {
 
-    this.socket.restoreTimeIntervals().subscribe(ack => {
-      console.log(ack)
-
-    })
-    this.socket.onTimeIntervalsChange().subscribe(ti => {
-      this.timeIntervals = ti
-      this.appRef.tick()
-    })
 
     // per accesso negato chiamata diretta a is admin senza subject e redirect
     /* mancano
@@ -126,7 +118,7 @@ export class SessioneComponent {
     this.socket.onReceiveMessage().subscribe(message => {
       this.publicApi.getAdminUserId().subscribe(adminUserId => {
         if (!this.messageIds.includes(message.id)) {
-          console.log(message.recipientUser.authorities)
+
           if (!(message.senderUser.id === adminUserId && message.order?.status !== 'INIT')) {
             this.messageIds.push(message.id)
             this.realTimeMessages.unshift({
@@ -149,6 +141,8 @@ export class SessioneComponent {
   protected setCompleted(order: Order): void {
     this.orderSvc.completeOrder(order.id).subscribe({
       next: res => {
+        this.timeIntervals = res
+        console.log(res)
         this.ngZone.run(() => this.dialog.open(ConfirmOrderDialogComponent, { data: { order } }))
         this.socket.sendMessage({
           recipientUserId: order.user.id,
@@ -218,7 +212,7 @@ export class SessioneComponent {
   }
 
   protected calctTotalAmount(order: Order): string {
-    return (order.orderSets.map(os => os.productRef.price).reduce((c, p) => c + p) + order.deliveryCost).toFixed(2) + '€'
+    return (order.orderSets.map(os => os.productRef.price * os.quantity).reduce((c, p) => c + p) + order.deliveryCost).toFixed(2) + '€'
   }
 
 

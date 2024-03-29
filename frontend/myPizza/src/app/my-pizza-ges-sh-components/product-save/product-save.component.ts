@@ -114,6 +114,10 @@ export class ProductSaveComponent {
     }
   }
 
+  protected rerender(): void {
+    this.appRef.tick()
+  }
+
   protected onFormInputEmit() {
     const toppings: Topping[] = []
     this.addedToppingDescriptions.forEach(el => {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment.production';
+import { environment } from '../../environments/environment.development';
 import { Observable } from 'rxjs';
 import { CategoriesRes, Product, ProductNamesRes, Topping, ToppingDTO, ToppingRes } from '../Models/i-product';
 import { HttpClient } from '@angular/common/http';

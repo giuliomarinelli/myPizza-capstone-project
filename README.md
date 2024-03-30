@@ -27,6 +27,8 @@ Per quanto riguarda il cliente 👱🏻‍♂️, egli può comodamente selezion
 
 => L'applicazione attende release future. Oltre ad alcuni bugfix minori, potranno essere implementate tutta una serie di funzionalità.
 
+Un progetto futuro distinto da questo ma al tempo stesso collegato prevederà la realizzazione di una copia esatta del backend di quest'app, qui realizzato in Java e Spring Boot, con Hibernate come framework di interfacciamento con i database relazionali, in Node.js, utilizzando il framwwork Nest.js (da qualcuno chiamato lo Spring di node) e TypeOrm (molto simile ad Hibernate, ma che gira in TypeScript)
+
 In questi 28 giorni di lavoro mi sono concentrato con la massima attenzione e con molta tenacia su tre aspetti fondamentali:
 1) Velocità. Credo che un'applicazione veloce sia un'applicazione amica 😄 dell'utente. Ho lavorato sul multithreading di Java, cercando anche quando possibile di fare sempre stream paralleli e non sequenziali.
    Ho lavorato sulle relazioni del database: il mio approccio è stato quello di preferire il più possibile relazioni unidirezionali, alleggerendo il carico di lavoro di Postgre, e in ogni caso preferire, quando possibile, la modalità lazy.

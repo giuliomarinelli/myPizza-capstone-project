@@ -35,4 +35,4 @@ Il sistema di autenticazione e autorizzazione inoltre lavora con i cookie. Per q
 
 => L'applicazione attende release future. Oltre ad alcuni bugfix minori, potranno essere implementate tutta una serie di funzionalità.
 
-Un progetto futuro distinto da questo ma al tempo stesso collegato prevederà la realizzazione di una copia esatta del backend di quest'app, qui realizzato in Java e Spring Boot, con Hibernate come framework di interfacciamento con i database relazionali, in Node.js, utilizzando il framework Nest.js (da qualcuno chiamato lo Spring di node) e TypeOrm (molto simile ad Hibernate, ma che gira in TypeScript)
+

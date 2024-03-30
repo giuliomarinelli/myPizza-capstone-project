@@ -15,7 +15,7 @@ const socket: Socket = io(`${environment.backendUrl}`, {
   transports: ['websocket'],
   reconnection: false,
   autoConnect: false,
-  query: { 'guest': false }
+  protocols: ['http']
 })
 
 // const socketGuest = io('http://localhost:8085', {

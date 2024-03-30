@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment.production';
+import { environment } from '../../environments/environment.development';
 import { Observable, map } from 'rxjs';
 import { InternationalPrefix } from '../Models/i-international-prefix';
 import { CityAutocomplete } from '../Models/i-city-autocomplete';

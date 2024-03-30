@@ -1,6 +1,7 @@
 Benvenuti! 😊
 
-Al momento siamo ancora in ambiente di sviluppo ⚒️, ma a breve il progetto potrà essere disponibile online affinché tutti possano provare direttamente come funziona. 
+Al momento siamo ancora in ambiente di sviluppo ⚒️, ma a breve il progetto potrà essere disponibile online affinché tutti possano provare direttamente come funziona 
+(a questo indirizzo: https://my-pizza.giuliomarinelli.com). 
 L'ambiente di produzione 🏭 è quasi pronto, per chiudere il cerchio è in corso la realizzazione di un web server Nginx 🖥️ che funzioni da Reverse Proxy, permettendo ai server Tomcat e Netty-Socket.io di lavorare in un'unica porta🚪.
 
 DESCRIZIONE DEL PROGETTO 👌

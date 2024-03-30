@@ -25,10 +25,6 @@ In questa versione (1.0.0beta4d) sono state implementate tutte le funzionalità,
 
 Per quanto riguarda il cliente 👱🏻‍♂️, egli può comodamente selezionare i prodotti da ordinare e la quantità e inviare l'ordine; riceverà una notifica istantanea quando l'ordine sarà stato accettato, e un'altra notifica quando l'ordine sarà pronto e starà per essere consegnato.
 
-=> L'applicazione attende release future. Oltre ad alcuni bugfix minori, potranno essere implementate tutta una serie di funzionalità.
-
-Un progetto futuro distinto da questo ma al tempo stesso collegato prevederà la realizzazione di una copia esatta del backend di quest'app, qui realizzato in Java e Spring Boot, con Hibernate come framework di interfacciamento con i database relazionali, in Node.js, utilizzando il framwwork Nest.js (da qualcuno chiamato lo Spring di node) e TypeOrm (molto simile ad Hibernate, ma che gira in TypeScript)
-
 In questi 28 giorni di lavoro mi sono concentrato con la massima attenzione e con molta tenacia su tre aspetti fondamentali:
 1) Velocità. Credo che un'applicazione veloce sia un'applicazione amica 😄 dell'utente. Ho lavorato sul multithreading di Java, cercando anche quando possibile di fare sempre stream paralleli e non sequenziali.
    Ho lavorato sulle relazioni del database: il mio approccio è stato quello di preferire il più possibile relazioni unidirezionali, alleggerendo il carico di lavoro di Postgre, e in ogni caso preferire, quando possibile, la modalità lazy.
@@ -36,3 +32,7 @@ In questi 28 giorni di lavoro mi sono concentrato con la massima attenzione e co
 2) Istantaneità della comunicazione cliente-ristorante e ristorante-cliente. A tal scopo ho implementato l'interfaccia con un websocket lavorando con la libreria Socket.io.
 3) Sicurezza: ho gestito un sistema di autenticazione un po' meno "didattico" cercando di avere un approccio un po' più professionale. Ho utilizzato una coppia di access token e refresh token rispettivamente per http e websocket.
 Il sistema di autenticazione e autorizzazione inoltre lavora con i cookie. Per quanto concerne gli endpoint http autenticati, ho messo a punto un sistema di refresh automatico lato-server che permette di lavorare tranquillamente con access token di 15 secondi.  
+
+=> L'applicazione attende release future. Oltre ad alcuni bugfix minori, potranno essere implementate tutta una serie di funzionalità.
+
+Un progetto futuro distinto da questo ma al tempo stesso collegato prevederà la realizzazione di una copia esatta del backend di quest'app, qui realizzato in Java e Spring Boot, con Hibernate come framework di interfacciamento con i database relazionali, in Node.js, utilizzando il framework Nest.js (da qualcuno chiamato lo Spring di node) e TypeOrm (molto simile ad Hibernate, ma che gira in TypeScript)

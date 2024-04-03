@@ -1,4 +1,3 @@
-
 <div class="footer-bottom">
 
 
@@ -64,7 +63,9 @@
       <p class="mt-2"><em>{{message.message.message}}</em></p>
       <p class="mt-2"><strong>Orario di consegna richiesto: {{message.message.order?.expectedDeliveryTime | date :
           'HH:mm'}}</strong></p>
-       <p><strong>Indirizzo:</strong> {{message.message.order?.address?.road}} {{message.message.order?.address?.civic}}, {{message.message.order?.address?.city?.name}} ({{message.message.order?.address?.city?.provinceCode}}), {{message.message.order?.address?.city?.region}}</p>
+      <p><strong>Indirizzo:</strong> {{message.message.order?.address?.road}} {{message.message.order?.address?.civic}},
+        {{message.message.order?.address?.city?.name}} ({{message.message.order?.address?.city?.provinceCode}}),
+        {{message.message.order?.address?.city?.region}}</p>
       @if(message.message.order)
       {
       <hr class="hr">
@@ -93,7 +94,7 @@
         </button>
         <button (click)="finalizeOrder(message.message.order.id, 'DELETE', message.message.id, i)"
           class="btn btn-danger d-flex justify-content-center align-items-center gap-3">
-          <i class="bi bi-check-circle-fill"></i>
+          <i class="bi bi-x-circle-fill"></i>
           <span>
             Rifiuta ordine
           </span>
@@ -114,7 +115,7 @@
   <div class="container-lg">
     <div class="row dark-design align-items-stretch">
       @if (timeIntervals) {
-        @if(countOrdersWithStatus('ACCEPTED', timeIntervals)) {
+      @if(countOrdersWithStatus('ACCEPTED', timeIntervals)) {
       @for(ti of timeIntervals; track ti) {
       @if (getOrdersWithStatus('ACCEPTED', ti.orders).length > 0) {
       <div class="col-12 col-md-6 col-xxl-4 p-3">
@@ -158,9 +159,9 @@
       }
       }
       } @else {
-        <p class="text-center">Non ci sono ordini in lavorazione</p>
+      <p class="text-center">Non ci sono ordini in lavorazione</p>
       }
-    }
+      }
     </div>
   </div>
 
@@ -171,17 +172,17 @@
 <div class="container-lg">
   <div class="row dark-design align-items-stretch">
     @if (timeIntervals) {
-      @if (countOrdersWithStatus('COMPLETED', timeIntervals)) {
+    @if (countOrdersWithStatus('COMPLETED', timeIntervals)) {
     @for(ti of timeIntervals; track ti) {
-      @if (getOrdersWithStatus('COMPLETED', ti.orders).length > 0) {
-        <div class="col-12 col-md-6 col-xxl-4 p-3">
+    @if (getOrdersWithStatus('COMPLETED', ti.orders).length > 0) {
+    <div class="col-12 col-md-6 col-xxl-4 p-3">
       <div class="my-pizza-card h-100">
         <h5 class="h5 text-accent">
           Ore {{ti.startsAt | date : 'HH:mm'}} - {{ti.endsAt | date : 'HH:mm'}}
         </h5>
         <hr class="hr text-secondary">
         @if (getOrdersWithStatus('COMPLETED', ti.orders).length === 0) {
-        <p class="text-white">Non ci sono ordini completati</p>
+        <p class="mt-5 text-white">Non ci sono ordini completati</p>
         } @else {
         @for(o of getOrdersWithStatus('COMPLETED', ti.orders); track o; let ind = $index) {
         @if (ti.orders) {
@@ -203,9 +204,9 @@
     }
     }
     } @else {
-      <p class="text-center">Non ci sono ordini completati</p>
+    <p class="text-center">Non ci sono ordini completati</p>
     }
-  }
+    }
   </div>
 </div>
 <app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>

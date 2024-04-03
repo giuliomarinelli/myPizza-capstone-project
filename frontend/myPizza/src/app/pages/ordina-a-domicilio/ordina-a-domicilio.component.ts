@@ -69,8 +69,7 @@ export class OrdinaADomicilioComponent {
         isNotValidMessages.push(`Non è stata settata la quantità per il prodotto "${this.findProductById(ocm.productId).name}".`)
       }
       const regex = new RegExp(/^[1-9][0-9]*$/)
-      console.log(String(ocm.quantity))
-      console.log('regex valid', regex.test(String(ocm.quantity)))
+
       if (ocm.quantity != null && !regex.test(String(ocm.quantity))) {
         isValid = false
         isNotValidMessages.push(`Si è verificato un errore nella compilazione della quantità per il prodotto "${this.findProductById(ocm.productId).name}": sono ammessi soltanto numeri interi positivi e superiori a 0.`)
@@ -78,7 +77,7 @@ export class OrdinaADomicilioComponent {
     })
     if (!isValid) {
       // gestisci con un messaggio i problemi di validazione
-      console.log(isNotValidMessages.join('\n'))
+
     } else {
       this.isLoading = true
       const orderInitDTO: OrderInitDTO = {
@@ -89,13 +88,13 @@ export class OrdinaADomicilioComponent {
           }
         })
       }
-      console.log('order', orderInitDTO)
+
       this.orderSvc.orderInit(orderInitDTO).subscribe(res => {
         this.authSvc.isLoggedInQuery().subscribe({
           next: res => location.href = '/ordina-a-domicilio/checkout',
           error: err => {
             const ref: string = btoa('/ordina-a-domicilio/checkout')
-            location.href = `/login?ref=${ref}`
+            location.href = `/login?ref=${ref}&SCOPE=checkout`
           }
         })
 
@@ -144,7 +143,7 @@ export class OrdinaADomicilioComponent {
           })
           this.isLoading = false
         })
-      }, 200)
+      }, 10)
     } else {
       this.isLoading = false
     }

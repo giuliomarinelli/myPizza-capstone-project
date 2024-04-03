@@ -19,7 +19,8 @@ import { Router } from '@angular/router';
 export class CheckoutComponent {
 
   constructor(private orderSvc: OrderService, private authSvc: AuthService, private fb: FormBuilder, private ngZone: NgZone,
-    private socket: SocketService, private publicApi: PublicApiService, private _session: SessionService, private router: Router) {
+    private socket: SocketService, private publicApi: PublicApiService,
+    private _session: SessionService, private router: Router) {
 
     afterNextRender(() => {
       _session.isThereAnActiveSession().subscribe(res => {
@@ -31,16 +32,17 @@ export class CheckoutComponent {
 
       authSvc.isLoggedIn$.subscribe(res => {
         this.isGuest = !res
-        orderSvc.getOrderInit().subscribe({next: res => {
-          this.orderId = res.orderId
-          this.deliveryCost = res.deliveryCost
-          this.address = res.address
-          this.orderSets = res.orderSets
-          this.totalAmount = res.totalAmount
-          this.isLoading = false
-        },
-        error: err => ngZone.run(() => router.navigate(['/ordina-a-domicilio']))
-      })
+        orderSvc.getOrderInit().subscribe({
+          next: res => {
+            this.orderId = res.orderId
+            this.deliveryCost = res.deliveryCost
+            this.address = res.address
+            this.orderSets = res.orderSets
+            this.totalAmount = res.totalAmount
+            this.isLoading = false
+          },
+          error: err => ngZone.run(() => router.navigate(['/ordina-a-domicilio']))
+        })
         // se non c'è l'order id bisogna gestire la situazione
       })
     })

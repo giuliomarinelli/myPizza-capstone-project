@@ -1,7 +1,7 @@
 <div class="footer-bottom d-flex justify-content-center align-items-center" *ngIf="!confirm">
   <div class="dark-design form-width">
     <form [formGroup]="registerForm" (submit)="performRegister()">
-      <h5 class="h5 text-accent text-center mb-3">Registrati a MyPizza</h5>
+      <h5 class="h5 text-accent text-center mb-3">Registrati a MyPizza @if(scope) {e procedi al checkout}</h5>
       <div class="illustration mb-3">
         <i class="bi bi-r-square-fill"></i>
       </div>
@@ -178,6 +178,6 @@
     <h3 class="h3 text-accent mb-3">
       Ciao {{name}}! La registrazione a MyPizza è avvenuta con successo.
     </h3>
-    <p><a routerLink="/login">Vai subito al login</a></p>
+    <p><a [routerLink]="'/login'" [queryParams]="{ref: _btoa(refUrl), SCOPE: scope}">Vai subito al login @if(scope === 'checkout'){ e procedi al checkout}</a></p>
   </div>
 </div>

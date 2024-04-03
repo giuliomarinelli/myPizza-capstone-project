@@ -1,91 +1,91 @@
-
-  <app-product-manager-nav></app-product-manager-nav>
-  @if(products.length === 0) {
-  <div class="container-lg footer-bottom d-flex justify-content-center align-items-center text-white">
-    <h3 class="h3">Non ci sono prodotti! <a routerLink="/my-pizza-ges/aggiungi-prodotti">Clicca qui</a> per aggiungerne.
-    </h3>
-  </div>
-  } @else {
-  <div class="container-lg" infiniteScroll [infiniteScrollDistance]="0.75" [fromRoot]="true"
-    [infiniteScrollThrottle]="500" (scrolled)="onScroll()">
-    <div class="btn-set p-2 mb-1 mt-4 row g-1 add-products">
-      <div class="col-12 col-mb-6">
-        <a routerLink="/my-pizza-ges/aggiungi-prodotti"
-          class="mb-3 mb-sm-0 w-100 btn btn-primary d-flex justify-content-center align-items-center gap-2">
-          <i class="bi bi-plus-circle-fill"></i>
-          <span>Aggiungi prodotti</span>
-        </a>
-      </div>
-      <div class="col-12 col-mb-6">
-        <a routerLink="/my-pizza-ges/ingredienti"
-          class="w-100 btn btn-primary d-flex justify-content-center align-items-center gap-2">
-          <i class="bi bi-pencil-square"></i>
-          <span>Gestisci ingredienti</span>
-        </a>
-      </div>
-
+<app-product-manager-nav></app-product-manager-nav>
+@if(products.length === 0) {
+<div class="container-lg footer-bottom d-flex justify-content-center align-items-center text-white">
+  <h3 class="h3">Non ci sono prodotti! <a routerLink="/my-pizza-ges/aggiungi-prodotti">Clicca qui</a> per aggiungerne.
+  </h3>
+</div>
+} @else {
+<div class="container-lg" infiniteScroll [infiniteScrollDistance]="0.75" [fromRoot]="true"
+  [infiniteScrollThrottle]="500" (scrolled)="onScroll()">
+  <div class="btn-set p-2 mb-1 mt-4 row g-1 add-products">
+    <div class="col-12 col-mb-6">
+      <a routerLink="/my-pizza-ges/aggiungi-prodotti"
+        class="mb-3 mb-sm-0 w-100 btn btn-primary d-flex justify-content-center align-items-center gap-2">
+        <i class="bi bi-plus-circle-fill"></i>
+        <span>Aggiungi prodotti</span>
+      </a>
     </div>
-    <div class="d-flex justify-content-center flex-wrap align-items-stretch">
+    <div class="col-12 col-mb-6">
+      <a routerLink="/my-pizza-ges/ingredienti"
+        class="w-100 btn btn-primary d-flex justify-content-center align-items-center gap-2">
+        <i class="bi bi-pencil-square"></i>
+        <span>Gestisci ingredienti</span>
+      </a>
+    </div>
 
-      @for(product of products; track product; let i = $index) {
-      <div class="my-3 max-width dark-design">
-        @if (edit[i] === false) {
-        <div class="my-pizza-card d-flex flex-column justify-content-between animated" [ngClass]="{'disappear': onDisappear, 'delete': onDelete}">
-          <app-product-card *ngIf="useClient" [name]="products[i].name" [category]="products[i].category.name"
-            [price]="products[i].price" [toppingDescriptions]="getToppinsDescriptions(i)"
-            class="align-self-stretch"></app-product-card>
-          <div class="btn-set row g-0">
-            <div class="col-12 col-sm-6 pe-sm-1 mb-3 mb-sm-0">
-              <button class="btn btn-primary d-flex justify-content-center align-items-center gap-3"
-                (click)="setUpdate(i)">
-                <span>
-                  <i class="bi bi-pencil-fill"></i>
-                </span>
-                <span>Modifica</span>
-              </button>
-            </div>
-            <div class="col-12 col-sm-6 ps-sm-1">
-              <button class="btn btn-danger d-flex justify-content-center align-items-center gap-3"
-                (click)="deleteProduct(i)">
-                <span>
-                  <i class="bi bi-trash"></i>
-                </span>
-                <span>Elimina</span>
-              </button>
-            </div>
+  </div>
+  <div class="d-flex justify-content-center flex-wrap align-items-stretch">
+
+    @for(product of products; track product; let i = $index) {
+    <div class="my-3 max-width dark-design">
+      @if (edit[i] === false) {
+      <div class="my-pizza-card d-flex flex-column justify-content-between animated"
+        [ngClass]="{'disappear': onDisappear, 'delete': onDelete}">
+        <app-product-card *ngIf="useClient" [name]="products[i].name" [category]="products[i].category.name"
+          [price]="products[i].price" [toppingDescriptions]="getToppinsDescriptions(i)"
+          class="align-self-stretch"></app-product-card>
+        <div class="btn-set row g-0">
+          <div class="col-12 col-sm-6 pe-sm-1 mb-3 mb-sm-0">
+            <button class="btn btn-primary d-flex justify-content-center align-items-center gap-3"
+              (click)="setUpdate(i)">
+              <span>
+                <i class="bi bi-pencil-fill"></i>
+              </span>
+              <span>Modifica</span>
+            </button>
           </div>
-
-        </div>} @else {
-
-        <div [ngClass]="{'formset animated': true, 'disappear': onDisappear, 'delete': onDelete}">
-          <app-product-save *ngIf="useClient" [type]="'UPDATE'" [categories]="categories" [i]="i"
-            [toppingDescriptions]="toppingDescriptions" [toppings]="toppings" [productNames]="productNames"
-            [nonDeleted]="true" [mark]="true" [productToUpdate]="products[i]" (onCancel)="edit[i] = $event"
-            (onDelete)="deleteProduct($event); edit[$event]=false" (onProductUpdate)="updateProduct($event)">
-          </app-product-save>
+          <div class="col-12 col-sm-6 ps-sm-1">
+            <button class="btn btn-danger d-flex justify-content-center align-items-center gap-3"
+              (click)="deleteProduct(i)">
+              <span>
+                <i class="bi bi-trash"></i>
+              </span>
+              <span>Elimina</span>
+            </button>
+          </div>
         </div>
 
-        }
-      </div>
-      }
-    </div>
-    <div class="btn-set p-2 mb-3 row g-1 add-products">
-      <div class="col-12 col-mb-6">
-        <a routerLink="/my-pizza-ges/aggiungi-prodotti"
-          class="mb-3 mb-sm-0 w-100 btn btn-primary d-flex justify-content-center align-items-center gap-2">
-          <i class="bi bi-plus-circle-fill"></i>
-          <span>Aggiungi prodotti</span>
-        </a>
-      </div>
-      <div class="col-12 col-mb-6">
-        <a routerLink="/my-pizza-ges/ingredienti"
-          class="w-100 btn btn-primary d-flex justify-content-center align-items-center gap-2">
-          <i class="bi bi-pencil-square"></i>
-          <span>Gestisci ingredienti</span>
-        </a>
+      </div>} @else {
+
+      <div [ngClass]="{'formset animated': true, 'disappear': onDisappear, 'delete': onDelete}">
+        <app-product-save *ngIf="useClient" [type]="'UPDATE'" [categories]="categories" [i]="i"
+          [toppingDescriptions]="toppingDescriptions" [toppings]="toppings" [productNames]="productNames"
+          [nonDeleted]="true" [mark]="true" [productToUpdate]="products[i]" (onCancel)="edit[i] = $event"
+          (onDelete)="deleteProduct($event); edit[$event]=false" (onProductUpdate)="updateProduct($event)">
+        </app-product-save>
       </div>
 
+      }
     </div>
+    }
   </div>
-  }
+  <div class="btn-set p-2 mb-3 row g-1 add-products">
+    <div class="col-12 col-mb-6">
+      <a routerLink="/my-pizza-ges/aggiungi-prodotti"
+        class="mb-3 mb-sm-0 w-100 btn btn-primary d-flex justify-content-center align-items-center gap-2">
+        <i class="bi bi-plus-circle-fill"></i>
+        <span>Aggiungi prodotti</span>
+      </a>
+    </div>
+    <div class="col-12 col-mb-6">
+      <a routerLink="/my-pizza-ges/ingredienti"
+        class="w-100 btn btn-primary d-flex justify-content-center align-items-center gap-2">
+        <i class="bi bi-pencil-square"></i>
+        <span>Gestisci ingredienti</span>
+      </a>
+    </div>
+
+  </div>
+</div>
+}
 <app-full-screen-loader [isLoading]="isLoading"></app-full-screen-loader>

@@ -3,7 +3,7 @@
   <app-product-manager-nav></app-product-manager-nav>
   <div class="dark-design w-max">
 
-    <div class="container-lg" infiniteScroll [infiniteScrollDistance]="0.8" [fromRoot]="true"
+    <div class="container-lg" infiniteScroll [infiniteScrollDistance]="1" [fromRoot]="true"
       [infiniteScrollThrottle]="1000" (scrolled)="onScroll()">
       <div cdkDropList class="list border-dark bg-dark" (cdkDropListDropped)="drop($event)">
         @if (menu.length === 0) {

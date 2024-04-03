@@ -92,7 +92,7 @@ export class AggiungiProdottiComponent {
 
   }
 
-  protected isproductDeleted(i: number) {
+  protected isproductDeleted(i: number): boolean {
     if (this.addProductData[i] != undefined) return this.addProductData[i].deleted
     return false
   }
@@ -103,6 +103,7 @@ export class AggiungiProdottiComponent {
     setTimeout(() => {
       this.addProductForms.push(true)
       this.onAdd = false
+      this.appRef.tick()
     }, 50)
   }
 

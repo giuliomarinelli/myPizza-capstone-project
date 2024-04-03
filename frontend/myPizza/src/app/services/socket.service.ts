@@ -1,4 +1,4 @@
-import { environment } from './../../environments/environment.production';
+import { environment } from './../../environments/environment.development';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Socket, io } from 'socket.io-client'
@@ -10,7 +10,7 @@ import { TimeInterval, _Session } from '../Models/i_session';
 
 
 
-const socket: Socket = io(environment.backendUrl, {
+const socket: Socket = io("http://localhost:8085", {
   withCredentials: true,
   transports: ['websocket'],
   reconnection: false,

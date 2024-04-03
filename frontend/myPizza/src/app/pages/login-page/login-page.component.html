@@ -1,6 +1,7 @@
 <div class="footer-bottom d-flex justify-content-center align-items-center">
   <div class="dark-design form-width">
     <form [formGroup]="loginForm" (submit)="performLogin()">
+      @if(scope === 'checkout'){<h5 class="h5 text-center text-accent mb-2">Accedi e procedi al checkout</h5>}
       <div class="illustration">
         <i class="bi bi-lock"></i>
       </div>
@@ -34,7 +35,8 @@
           </label>
         </div>
         <p class="m-0 mb-2 forgot">oppure</p>
-        <div class="form-group m-0"><a class="btn btn-outline-info w-100 btn-block" href="/registrati">Registrati</a>
+        <div class="form-group m-0"><a class="btn btn-outline-info w-100 btn-block" [routerLink]="'/registrati'"
+          [queryParams]="{ref: _btoa(refUrl), SCOPE: scope}">Registrati</a>
         </div>
       </div>
     </form>

@@ -17,15 +17,15 @@ export class GestisciVisualizzazioneMenuComponent {
     @Inject(PLATFORM_ID) private platformId: string, private appRef: ApplicationRef) {
 
     afterNextRender(() => {
-      this.menuSvc.getMenu(25).subscribe(res => {
+      this.menuSvc.getMenu(5).subscribe(res => {
 
         res.content.forEach(m => {
           this.menu.push(m)
-          this.onlyOnce.push(true)
+          this.isLoading = false
+          appRef.tick()
+
         })
 
-        this.isLoading = false
-        appRef.tick()
 
       })
     })
@@ -55,12 +55,12 @@ export class GestisciVisualizzazioneMenuComponent {
     this.menuSvc.setMenu(this.menu.map(m => m.id)).subscribe(res => {
       this.noEdit = true
       this.menu = []
-      this.menuSvc.getMenu(25).subscribe(res => {
-
+      this.menuSvc.getMenu(5).subscribe(res => {
         res.content.forEach(m => {
           this.menu.push(m)
-          this.onlyOnce.push(true)
+          this.appRef.tick()
         })
+        this.count = 0
 
         this.isLoading = false
 
@@ -73,28 +73,30 @@ export class GestisciVisualizzazioneMenuComponent {
 
   protected drop(event: CdkDragDrop<Menu[]>) {
     moveItemInArray(this.menu, event.previousIndex, event.currentIndex)
+    this.appRef.tick()
     this.noEdit = false
   }
 
   protected onScroll() {
 
-    if (this.onlyOnce[this.count]) {
 
-      this.isLoading = true
-      this.onlyOnce[this.count] = false
-      setTimeout(() => {
-        this.menuSvc.getMenu(25, this.count).subscribe(res => {
-          res.content.forEach(el => {
-            this.menu.push(el)
-          })
-          this.isLoading = false
+
+    this.isLoading = true
+    this.onlyOnce[this.count] = false
+    setTimeout(() => {
+      this.menuSvc.getMenu(5, this.count).subscribe(res => {
+        res.content.forEach(el => {
+          this.menu.push(el)
         })
-      }, 800)
+        this.appRef.tick()
+        this.isLoading = false
+      })
+    }, 10)
 
-      this.count++
+    this.count++
 
 
-    }
+
 
 
   }

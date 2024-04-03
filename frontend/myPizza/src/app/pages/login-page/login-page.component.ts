@@ -4,6 +4,7 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import { AuthService } from '../../services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SocketService } from '../../services/socket.service';
+import { app } from '../../../../server';
 
 @Component({
   selector: 'section#login-page',
@@ -15,24 +16,29 @@ export class LoginPageComponent {
   constructor(private fb: FormBuilder, private authSvc: AuthService, private ngZone: NgZone,
     private router: Router, private socket: SocketService, private appRef: ApplicationRef, private route: ActivatedRoute) {
     afterNextRender(() => {
-      console.log('login page')
       this.route.queryParams.subscribe(params => {
         if (params['ref']) {
           const ref = <string>params['ref']
           this.refUrl = atob(ref)
+          if (params['SCOPE']) {
+            const SCOPE = <string>params['SCOPE']
+            if (SCOPE === 'checkout') this.scope = 'checkout'
+          }
           if (params['act']) {
-            console.log('LOGOUT')
             const act = <string>params['act']
             if (atob(act) === 'LOGOUT') this.authSvc.logout().subscribe(res => {
               ngZone.run(() => {
                 location.href = '/login?ref=' + ref
-             })
+              })
+
             })
           }
         }
       })
     })
   }
+
+  protected scope: string = ''
 
   protected submit: boolean = false
 
@@ -81,6 +87,10 @@ export class LoginPageComponent {
 
   protected isInvalid(fieldName: string) {
     return !this.loginForm.get(fieldName)?.valid && this.loginForm.get(fieldName)?.dirty
+  }
+
+  protected _btoa(str: string): string {
+    return btoa(str)
   }
 
   protected performLogin(): void {

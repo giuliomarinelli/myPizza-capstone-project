@@ -103,7 +103,7 @@ public class ProductService {
         return productRp.findAll(pageable).map(p -> {
             p.setToppings(p.getToppings().stream()
                     .peek(t -> t.setDescription(t.getName() + " (" + df.format(t.getPrice()) + "€)")).toList());
-            p.setProductTotalAmount();
+            p.setPrice(p.getBasePrice() + p.getToppings().stream().mapToDouble(Topping::getPrice).sum());
             return p;
         });
     }

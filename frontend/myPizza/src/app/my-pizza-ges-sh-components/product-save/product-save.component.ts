@@ -170,6 +170,7 @@ export class ProductSaveComponent {
       this.productForm.controls['name']?.setValue(this.productToUpdate.name)
       this.productForm.controls['basePrice']?.setValue(this.productToUpdate.basePrice)
       this.productForm.controls['category']?.setValue(this.productToUpdate.category.name)
+      this.fullPriceCtrl.setValue(this.productToUpdate.price.toFixed(2) || '0.00')
       this.productToUpdate.toppings.forEach(t => this.addedToppingDescriptions.push(t.description))
       const i = this.productNames?.productNames.findIndex(n => n === this.productToUpdate?.name)
       if (i != undefined) this.productNames?.productNames.splice(i, 1)

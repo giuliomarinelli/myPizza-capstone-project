@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment.production';
+import { environment } from '../../environments/environment.development';
 import { ConfirmOrderDTO, GetOrderIdRes, Order, OrderCheckoutInfo, OrderInitDTO, OrderInitRes, SendOrderDTO } from '../Models/i-order';
 import { Observable } from 'rxjs';
 import { ConfirmRes } from '../Models/confirm-res';

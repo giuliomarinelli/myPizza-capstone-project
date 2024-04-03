@@ -76,8 +76,6 @@ export class ProdottiComponent {
 
   private lastPage: number = 0
 
-  private height = 0
-
   protected getToppinsDescriptions(i: number): string[] {
     return this.products[i].toppings.map(t => t.description)
   }

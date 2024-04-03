@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Page } from '../Models/i-page';
 import { Menu } from '../Models/i-menu';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment.production';
 import { ConfirmRes } from '../Models/confirm-res';
 
 @Injectable({

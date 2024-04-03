@@ -1,6 +1,6 @@
 import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, map, tap } from 'rxjs';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment.production';
 import { HttpClient } from '@angular/common/http';
 import { IsLoggedIn } from '../Models/is-logged-in';
 import { UserLogin, UserPostDTO } from '../Models/user-dto';

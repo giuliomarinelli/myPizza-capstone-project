@@ -159,7 +159,7 @@
 
 
           <button mat-icon-button (click)="sidenav.open()" aria-label="Example icon-button with menu icon"
-            class="material-icon d-lg-none">
+            [ngClass]="{'material-icon d-lg-none': true}" >
             <mat-icon>menu</mat-icon>
           </button>
         </div>

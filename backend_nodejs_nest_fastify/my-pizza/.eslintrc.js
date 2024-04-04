@@ -8,7 +8,8 @@ module.exports = {
   plugins: ['@typescript-eslint/eslint-plugin'],
   extends: [
     'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
+    // below plugin commented out because it was putting unwanted red squiggly lines in my code
+    // 'plugin:prettier/recommended',
   ],
   root: true,
   env: {

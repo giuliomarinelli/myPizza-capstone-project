@@ -283,7 +283,7 @@ export class AppComponent {
     },
     {
       name: 'sessione lavorativa',
-      paths: ['/my-pizza-ges/sessione'],
+      paths: ['/my-pizza-ges/sessione', '/my-pizza-ges/sessione/configura-nuova-sessione'],
       linkPath: '/my-pizza-ges/sessione'
     },
     {

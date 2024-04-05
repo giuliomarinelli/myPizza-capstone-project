@@ -35,6 +35,7 @@
     "fastify": "^4.26.2",
     "handlebars": "^4.7.8",
     "mysql2": "^3.9.3",
+    "nestjs-typeorm-paginate": "^4.0.4",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "typeorm": "^0.3.20",

@@ -11,34 +11,30 @@ import { JwtService } from '@nestjs/jwt';
 import { ProductModule } from './nest_modules/product/product.module';
 import { OrderModule } from './nest_modules/order/order.module';
 
-
-
-
-
 @Module({
   imports: [ConfigModule.forRoot({
     load: [...configurations],
     isGlobal: true,
     envFilePath: ['development.env']
   }),
-   TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configSvc: ConfigService) => configSvc.get('DB'),
-      inject: [ConfigService],
-    }),
-   AddressModule,
-   AuthUserModule,
-   ProductModule,
-   OrderModule,
+  TypeOrmModule.forRootAsync({
+    imports: [ConfigModule],
+    useFactory: (configSvc: ConfigService) => configSvc.get('DB'),
+    inject: [ConfigService],
+  }),
+    AddressModule,
+    AuthUserModule,
+    ProductModule,
+    OrderModule,
   ],
   controllers: [],
   providers: [{
     provide: APP_GUARD,
     useClass: AuthGuard
   },
-  JwtService,
-  ConfigService,
-  JwtUtilsService
-],
+    JwtService,
+    ConfigService,
+    JwtUtilsService
+  ]
 })
 export class AppModule { }

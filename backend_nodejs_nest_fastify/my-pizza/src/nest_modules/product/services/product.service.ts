@@ -10,7 +10,10 @@ import { ToppingType } from '../enums/topping-type.enum';
 import { ToppingDTO } from '../interfaces/topping-dto.interface';
 import { UUID } from 'crypto';
 import { ConfirmRes } from 'src/nest_modules/auth-user/interfaces/confirm-res.interface';
-
+import { paginate, Pagination, IPaginationOptions } from 'nestjs-typeorm-paginate';
+import { ManyproductsPostDTO } from '../interfaces/many-products-post-dto.interface';
+import { ProductRes } from '../interfaces/product-res.interface';
+import { ProductDTO } from '../interfaces/product-dto.interface';
 
 @Injectable()
 export class ProductService {
@@ -54,6 +57,10 @@ export class ProductService {
         return await this.toppingRepository.findOneBy({ id })
     }
 
+    private async findToppingByName(name: string): Promise<Topping | null | undefined> {
+        return await this.toppingRepository.findOneBy({ name })
+    }
+
     public async addTopping(toppingDTO: ToppingDTO): Promise<ToppingRes> {
         if ((await this.findAllToppingNames()).includes(toppingDTO.name))
             throw new BadRequestException(`topping with name=${toppingDTO.name} already exist`,
@@ -91,8 +98,181 @@ export class ProductService {
         }
     }
 
-     // ._._._._._._._._._._._._._._ PRODUCTS ._._._._._._._._._._._._._._
+    // ._._._._._._._._._._._._._._ CATEGORIES ._._._._._._._._._._._._._._
 
-     
+    private async findCategoryByName(name: string): Promise<Category | null | undefined> {
+        return await this.categoryRepository.findOneBy({ name })
+    }
+
+    public async isPresentCategory(name: string): Promise<boolean> {
+        return !!await this.findCategoryByName(name)
+    }
+
+    public async getAllCategoryNames(): Promise<string[]> {
+        return (await this.categoryRepository
+            .createQueryBuilder('category')
+            .select(['category.name'])
+            .getMany()).map(category => category.name)
+    }
+
+    public async productsHaveNotCategory(category: Category): Promise<boolean> {
+        return !await this.productRepository
+            .createQueryBuilder('product')
+            .where('product.category = :category', { category })
+            .getCount()
+    }
+
+    // ._._._._._._._._._._._._._._ PRODUCTS ._._._._._._._._._._._._._._
+
+    private generateProductResModel(product: Product): ProductRes {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { setProductTotalAmount, toppings, ...productResOthers } = product
+
+        const toppingResList: ToppingRes[] = []
+        toppings.forEach(topping => toppingResList.push(this.generateToppingResModel(topping)))
+
+        return {
+            ...productResOthers,
+            toppings: toppingResList
+        }
+
+    }
+
+    public async getAllProducts(options: IPaginationOptions): Promise<Pagination<Product>> {
+        return paginate<Product>(this.productRepository, options)
+    }
+
+    public async findProductByName(name: string): Promise<ProductRes | null | undefined> {
+        return this.productRepository.findOneBy({ name })
+    }
+
+    public async addManyProducts(manyProductsPostDTO: ManyproductsPostDTO): Promise<ProductRes[]> {
+        // Exception handling
+        manyProductsPostDTO.products.forEach(async (productDTO) => {
+            const isPresent: boolean = !!await this.findProductByName(productDTO.name)
+            if (isPresent) throw new BadRequestException(`product with name=${productDTO.name} already exists`,
+                { cause: new Error(), description: 'Bad request' })
+            productDTO.toppings.forEach(async (toppingName) => {
+                const isPresent: boolean = !!await this.findToppingByName(toppingName)
+                if (!isPresent) throw new BadRequestException(`topping with name=${productDTO.name} doesn't exist`,
+                    { cause: new Error(), description: 'Bad request' })
+            })
+        })
+        // Finish exception handling
+        const addedProducts: Product[] = []
+        manyProductsPostDTO.products.forEach(async (productDTO) => {
+            let category: Category
+            if (this.isPresentCategory(productDTO.category)) {
+                category = await this.findCategoryByName(productDTO.category)
+            } else {
+                category = new Category(productDTO.category)
+                await this.categoryRepository.save(category)
+                const menu = new Menu(category)
+                await this.menuRepository.save(menu)
+            }
+
+            const newProduct = new Product(productDTO.name, productDTO.basePrice, category)
+
+            productDTO.toppings.forEach(async (toppingName) => newProduct.toppings
+                .push(await this.findToppingByName(toppingName)))
+
+            addedProducts.push(newProduct)
+
+        })
+
+        const savedProducts = await this.productRepository.save(addedProducts)
+
+        const menuProducts: Menu[] = []
+
+        savedProducts.forEach(async (product) => menuProducts.push(new Menu(product)))
+        await this.menuRepository.save(menuProducts)
+
+        return savedProducts.map(product => {
+            product.setProductTotalAmount()
+            product.toppings = product.toppings.map(topping => {
+                topping.setDescription()
+                return topping
+            })
+            return this.generateProductResModel(product)
+        })
+    }
+
+    public async getProductNames(): Promise<string[]> {
+        return (await this.productRepository
+            .createQueryBuilder('product')
+            .select(['products.name'])
+            .getMany()).map(product => product.name)
+    }
+
+    public async updateProductByName(oldName: string, productDTO: ProductDTO): Promise<ProductRes> {
+        const product: Product | null | undefined = await this.productRepository.findOneBy({ name: oldName })
+        if (!product) throw new BadRequestException(`product with name=${oldName} you're trying to update doesn't exist`)
+        const menu = await this.menuRepository.findOneBy({ item: { id: product.id } })
+        await this.menuRepository.delete(menu)
+        product.name = productDTO.name
+        product.basePrice = productDTO.basePrice
+        const sentCategory: Category | null | undefined = await this.categoryRepository.findOneBy({ name: productDTO.category })
+        const oldCategory: Category = product.category
+
+        if (sentCategory && sentCategory !== oldCategory) {
+            product.category = sentCategory
+            await this.productRepository.save(product)
+        } else if (!sentCategory) {
+            const newCategory = new Category(productDTO.category)
+            await this.productRepository.save(newCategory)
+            await this.menuRepository.save(new Menu(newCategory))
+            product.category = newCategory
+            await this.productRepository.save(product)
+        }
+
+        if (this.productsHaveNotCategory(oldCategory)) {
+            await this.categoryRepository.delete(oldCategory)
+            const oldMenu = await this.menuRepository.findOneBy({ item: { id: oldCategory.id } })
+            await this.menuRepository.delete(oldMenu)
+        }
+
+        const toppings: Topping[] = []
+        productDTO.toppings.forEach(async (toppingName) => {
+            const topping: Topping | null | undefined = await this.toppingRepository.findOneBy({ name: toppingName })
+            if (!topping) throw new BadRequestException(`topping with name=${toppingName} you're trying to update doesn't exist`,
+                { cause: new Error(), description: 'Bad Request' })
+            topping.setDescription()
+            toppings.push(topping)
+        })
+
+        product.toppings = toppings
+
+        const newProduct = await this.productRepository.save(product)
+
+        await this.menuRepository.save(new Menu(newProduct))
+
+        newProduct.setProductTotalAmount()
+
+        return this.generateProductResModel(newProduct)
+
+    }
+
+
+    public async deleteProductByName(name: string): Promise<ConfirmRes> {
+        const product: Product | null | undefined = await this.productRepository.findOneBy({ name })
+        if (!product) throw new BadRequestException(`product with name=${name} you're trying to delete doesn't exist`,
+            { cause: new Error(), description: 'Bad Request' })
+        const category: Category = product.category
+        await this.menuRepository.delete({ id: product.id })
+        if (await this.productsHaveNotCategory(category)) {
+            const menu = await this.menuRepository.findOneBy({ item: { id: category.id } })
+            await this.menuRepository.delete(menu)
+            await this.categoryRepository.delete(category)
+        }
+
+        return {
+            statusCode: HttpStatus.NO_CONTENT,
+            timestamp: new Date().getTime(),
+            message: `product with name=${name} has been deleted successfully`
+        }
+
+    }
+
+
 
 }

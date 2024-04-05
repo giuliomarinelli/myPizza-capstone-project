@@ -9,6 +9,7 @@ import { AuthGuard } from './nest_modules/auth-user/guards/auth.guard';
 import { JwtUtilsService } from './nest_modules/auth-user/services/jwt-utils.service';
 import { JwtService } from '@nestjs/jwt';
 import { ProductModule } from './nest_modules/product/product.module';
+import { OrderModule } from './nest_modules/order/order.module';
 
 
 
@@ -28,6 +29,7 @@ import { ProductModule } from './nest_modules/product/product.module';
    AddressModule,
    AuthUserModule,
    ProductModule,
+   OrderModule,
   ],
   controllers: [],
   providers: [{

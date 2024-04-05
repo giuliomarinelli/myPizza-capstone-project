@@ -1,10 +1,18 @@
 import { registerAs } from '@nestjs/config';
+import { Address } from 'src/nest_modules/address/entities/address.entity';
+import { City } from 'src/nest_modules/address/entities/city.entity';
+import { User } from 'src/nest_modules/auth-user/entities/user.entity';
+import { Category } from 'src/nest_modules/product/entities/category.entity';
+import { MenuItem } from 'src/nest_modules/product/entities/menu-item.entity';
+import { Product } from 'src/nest_modules/product/entities/product.entity';
+import { Topping } from 'src/nest_modules/product/entities/topping.entity';
 
 export enum ConfigKey {
     APP = 'APP',
     DB = 'DB',
     KEYS = 'KEYS',
-    EXP = 'EXP'
+    EXP = 'EXP',
+    COOKIE = 'COOKIE'
 }
 
 export enum Environment {
@@ -34,7 +42,7 @@ const DBConfig = registerAs(
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE,
         type: process.env.DATABASE_TYPE,
-        entities: [],
+        entities: [City, User, Address, MenuItem, Product, Topping, Category],
         synchronize: false
     }),
 )
@@ -58,4 +66,11 @@ const EXPConfig = registerAs(
     })
 )
 
-export const configurations = [APPConfig, DBConfig, KEYSConfig, EXPConfig]
+const COOKIEConfig = registerAs(
+    ConfigKey.COOKIE, () => ({
+        domain: process.env.DOMAIN,
+        sameSite: process.env.SAME_SITE
+    })
+)
+
+export const configurations = [APPConfig, DBConfig, KEYSConfig, EXPConfig, COOKIEConfig]

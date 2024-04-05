@@ -5,26 +5,30 @@ import fastifyCookie from '@fastify/cookie';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
 
+// import { AddressService } from './nest_modules/address/services/address.service';
+
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter(),
-    {
-      cors: {
-        origin: ['http://localhost:4200'],
-        credentials: true,
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
-      }
-    })
+    new FastifyAdapter()
+  )
+  const configSvc = app.get<ConfigService>(ConfigService)
+
+  // const addressSvc = app.get<AddressService>(AddressService)
+  // await addressSvc.fillCityTableFromDataSets()
   await app.register(fastifyCookie, {
-    secret: 'my-secret', // ... variabili d'ambiente
+    secret: configSvc.get('KEYS.cookieSignSecret')
+  })
+  app.enableCors({
+    origin: configSvc.get('APP.corsOrigins'),
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
   })
 
   const logger = new Logger('Bootstrap')
   logger.log('MyPizza Backend Node.js Application')
 
-  const configSvc =  app.get<ConfigService>(ConfigService)
-  
+
   await app.listen(configSvc.get('APP.port'));
 
 }

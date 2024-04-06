@@ -130,7 +130,7 @@ public class ProductService {
             oldProduct.setCategory(newCategory);
             productRp.save(oldProduct);
         }
-
+    
         if (productsHaveNotCategory(oldCategory)) {
             categoryRp.delete(oldCategory);
             assert menuRp.findByItemId(oldCategory.getId()).isPresent();

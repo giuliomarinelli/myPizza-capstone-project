@@ -134,17 +134,95 @@ export class ProductService {
         )
     }
 
-    public async findProductByName(name: string): Promise<ProductRes | null | undefined> {
+    public async findProductByName(name: string): Promise<Product | null | undefined> {
         return this.productRepository.findOneBy({ name })
     }
 
     public async addManyProducts(manyProductsPostDTO: ManyproductsPostDTO): Promise<ProductRes[]> {
+
         // Exception handling start
-        for await (const productDTO: ProductDTO of manyProductsPostDTO.products) {
-            const isProductPresent: boolean = !!await this.productRepository.findOneBy({ name: productDTO.name })
-            if (isProductPresent) throw new BadRequestException(``)
+        for await (const productDTO of manyProductsPostDTO.products) {
+            if (!!await this.findProductByName(productDTO.name))
+                throw new BadRequestException(`product with name=${productDTO.name} already exist`,
+                    { cause: new Error(), description: 'Bad Request' })
+
+            for await (const name of productDTO.toppings) {
+                if (!await this.toppingRepository.findOneBy({ name }))
+                    throw new BadRequestException(`topping with name=${name} doesn't exist`,
+                        { cause: new Error(), description: 'Bad Request' })
+            }
         }
+        // Exception handling finish
+
+        const addedProducts: Product[] = []
+
+        for await (const productDTO of manyProductsPostDTO.products) {
+
+            let category: Category
+
+            if (await this.isPresentCategory(productDTO.category)) {
+                category = await this.findCategoryByName(productDTO.category)
+            } else {
+                category = new Category(productDTO.category)
+                await this.categoryRepository.save(category)
+                await this.menuRepository.save(new Menu(category))
+            }
+
+            const newProduct = new Product(productDTO.name, productDTO.basePrice, category)
+
+            newProduct.toppings = []
+            /* Altrimenti è undefined se non ci sono topping, 
+            questa è una differenza sostanziale di TypeOrm rispetto ad Hibernate che invece dà una lista vuota */
+
+            for await (const name of productDTO.toppings) {
+                newProduct.toppings.push(await this.findToppingByName(name))
+            }
+
+            addedProducts.push(newProduct)
+        }
+
+        await this.productRepository.save(addedProducts)
+
+        const menuProducts: Menu[] = addedProducts.map(product => new Menu(product))
+
+        await this.menuRepository.save(menuProducts)
+
+        return addedProducts.map(product => this.generateProductResModel(product))
+
     }
+
+
+    public async updateProductByName(oldName: string, productDTO: ProductDTO): Promise<ProductRes> {
+
+        const product = await this.findProductByName(oldName)
+
+        if (!product) throw new BadRequestException(`the product with name='${oldName}' you're trying to update doesn't exist`, {
+            cause: new Error(), description: 'Bad Request'
+        })
+
+        const menu: Menu = await this.menuRepository.findOneBy({ item: { id: product.id } })
+        await this.menuRepository.delete(menu)
+
+        product.name = productDTO.name
+        product.basePrice = productDTO.basePrice
+
+        const sentCategory: Category | null | undefined = await this.findCategoryByName(productDTO.category)
+
+        if (sentCategory) {
+            if (sentCategory !== product.category) {
+                product.category = sentCategory
+                await this.productRepository.save(product)
+            }
+        } else {
+            const newCategory = new Category(productDTO.category)
+            await this.categoryRepository.save(newCategory)
+            await this.menuRepository.save(new Menu(newCategory))
+            product.category = newCategory
+            await this.productRepository.save(product)
+        }
+
+    }
+
 
     public async getProductNames(): Promise<string[]> {
         return (await this.productRepository
@@ -153,10 +231,6 @@ export class ProductService {
             .getMany()).map(product => product.name)
     }
 
-    public async updateProductByName(oldName: string, productDTO: ProductDTO): Promise<ProductRes> {
-
-
-    }
 
 
     public async deleteProductByName(name: string): Promise<ConfirmRes> {

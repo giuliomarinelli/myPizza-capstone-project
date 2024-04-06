@@ -9,9 +9,8 @@ import { AuthGuard } from './nest_modules/auth-user/guards/auth.guard';
 import { JwtUtilsService } from './nest_modules/auth-user/services/jwt-utils.service';
 import { JwtService } from '@nestjs/jwt';
 import { ProductModule } from './nest_modules/product/product.module';
-
-
-
+import { OrderModule } from './nest_modules/order/order.module';
+import { SocketIoModule } from './nest_modules/socket.io/socket.io.module';
 
 
 @Module({
@@ -20,23 +19,25 @@ import { ProductModule } from './nest_modules/product/product.module';
     isGlobal: true,
     envFilePath: ['development.env']
   }),
-   TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configSvc: ConfigService) => configSvc.get('DB'),
-      inject: [ConfigService],
-    }),
-   AddressModule,
-   AuthUserModule,
-   ProductModule,
+  TypeOrmModule.forRootAsync({
+    imports: [ConfigModule],
+    useFactory: (configSvc: ConfigService) => configSvc.get('DB'),
+    inject: [ConfigService],
+  }),
+    AddressModule,
+    AuthUserModule,
+    ProductModule,
+    OrderModule,
+    SocketIoModule
   ],
   controllers: [],
   providers: [{
     provide: APP_GUARD,
     useClass: AuthGuard
   },
-  JwtService,
-  ConfigService,
-  JwtUtilsService
-],
+    JwtService,
+    ConfigService,
+    JwtUtilsService
+  ]
 })
 export class AppModule { }

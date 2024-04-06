@@ -14,7 +14,7 @@ export class Address {
         this._default = _default;
     }
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid")
     id: UUID;
     
     @Column()
@@ -31,6 +31,7 @@ export class Address {
     @JoinColumn({ name: "user_id" })
     user: User;
 
+    @Column()
     _default: boolean;
 
 }

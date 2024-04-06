@@ -1,10 +1,11 @@
 import { UUID } from "crypto";
-import { Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, TableInheritance } from "typeorm";
 
-@Entity()
+@Entity({ name: 'menu_items' })
+@TableInheritance({ column: { type: "varchar", name: "_type" } })
 export abstract class MenuItem {
-    
-    @PrimaryGeneratedColumn()
+
+    @PrimaryGeneratedColumn("uuid")
     id: UUID
-    
+
 }

@@ -1,10 +1,10 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne } from "typeorm";
+import { ChildEntity, Column, JoinColumn, JoinTable, ManyToMany, ManyToOne } from "typeorm";
 import { MenuItem } from "./menu-item.entity";
 import { ItemType } from "../enums/item-type.enum";
 import { Topping } from "./topping.entity";
 import { Category } from "./category.entity";
 
-@Entity({ name: 'products' })
+@ChildEntity()
 export class Product extends MenuItem {
 
     constructor(name: string, basePrice: number, category: Category) {
@@ -15,7 +15,7 @@ export class Product extends MenuItem {
         this.createdAt = new Date().getTime()
     }
 
-    @Column()
+    @Column({ unique: true })
     name: string
 
     @Column()
@@ -29,17 +29,18 @@ export class Product extends MenuItem {
     })
     toppings: Topping[]
 
-    @Column({name: 'base_price'})
+    @Column({ name: 'base_price' })
     basePrice: number
 
     @ManyToOne(() => Category, (category) => category.id, { eager: true })
     @JoinColumn({ name: "category_id" })
     category: Category
 
-    @Column({name: 'created_at'})
+    @Column({ name: 'created_at', type: 'bigint' })
     createdAt: number
-    
+
     price: number
+
 
     public setProductTotalAmount(): void {
         this.price = this.toppings.map(topping => topping.price).reduce((c, p) => c + p) + this.basePrice;

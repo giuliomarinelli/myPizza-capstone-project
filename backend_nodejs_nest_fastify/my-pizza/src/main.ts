@@ -16,9 +16,11 @@ async function bootstrap() {
 
   // const addressSvc = app.get<AddressService>(AddressService)
   // await addressSvc.fillCityTableFromDataSets()
+
   await app.register(fastifyCookie, {
     secret: configSvc.get('KEYS.cookieSignSecret')
   })
+  
   app.enableCors({
     origin: configSvc.get('APP.corsOrigins'),
     credentials: true,
@@ -26,10 +28,10 @@ async function bootstrap() {
   })
 
   const logger = new Logger('Bootstrap')
-  logger.log('MyPizza Backend Node.js Application')
-
-
+  
   await app.listen(configSvc.get('APP.port'));
+  
+  logger.log(`MyPizza Backend Node.js Application listening on port ${configSvc.get('APP.port')}`)
 
 }
 bootstrap();

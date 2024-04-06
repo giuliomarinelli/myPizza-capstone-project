@@ -8,7 +8,6 @@ import { ToppingDTO } from '../interfaces/topping-dto.interface';
 import { ToppingRes } from '../interfaces/topping-res.interface';
 import { ConfirmRes } from 'src/nest_modules/auth-user/interfaces/confirm-res.interface';
 import { Pagination } from 'nestjs-typeorm-paginate';
-import { Product } from '../entities/product.entity';
 import { ProductNamesRes } from '../interfaces/products-names-res.interface';
 import { CategoriesRes } from '../interfaces/categories-res.interface';
 import { ManyproductsPostDTO } from '../interfaces/many-products-post-dto.interface';
@@ -59,7 +58,7 @@ export class ProductController {
 
     @Get('products')
     public async getAllProducts(@Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-        @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10): Promise<Pagination<Product>> {
+        @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10): Promise<Pagination<ProductRes>> {
 
         return await this.productSvc.getAllProducts({ page, limit })
 

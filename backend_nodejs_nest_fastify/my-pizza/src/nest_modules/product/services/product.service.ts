@@ -71,7 +71,7 @@ export class ProductService {
     }
 
     public async updateToppingByName(oldName: string, toppingDTO: ToppingDTO): Promise<ToppingRes> {
-        const topping: Topping | null | undefined = await this.toppingRepository.findOneBy({ name: oldName })
+        const topping: Topping | null | undefined = await this.findToppingByName(oldName)
         if (!topping) throw new BadRequestException(`topping with name=${oldName} doesn't exist`,
             { cause: new Error(), description: 'Bad Request' })
         topping.name = toppingDTO.name
@@ -83,6 +83,24 @@ export class ProductService {
     }
 
     public async deleteToppingByName(name: string): Promise<ConfirmRes> {
+
+        const topping: Topping | null | undefined = await this.findToppingByName(name)
+
+        if (topping.products) {
+            for await (const product of topping.products) {
+                const i: number = product.toppings?.indexOf(topping)
+                if (i !== - 1) product.toppings?.splice(i, 1)
+                await this.productRepository.save(product)
+            }
+        }
+
+        await this.toppingRepository.delete(topping.id)
+
+        return {
+            statusCode: HttpStatus.NO_CONTENT,
+            timestamp: new Date().getTime(),
+            message: `topping with name='${name}' has been successfully deleted`
+        }
 
     }
 
@@ -200,6 +218,8 @@ export class ProductService {
             cause: new Error(), description: 'Bad Request'
         })
 
+        console.log(product)
+
         const menu: Menu = await this.menuRepository.findOneBy({ item: { id: product.id } })
         await this.menuRepository.delete(menu)
 
@@ -207,6 +227,8 @@ export class ProductService {
         product.basePrice = productDTO.basePrice
 
         const sentCategory: Category | null | undefined = await this.findCategoryByName(productDTO.category)
+        const oldCategory: Category = product.category
+
 
         if (sentCategory) {
             if (sentCategory !== product.category) {
@@ -220,6 +242,28 @@ export class ProductService {
             product.category = newCategory
             await this.productRepository.save(product)
         }
+
+        if (await this.productsHaveNotCategory(oldCategory)) {
+            await this.categoryRepository.delete(oldCategory)
+            await this.menuRepository.delete({ item: { id: oldCategory.id } })
+        }
+
+        product.toppings = []
+
+        for await (const name of productDTO.toppings) {
+            const topping: Topping | null | undefined = await this.findToppingByName(name)
+            if (!topping)
+                throw new BadRequestException(`topping with name='${name}' you're trying to update doesn't exist`, {
+                    cause: new Error(), description: 'Bad request'
+                })
+            product.toppings.push(topping)
+        }   
+
+        await this.productRepository.save(product)
+
+        await this.menuRepository.save(new Menu(product))
+
+        return this.generateProductResModel(product)
 
     }
 

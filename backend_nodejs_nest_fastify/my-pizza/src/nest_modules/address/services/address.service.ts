@@ -117,7 +117,7 @@ export class AddressService {
             .where('city.name = :name', { name: addressDTO.city })
             .andWhere('city.provinceCode = :code', { code: addressDTO.province })
             .getOne()
-
+        
         if (!city) throw new BadRequestException(`City with name=${addressDTO.city} and province=${addressDTO.province} doesn't exist`,
             { cause: new Error(), description: 'Bad Request' })
 

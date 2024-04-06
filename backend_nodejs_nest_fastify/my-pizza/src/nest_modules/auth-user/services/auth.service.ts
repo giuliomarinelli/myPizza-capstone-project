@@ -18,8 +18,8 @@ import { TokenType } from '../enums/token-type.enum';
 @Injectable()
 export class AuthService {
 
-    constructor(@InjectRepository(User) private userRepository: Repository<User>, private addressSvc: AddressService, 
-    private jwtUtils: JwtUtilsService) { }
+    constructor(@InjectRepository(User) private userRepository: Repository<User>, private addressSvc: AddressService,
+        private jwtUtils: JwtUtilsService) { }
 
     private async passwordEncoder(password: string): Promise<string> {
         const salt = await bcrypt.genSalt()
@@ -54,7 +54,12 @@ export class AuthService {
         const user = new User(firstName, lastName, email, await this.passwordEncoder(password), phoneNumber, gender)
         await this.userRepository.save(user)
 
-        this.addressSvc.createAddress(address, user)
+        try {
+            await this.addressSvc.createAddress(address, user)
+        } catch(e) {
+            await this.userRepository.delete(user.id)
+            throw e
+        }
 
         return this.generateUserResModel(user)
 

@@ -1,10 +1,10 @@
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne } from "typeorm";
+import { ChildEntity, Column, JoinColumn, JoinTable, ManyToMany, ManyToOne } from "typeorm";
 import { MenuItem } from "./menu-item.entity";
 import { ItemType } from "../enums/item-type.enum";
 import { Topping } from "./topping.entity";
 import { Category } from "./category.entity";
 
-@Entity({ name: 'products' })
+@ChildEntity()
 export class Product extends MenuItem {
 
     constructor(name: string, basePrice: number, category: Category) {

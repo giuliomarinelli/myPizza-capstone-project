@@ -4,7 +4,7 @@ import { Entity, PrimaryGeneratedColumn } from "typeorm";
 @Entity()
 export abstract class MenuItem {
     
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid")
     id: UUID
     
 }

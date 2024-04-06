@@ -32,10 +32,10 @@ export class WorkSession {
     @Column()
     type: WorkSessionType
 
-    @Column({ name: 'open_time' })
+    @Column({ name: 'open_time', type: 'bigint'})
     openTime: number
 
-    @Column({ name: 'close_time' })
+    @Column({ name: 'close_time', type: 'bigint'})
     closeTime: number
 
     @Column({ name: 'cook_count' })

@@ -10,7 +10,7 @@ export class ProductRef {
         this.price = price
     }
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     id: UUID
 
     @Column()

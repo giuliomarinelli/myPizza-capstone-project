@@ -23,15 +23,15 @@ export class AuthService {
 
     private async passwordEncoder(password: string): Promise<string> {
         const salt = await bcrypt.genSalt()
-        return bcrypt.hash(password, salt)
+        return await bcrypt.hash(password, salt)
     }
 
     private async passwordMatcher(password: string, hash: string): Promise<boolean> {
-        return bcrypt.compare(password, hash)
+        return await bcrypt.compare(password, hash)
     }
 
     private async getUserByEmail(email: string): Promise<User | null | undefined> {
-        return this.userRepository.findOneBy({ email })
+        return await this.userRepository.findOneBy({ email })
     }
 
 

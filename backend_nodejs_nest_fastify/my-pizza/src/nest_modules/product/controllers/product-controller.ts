@@ -85,7 +85,7 @@ export class ProductController {
     }
 
     @Put('products/:name')
-    public async updateproduct(@Param('name') name: string, productDTO: ProductDTO): Promise<ProductRes> {
+    public async updateProduct(@Param('name') name: string, productDTO: ProductDTO): Promise<ProductRes> {
         return await this.productSvc.updateProductByName(name, productDTO)
     }
 

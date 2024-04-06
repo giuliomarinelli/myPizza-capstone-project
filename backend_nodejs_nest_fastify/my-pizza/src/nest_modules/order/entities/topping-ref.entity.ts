@@ -9,7 +9,7 @@ export class ToppingRef {
         this.price = price
     }
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     id: UUID
 
     @Column()

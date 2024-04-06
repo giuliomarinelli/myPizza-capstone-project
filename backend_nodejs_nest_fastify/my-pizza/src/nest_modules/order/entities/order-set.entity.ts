@@ -11,7 +11,7 @@ export class OrderSet {
         this.quantity = quantity
     }
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     id: UUID
 
     @ManyToOne(() => ProductRef, (productRef) => productRef.id)

@@ -14,7 +14,7 @@ export class Topping {
         this.createdAt = new Date().getTime()
     }
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid")
     id: UUID
 
     @Column()
@@ -23,7 +23,7 @@ export class Topping {
     @Column()
     price: number
 
-    @Column()
+    @Column({name: 'created_at', type: "bigint"})
     createdAt: number
 
     @Column()
@@ -35,7 +35,7 @@ export class Topping {
         this.description = `${this.name} (${this.price.toFixed(2)}€)`
     }
 
-    @ManyToMany(() => Product, (product) => product.toppings, { lazy: true })
+    @ManyToMany(() => Product, (product) => product.toppings)
     products: Product[]
 
 

@@ -9,7 +9,7 @@ export class Menu {
         this.item = item
     }
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid")
     id: UUID
 
     @OneToOne(() => MenuItem, (menuItem) => menuItem.id)

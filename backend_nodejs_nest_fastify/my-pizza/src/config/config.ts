@@ -53,7 +53,7 @@ const DBConfig = registerAs(
             City, User, Address, MenuItem, Product, Topping, Category, Menu,
             ProductRef, ToppingRef, OrderSet, Order, TimeInterval, WorkSession
         ],
-        synchronize: false
+        synchronize: true
     }),
 )
 

@@ -10,7 +10,7 @@ import { User } from "src/nest_modules/auth-user/entities/user.entity";
 export class Order {
 
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     id: UUID
 
     @OneToMany(() => OrderSet, (orderSet) => orderSet.order, { eager: true })
@@ -20,13 +20,13 @@ export class Order {
     @JoinColumn({ name: 'address_id' })
     address: Address
 
-    @Column({ name: 'order_time' })
+    @Column({ name: 'order_time', type: "bigint" })
     orderTime: number;
 
-    @Column({ name: 'expected_delivery_time' })
+    @Column({ name: 'expected_delivery_time', type: "bigint" })
     expectedDeliveryTime: number;
 
-    @Column({ name: 'delivery_time' })
+    @Column({ name: 'delivery_time', type: "bigint" })
     deliveryTime: number;
 
     @Column()
@@ -47,7 +47,7 @@ export class Order {
     @JoinColumn({ name: 'user_id' })
     user: User
 
-    @Column({name: 'completed_at'})
+    @Column({name: 'completed_at', type: 'bigint'})
     completedAt: number
 
     @Column()

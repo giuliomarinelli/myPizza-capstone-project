@@ -36,10 +36,11 @@ export class Product extends MenuItem {
     @JoinColumn({ name: "category_id" })
     category: Category
 
-    @Column({name: 'created_at'})
+    @Column({name: 'created_at', type: 'bigint'})
     createdAt: number
     
     price: number
+
 
     public setProductTotalAmount(): void {
         this.price = this.toppings.map(topping => topping.price).reduce((c, p) => c + p) + this.basePrice;

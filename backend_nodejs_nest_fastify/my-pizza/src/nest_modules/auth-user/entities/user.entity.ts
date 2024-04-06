@@ -22,7 +22,7 @@ export class User {
         this.profileImage = this.generateAvatar();
     }
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     id: UUID
 
     @Column({ name: 'first_name' })
@@ -46,28 +46,28 @@ export class User {
     @Column({ name: 'profile_image' })
     profileImage: string;
 
-    @Column({ name: 'created_at' })
+    @Column({ name: 'created_at', type: "bigint" })
     createdAt: number;
 
-    @Column({ name: 'last_update' })
+    @Column({ name: 'last_update', type: "bigint" })
     lastUpdate: number;
 
     @Column({ name: 'messaging_username' })
     messagingUsername: string;
 
 
-    @Column({ name: 'guest_email' })
+    @Column({ name: 'guest_email', nullable: true, default: null })
     guestEmail: string;
 
 
     // @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     // private List<Order> orders = new ArrayList<>();
 
-    
+
     @OneToMany(() => Address, (address) => address.user)
     addresses: Address[];
 
-    @Column()
+    @Column({ default: null })
     _2FA: _2FAStrategy
 
     @Column("simple-array")

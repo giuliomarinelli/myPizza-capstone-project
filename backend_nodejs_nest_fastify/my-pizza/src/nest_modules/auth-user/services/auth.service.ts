@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
@@ -20,6 +20,8 @@ export class AuthService {
 
     constructor(@InjectRepository(User) private userRepository: Repository<User>, private addressSvc: AddressService,
         private jwtUtils: JwtUtilsService) { }
+
+    private logger = new Logger('AuthService')
 
     private async passwordEncoder(password: string): Promise<string> {
         const salt = await bcrypt.genSalt()
@@ -52,13 +54,30 @@ export class AuthService {
         const { address, firstName, lastName, email, gender, password, phoneNumber } = userPostDTO
 
         const user = new User(firstName, lastName, email, await this.passwordEncoder(password), phoneNumber, gender)
-        await this.userRepository.save(user)
+        try {
+            await this.userRepository.save(user)
+        } catch (e) {
+            if (e.message) {
+                if (typeof e.message === 'string') {
+                    if (e.message.includes('Duplicate entry')) {
+                        if (e.message.includes('IDX_97672ac88f789774dd47f7c8be')) {
+                            throw new BadRequestException('email already exist')
+                        } else if (e.message.includes('IDX_17d1817f241f10a3dbafb169fd')) {
+                            throw new BadRequestException('phoneNumber already exist')
+                        }
+                    }
+                }
+            }
+            
+            throw new InternalServerErrorException('Database error')
+        }
 
         try {
             await this.addressSvc.createAddress(address, user)
-        } catch(e) {
+        } catch (e) {
             await this.userRepository.delete(user.id)
-            throw e
+            if (e instanceof BadRequestException) throw e
+            throw new InternalServerErrorException('An error occurred, cannot register')
         }
 
         return this.generateUserResModel(user)

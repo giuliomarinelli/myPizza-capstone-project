@@ -10,7 +10,7 @@ export class Category extends MenuItem {
         this.name = name
     }
 
-    @Column()
+    @Column({ unique: true })
     name: string
 
     @Column()

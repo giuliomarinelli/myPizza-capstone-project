@@ -10,6 +10,8 @@ import { JwtUtilsService } from './nest_modules/auth-user/services/jwt-utils.ser
 import { JwtService } from '@nestjs/jwt';
 import { ProductModule } from './nest_modules/product/product.module';
 import { OrderModule } from './nest_modules/order/order.module';
+import { SocketIoModule } from './nest_modules/socket.io/socket.io.module';
+
 
 @Module({
   imports: [ConfigModule.forRoot({
@@ -26,6 +28,7 @@ import { OrderModule } from './nest_modules/order/order.module';
     AuthUserModule,
     ProductModule,
     OrderModule,
+    SocketIoModule
   ],
   controllers: [],
   providers: [{

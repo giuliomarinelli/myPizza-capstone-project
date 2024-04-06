@@ -17,13 +17,13 @@ export class Topping {
     @PrimaryGeneratedColumn("uuid")
     id: UUID
 
-    @Column()
+    @Column({ unique: true })
     name: string
 
     @Column()
     price: number
 
-    @Column({name: 'created_at', type: "bigint"})
+    @Column({ name: 'created_at', type: "bigint" })
     createdAt: number
 
     @Column()

@@ -1,4 +1,4 @@
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Topping } from '../entities/topping.entity';
 import { DataSource, Repository } from 'typeorm';
@@ -8,15 +8,17 @@ import { Menu } from '../entities/menu.entity';
 import { ToppingRes } from '../interfaces/topping-res.interface';
 import { ToppingType } from '../enums/topping-type.enum';
 import { ToppingDTO } from '../interfaces/topping-dto.interface';
-import { UUID } from 'crypto';
 import { ConfirmRes } from 'src/nest_modules/auth-user/interfaces/confirm-res.interface';
 import { paginate, Pagination, IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { ManyproductsPostDTO } from '../interfaces/many-products-post-dto.interface';
 import { ProductRes } from '../interfaces/product-res.interface';
 import { ProductDTO } from '../interfaces/product-dto.interface';
 
+
 @Injectable()
 export class ProductService {
+
+    private logger = new Logger('ProductService')
 
     constructor(
         @InjectRepository(Topping) private toppingRepository: Repository<Topping>,
@@ -34,28 +36,21 @@ export class ProductService {
                 return topping.type === type
             }
             return true
-        }).map(topping => {
-            topping.setDescription()
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            return this.generateToppingResModel(topping)
-        })
+        }).map(topping => this.generateToppingResModel(topping))
     }
 
-    private async findAllToppingNames(): Promise<string[]> {
-        return (await this.toppingRepository
-            .createQueryBuilder('topping')
-            .select(['topping.name'])
-            .getMany()).map(topping => topping.name)
-    }
+    // private async findAllToppingNames(): Promise<string[]> {
+    //     return (await this.toppingRepository
+    //         .createQueryBuilder('topping')
+    //         .select(['topping.name'])
+    //         .getMany()).map(topping => topping.name)
+    // }
 
     private generateToppingResModel(topping: Topping): ToppingRes {
+        topping.setDescription()
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { setDescription, products, ...toppingRes } = topping
-        return toppingRes
-    }
-
-    private async findToppingById(id: UUID): Promise<Topping> {
-        return await this.toppingRepository.findOneBy({ id })
+        const { setDescription, products, id, ...toppingRes } = topping
+        return { id, ...toppingRes }
     }
 
     private async findToppingByName(name: string): Promise<Topping | null | undefined> {
@@ -63,11 +58,21 @@ export class ProductService {
     }
 
     public async addTopping(toppingDTO: ToppingDTO): Promise<ToppingRes> {
-        if ((await this.findAllToppingNames()).includes(toppingDTO.name))
-            throw new BadRequestException(`topping with name=${toppingDTO.name} already exist`,
-                { cause: new Error(), description: 'Bad Request' })
+
         const topping = new Topping(toppingDTO.name, toppingDTO.price, toppingDTO.type)
-        return await this.toppingRepository.save(topping)
+
+        try {
+            await this.toppingRepository.save(topping)
+        } catch (e) {
+            if (e.message) {
+                if (typeof e.message === 'string') {
+                    if (e.message.includes('Duplicate entry'))
+                        throw new BadRequestException(`topping with name=${toppingDTO.name} already exist`)
+                }
+            }
+            throw new InternalServerErrorException('Database error')
+        }
+        return this.generateToppingResModel(topping)
     }
 
     public async updateToppingByName(oldName: string, toppingDTO: ToppingDTO): Promise<ToppingRes> {
@@ -77,7 +82,17 @@ export class ProductService {
         topping.name = toppingDTO.name
         topping.price = toppingDTO.price
         topping.type = toppingDTO.type
-        await this.toppingRepository.save(topping)
+        try {
+            await this.toppingRepository.save(topping)
+        } catch (e) {
+            if (e.message) {
+                if (typeof e.message === 'string') {
+                    if (e.message.includes('Duplicate entry'))
+                        throw new BadRequestException(`topping with name=${toppingDTO.name} already exist`)
+                }
+            }
+            throw new InternalServerErrorException('Database error')
+        }
         topping.setDescription()
         return this.generateToppingResModel(topping)
     }
@@ -85,6 +100,8 @@ export class ProductService {
     public async deleteToppingByName(name: string): Promise<ConfirmRes> {
 
         const topping: Topping | null | undefined = await this.findToppingByName(name)
+
+        if (!topping) throw new BadRequestException(`Topping with name='${name}' you're trying to delete doesn't exist`)
 
         if (topping.products) {
             for await (const product of topping.products) {
@@ -97,7 +114,7 @@ export class ProductService {
         await this.toppingRepository.delete(topping.id)
 
         return {
-            statusCode: HttpStatus.NO_CONTENT,
+            statusCode: HttpStatus.OK,
             timestamp: new Date().getTime(),
             message: `topping with name='${name}' has been successfully deleted`
         }
@@ -106,6 +123,14 @@ export class ProductService {
 
     // ._._._._._._._._._._._._._._ CATEGORIES ._._._._._._._._._._._._._._
 
+    public generateCategoryResModel(category: Category): Category {
+        const {id, ...otherProps} = category
+        return {
+            id,
+            ...otherProps
+        }
+    }
+    
     private async findCategoryByName(name: string): Promise<Category | null | undefined> {
         return await this.categoryRepository.findOneBy({ name })
     }
@@ -124,21 +149,24 @@ export class ProductService {
     public async productsHaveNotCategory(category: Category): Promise<boolean> {
         return !await this.productRepository
             .createQueryBuilder('product')
-            .where('product.category = :category', { category })
+            .where('product.category = :category_id', { category_id: category.id })
             .getCount()
     }
 
     // ._._._._._._._._._._._._._._ PRODUCTS ._._._._._._._._._._._._._._
 
-    private generateProductResModel(product: Product): ProductRes {
+    public generateProductResModel(product: Product): ProductRes {
+        
+        product.setProductTotalAmount()
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { setProductTotalAmount, toppings, ...productResOthers } = product
-
+        const { setProductTotalAmount, id, toppings, category, ...productResOthers } = product
         const toppingResList: ToppingRes[] = []
         toppings.forEach(topping => toppingResList.push(this.generateToppingResModel(topping)))
-
+        
         return {
+            id, // per farlo apparire per primo
             ...productResOthers,
+            category: this.generateCategoryResModel(category),
             toppings: toppingResList
         }
 
@@ -199,6 +227,12 @@ export class ProductService {
             addedProducts.push(newProduct)
         }
 
+        try {
+            await this.productRepository.save(addedProducts)
+        } catch {
+            throw new InternalServerErrorException('Database error')
+        }
+
         await this.productRepository.save(addedProducts)
 
         const menuProducts: Menu[] = addedProducts.map(product => new Menu(product))
@@ -214,17 +248,11 @@ export class ProductService {
 
         const product = await this.findProductByName(oldName)
 
-        if (!product) throw new BadRequestException(`the product with name='${oldName}' you're trying to update doesn't exist`, {
-            cause: new Error(), description: 'Bad Request'
-        })
-
-        console.log(product)
-
+        if (!product)
+         throw new BadRequestException(`the product with name='${oldName}' you're trying to update doesn't exist`)
+           
         const menu: Menu = await this.menuRepository.findOneBy({ item: { id: product.id } })
-        await this.menuRepository.delete(menu)
-
-        product.name = productDTO.name
-        product.basePrice = productDTO.basePrice
+        await this.menuRepository.delete(menu.id)
 
         const sentCategory: Category | null | undefined = await this.findCategoryByName(productDTO.category)
         const oldCategory: Category = product.category
@@ -234,6 +262,7 @@ export class ProductService {
             if (sentCategory !== product.category) {
                 product.category = sentCategory
                 await this.productRepository.save(product)
+
             }
         } else {
             const newCategory = new Category(productDTO.category)
@@ -241,12 +270,16 @@ export class ProductService {
             await this.menuRepository.save(new Menu(newCategory))
             product.category = newCategory
             await this.productRepository.save(product)
+
         }
 
         if (await this.productsHaveNotCategory(oldCategory)) {
-            await this.categoryRepository.delete(oldCategory)
+            await this.categoryRepository.delete(oldCategory.id)
             await this.menuRepository.delete({ item: { id: oldCategory.id } })
         }
+
+        product.name = productDTO.name
+        product.basePrice = productDTO.basePrice
 
         product.toppings = []
 
@@ -257,11 +290,22 @@ export class ProductService {
                     cause: new Error(), description: 'Bad request'
                 })
             product.toppings.push(topping)
-        }   
+        }
 
-        await this.productRepository.save(product)
 
-        await this.menuRepository.save(new Menu(product))
+        try {
+            await this.productRepository.save(product)
+        } catch (e) {
+            if (e.message) {
+                if (typeof e.message === 'string') {
+                    if (e.message.includes('Duplicate entry'))
+                        throw new BadRequestException(`product with name='${product.name}' already exist`)
+                }
+            }
+            throw new InternalServerErrorException('Database error')
+        } finally {
+            await this.menuRepository.save(new Menu(product))
+        }
 
         return this.generateProductResModel(product)
 
@@ -279,20 +323,21 @@ export class ProductService {
 
     public async deleteProductByName(name: string): Promise<ConfirmRes> {
         const product: Product | null | undefined = await this.productRepository.findOneBy({ name })
-        if (!product) throw new BadRequestException(`product with name=${name} you're trying to delete doesn't exist`,
-            { cause: new Error(), description: 'Bad Request' })
+        if (!product) throw new BadRequestException(`product with name='${name}' you're trying to delete doesn't exist`)
         const category: Category = product.category
-        await this.menuRepository.delete({ id: product.id })
+        const menu = await this.menuRepository.findOneBy({ item: { id: product.id } })
+        await this.menuRepository.delete(menu.id)
+        await this.productRepository.delete(product.id)
         if (await this.productsHaveNotCategory(category)) {
             const menu = await this.menuRepository.findOneBy({ item: { id: category.id } })
-            await this.menuRepository.delete(menu)
-            await this.categoryRepository.delete(category)
+            await this.menuRepository.delete(menu.id)
+            await this.categoryRepository.delete(category.id)
         }
 
         return {
-            statusCode: HttpStatus.NO_CONTENT,
+            statusCode: HttpStatus.OK,
             timestamp: new Date().getTime(),
-            message: `product with name=${name} has been deleted successfully`
+            message: `product with name='${name}' has been deleted successfully`
         }
 
     }

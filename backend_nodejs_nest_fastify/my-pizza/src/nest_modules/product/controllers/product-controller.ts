@@ -1,7 +1,6 @@
 import { Body, Controller, DefaultValuePipe, Delete, Get, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { AdminGuard } from '../../auth-user/guards/admin.guard';
 import { ProductService } from '../services/product.service';
-import { MenuService } from '../services/menu.service';
 import { ToppingType } from '../enums/topping-type.enum';
 import { ToppingsRes } from '../interfaces/toppings-res.interface';
 import { ToppingDTO } from '../interfaces/topping-dto.interface';
@@ -13,13 +12,12 @@ import { CategoriesRes } from '../interfaces/categories-res.interface';
 import { ManyproductsPostDTO } from '../interfaces/many-products-post-dto.interface';
 import { ProductRes } from '../interfaces/product-res.interface';
 import { ProductDTO } from '../interfaces/product-dto.interface';
-import { MenuDTO } from '../entities/menu-dto.interface';
 
 @Controller('api')
 @UseGuards(AdminGuard)
 export class ProductController {
 
-    constructor(private productSvc: ProductService, private menuSvc: MenuService) { }
+    constructor(private productSvc: ProductService) { }
 
     // -.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.-.
     // Toppings
@@ -27,13 +25,13 @@ export class ProductController {
     @Get('toppings')
     public async getAllToppings(@Query('type') type: ToppingType): Promise<ToppingsRes> {
         const isTypeDefined: boolean = !!type
-        if (!isTypeDefined) {
+        if (isTypeDefined) {
             return {
-                toppings: await this.productSvc.findAllToppings()
+                toppings: await this.productSvc.findAllToppings(type)
             }
         } else {
             return {
-                toppings: await this.productSvc.findAllToppings(type)
+                toppings: await this.productSvc.findAllToppings()
             }
         }
     }
@@ -57,7 +55,8 @@ export class ProductController {
     // Products
 
     @Get('products')
-    public async getAllProducts(@Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    public async getAllProducts(
+        @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
         @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10): Promise<Pagination<ProductRes>> {
 
         return await this.productSvc.getAllProducts({ page, limit })
@@ -84,7 +83,7 @@ export class ProductController {
     }
 
     @Put('products/:name')
-    public async updateProduct(@Param('name') name: string, productDTO: ProductDTO): Promise<ProductRes> {
+    public async updateProduct(@Param('name') name: string, @Body() productDTO: ProductDTO): Promise<ProductRes> {
         return await this.productSvc.updateProductByName(name, productDTO)
     }
 
@@ -93,10 +92,7 @@ export class ProductController {
         return this.productSvc.deleteProductByName(name)
     }
 
-    @Post()
-    public async setMenu(menuDTO: MenuDTO): Promise<ConfirmRes> {
-        return this.menuSvc.saveMenu(menuDTO.menuIds)
-    }
+    
 
 }
 

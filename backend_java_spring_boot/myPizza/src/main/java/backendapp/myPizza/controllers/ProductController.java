@@ -116,7 +116,7 @@ public class ProductController {
     public ConfirmRes setMenu(@RequestBody @Validated MenuDTO menuDTO, BindingResult validation) throws BadRequestException {
         Validation.validate(validation);
         return menuSvc.saveMenu(menuDTO.menuIds());
-    }
+    }   
 
 
 }

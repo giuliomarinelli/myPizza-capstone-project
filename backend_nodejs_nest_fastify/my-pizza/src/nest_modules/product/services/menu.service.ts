@@ -5,14 +5,38 @@ import { Repository } from 'typeorm';
 import { paginate, Pagination, IPaginationOptions } from 'nestjs-typeorm-paginate';
 import { UUID } from 'crypto';
 import { ConfirmRes } from 'src/nest_modules/auth-user/interfaces/confirm-res.interface';
+import { ProductService } from './product.service';
+import { MenuItem } from '../entities/menu-item.entity';
+import { MenuItemRes } from '../interfaces/menu-item-res.interface';
+import { Product } from '../entities/product.entity';
+import { Category } from '../entities/category.entity';
+import { MenuRes } from '../interfaces/menu-res-interface';
 
 @Injectable()
 export class MenuService {
 
-    constructor(@InjectRepository(Menu) private menuRepository: Repository<Menu>) { }
+    constructor(@InjectRepository(Menu) private menuRepository: Repository<Menu>, private productSvc: ProductService) { }
 
-    public async getMenu(options: IPaginationOptions): Promise<Pagination<Menu>> {
-        return await paginate<Menu>(this.menuRepository, options)
+    private generateMenuItemResModel(menuItem: MenuItem): MenuItemRes {
+        if (menuItem instanceof Product) {
+            return this.productSvc.generateProductResModel(menuItem)
+        } else if (menuItem instanceof Category) {
+            return this.productSvc.generateCategoryResModel(menuItem)
+        }
+    }
+
+
+    public async getMenu(options: IPaginationOptions): Promise<Pagination<MenuRes>> {
+        const results = await paginate<Menu>(this.menuRepository, options)
+        return new Pagination<MenuRes>(
+            results.items.map(menu => {
+                return {
+                    id: menu.id,
+                    item: menu.item = this.generateMenuItemResModel(menu.item)
+                }
+            }),
+            results.meta
+        )
     }
 
 
@@ -31,7 +55,7 @@ export class MenuService {
             .delete()
             .from(Menu)
             .execute()
-        
+
         await this.menuRepository.save(newMenuList)
 
         return {

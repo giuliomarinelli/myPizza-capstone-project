@@ -31,13 +31,13 @@ export class User {
     @Column({ name: 'last_name' })
     lastName: string;
 
-    @Column()
+    @Column({ unique: true })
     email: string;
 
     @Column({ name: 'hash_password' })
     hashPassword: string;
 
-    @Column({ name: 'phone_number' })
+    @Column({ name: 'phone_number', unique: true })
     phoneNumber: string;
 
     @Column()

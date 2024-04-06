@@ -15,7 +15,7 @@ export class Product extends MenuItem {
         this.createdAt = new Date().getTime()
     }
 
-    @Column()
+    @Column({ unique: true })
     name: string
 
     @Column()
@@ -29,16 +29,16 @@ export class Product extends MenuItem {
     })
     toppings: Topping[]
 
-    @Column({name: 'base_price'})
+    @Column({ name: 'base_price' })
     basePrice: number
 
     @ManyToOne(() => Category, (category) => category.id, { eager: true })
     @JoinColumn({ name: "category_id" })
     category: Category
 
-    @Column({name: 'created_at', type: 'bigint'})
+    @Column({ name: 'created_at', type: 'bigint' })
     createdAt: number
-    
+
     price: number
 
 

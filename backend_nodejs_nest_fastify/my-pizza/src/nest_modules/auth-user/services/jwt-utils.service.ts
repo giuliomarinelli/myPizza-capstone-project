@@ -9,6 +9,7 @@ import { TokenPair } from '../interfaces/token-pair.interface';
 import { UUID } from 'crypto';
 import { DataSource } from 'typeorm';
 import { FastifyRequest } from 'fastify';
+import { WsException } from '@nestjs/websockets';
 
 @Injectable()
 export class JwtUtilsService {
@@ -99,9 +100,29 @@ export class JwtUtilsService {
         }
     }
 
+    public async verifyWsAccessToken(wsAccessToken: string): Promise<void> {
+        try {
+            await this.jwtSvc.verifyAsync(wsAccessToken, { ignoreExpiration: true, secret: this.configSvc.get('KEYS.wsAccessTokenSecret') })
+            if (new Date().getTime() > (this.jwtSvc.decode(wsAccessToken).exp as number) + (this.jwtSvc.decode(wsAccessToken).iat))
+                throw new WsException({ error: 'Unauthorized', message: 'ws_access_token is expired' })
+        } catch {
+            throw new WsException({ error: 'Unauthorized', message: 'invalid ws_access_token' })
+        }
+    }
+
+
     public async extractUserFromAccessToken(accessToken: string): Promise<User> {
         const userId = await this.extractUserIdFromAccessToken(accessToken)
         return await this.getUserById(userId)
+    }
+
+    public async extractUserIdFromWsAccessToken(wsAccessToken: string): Promise<UUID> {
+        await this.verifyWsAccessToken(wsAccessToken)
+        return this.jwtSvc.decode(wsAccessToken).sub
+    }
+
+    public async extractUserFromWsAccessToken(wsAccessToken: string): Promise<User> {
+        return await this.getUserById(await this.extractUserIdFromWsAccessToken(wsAccessToken))
     }
 
     public async extractUserIdFromAccessToken(accessToken: string): Promise<UUID> {

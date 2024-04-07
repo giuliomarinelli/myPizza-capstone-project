@@ -37,7 +37,7 @@ async function bootstrap() {
 
   await app.listen(configSvc.get('APP.port'));
 
-  logger.log(`MyPizza Backend Node.js Application listening on port ${configSvc.get('APP.port')}`)
+  logger.log(`App listening on the same port (${configSvc.get('APP.port')}) for Http (Fastify) and WebSocket (Socket.io)`)
 
 }
 bootstrap();

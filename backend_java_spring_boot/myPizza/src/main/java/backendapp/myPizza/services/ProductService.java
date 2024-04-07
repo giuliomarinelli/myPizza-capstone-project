@@ -125,7 +125,8 @@ public class ProductService {
             productRp.save(oldProduct);
         } else if (sentCategory.isEmpty()) {
             Category newCategory = new Category(productDTO.category());
-            categoryRp.save(newCategory);;
+            categoryRp.save(newCategory);
+            ;
             menuRp.save(new Menu(newCategory));
             oldProduct.setCategory(newCategory);
             productRp.save(oldProduct);

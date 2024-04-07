@@ -2,8 +2,15 @@ import { registerAs } from '@nestjs/config';
 import { Address } from 'src/nest_modules/address/entities/address.entity';
 import { City } from 'src/nest_modules/address/entities/city.entity';
 import { User } from 'src/nest_modules/auth-user/entities/user.entity';
+import { OrderSet } from 'src/nest_modules/order/entities/order-set.entity';
+import { Order } from 'src/nest_modules/order/entities/order.entity';
+import { ProductRef } from 'src/nest_modules/order/entities/product-ref.entity';
+import { TimeInterval } from 'src/nest_modules/order/entities/time-interval.entity';
+import { ToppingRef } from 'src/nest_modules/order/entities/topping-ref.entity';
+import { WorkSession } from 'src/nest_modules/order/entities/work-session.entity';
 import { Category } from 'src/nest_modules/product/entities/category.entity';
 import { MenuItem } from 'src/nest_modules/product/entities/menu-item.entity';
+import { Menu } from 'src/nest_modules/product/entities/menu.entity';
 import { Product } from 'src/nest_modules/product/entities/product.entity';
 import { Topping } from 'src/nest_modules/product/entities/topping.entity';
 
@@ -42,8 +49,11 @@ const DBConfig = registerAs(
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE,
         type: process.env.DATABASE_TYPE,
-        entities: [City, User, Address, MenuItem, Product, Topping, Category],
-        synchronize: false
+        entities: [
+            City, User, Address, MenuItem, Product, Topping, Category, Menu,
+            ProductRef, ToppingRef, OrderSet, Order, TimeInterval, WorkSession
+        ],
+        synchronize: true
     }),
 )
 

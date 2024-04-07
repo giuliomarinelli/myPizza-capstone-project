@@ -103,26 +103,28 @@ export class AddressService {
         const defaultAddresses: number = await addressRepository
             .createQueryBuilder('address')
             .where('address._default = true')
+            .andWhere('address.user = :userId', { userId: user.id })
             .getCount()
+        
 
         if (defaultAddresses > 1) throw new InternalServerErrorException('There are many default addresses',
             { cause: new Error(), description: 'Internal Server Error' })
 
-        const _default: boolean = !!defaultAddresses
+        const _default: boolean = !defaultAddresses
 
         const city: City | null | undefined = await cityRepository
             .createQueryBuilder('city')
             .where('city.name = :name', { name: addressDTO.city })
             .andWhere('city.provinceCode = :code', { code: addressDTO.province })
             .getOne()
-
+        
         if (!city) throw new BadRequestException(`City with name=${addressDTO.city} and province=${addressDTO.province} doesn't exist`,
             { cause: new Error(), description: 'Bad Request' })
 
         const address = new Address(addressDTO.road, addressDTO.civic, city, user, _default)
 
         return await addressRepository.save(address)
-        
+
     }
 
 }

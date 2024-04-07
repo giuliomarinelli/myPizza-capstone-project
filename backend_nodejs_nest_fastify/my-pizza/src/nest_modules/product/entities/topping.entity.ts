@@ -1,6 +1,8 @@
 import { UUID } from "crypto";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ToppingType } from "../enums/topping-type.enum";
+import { Product } from "./product.entity";
+
 
 @Entity({ name: 'toppings' })
 export class Topping {
@@ -12,16 +14,16 @@ export class Topping {
         this.createdAt = new Date().getTime()
     }
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid")
     id: UUID
 
-    @Column()
+    @Column({ unique: true })
     name: string
 
     @Column()
     price: number
 
-    @Column()
+    @Column({ name: 'created_at', type: "bigint" })
     createdAt: number
 
     @Column()
@@ -33,7 +35,8 @@ export class Topping {
         this.description = `${this.name} (${this.price.toFixed(2)}€)`
     }
 
-    // lato inverso della ManyToMany con Product. Non credo sia necessario
-  
+    @ManyToMany(() => Product, (product) => product.toppings)
+    products: Product[]
+
 
 }

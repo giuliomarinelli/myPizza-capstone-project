@@ -1,8 +1,8 @@
-import { Column, Entity } from "typeorm";
+import { ChildEntity, Column } from "typeorm";
 import { MenuItem } from "./menu-item.entity";
 import { ItemType } from "../enums/item-type.enum";
 
-@Entity({ name: 'categories' })
+@ChildEntity()
 export class Category extends MenuItem {
 
     constructor(name: string) {
@@ -10,7 +10,7 @@ export class Category extends MenuItem {
         this.name = name
     }
 
-    @Column()
+    @Column({ unique: true })
     name: string
 
     @Column()

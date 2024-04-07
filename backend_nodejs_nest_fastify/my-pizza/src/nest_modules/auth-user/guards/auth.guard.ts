@@ -24,7 +24,7 @@ export class AuthGuard implements CanActivate {
       '/api/work-session/is-there-an-active-session',
       '/api/work-session/get-delivery-times'
     ]
-    if (path.startsWith('/auth') || path.startsWith('/auth') ||
+    if (path.startsWith('/auth') || path.startsWith('/public') ||
       path.startsWith('/socket.io') || publicExactPaths.includes(path))
       return true;
     const accessToken: string | undefined | null = req.cookies['__access_tkn']
@@ -36,7 +36,8 @@ export class AuthGuard implements CanActivate {
     
     /* Access token scaduto => Refresh: il metodo chiamato verifica la validità del refresh token (scadenza compresa).
      Se non è valido genera un'eccezione, altrimenti restituisce una nuova coppia di token */
-    const restore: boolean = await this.jwtUtils.getRestoreFromRefreshToken(refreshToken) // verifico se l'utente vuole ricordare il login oltre la sessione
+    const restore: boolean = await this.jwtUtils.getRestoreFromRefreshToken(refreshToken) 
+    // verifico se l'utente vuole ricordare il login oltre la sessione
     const newTokens: TokenPair = await this.jwtUtils.generateTokenPair(refreshToken, TokenPairType.HTTP, restore)
     
     this.logger.log('Auth Refresh')

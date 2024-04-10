@@ -15,7 +15,11 @@ import { MenuRes } from '../interfaces/menu-res-interface';
 @Injectable()
 export class MenuService {
 
-    constructor(@InjectRepository(Menu) private menuRepository: Repository<Menu>, private productSvc: ProductService) { }
+    constructor(@InjectRepository(Menu) private menuRepository: Repository<Menu>,
+        @InjectRepository(Category) private categoryRepository: Repository<Category>,
+        @InjectRepository(Product) private productRepository: Repository<Product>,
+        @InjectRepository(MenuItem) private menuItemRepository: Repository<MenuItem>,
+        private productSvc: ProductService) { }
 
     private generateMenuItemResModel(menuItem: MenuItem): MenuItemRes {
         if (menuItem instanceof Product) {
@@ -29,10 +33,10 @@ export class MenuService {
     public async getMenu(options: IPaginationOptions): Promise<Pagination<MenuRes>> {
         const results = await paginate<Menu>(this.menuRepository, options)
         return new Pagination<MenuRes>(
-            results.items.map(menu => {
+            results.items.map((menu) => {
                 return {
                     id: menu.id,
-                    item: menu.item = this.generateMenuItemResModel(menu.item)
+                    item: this.generateMenuItemResModel(menu.item)
                 }
             }),
             results.meta

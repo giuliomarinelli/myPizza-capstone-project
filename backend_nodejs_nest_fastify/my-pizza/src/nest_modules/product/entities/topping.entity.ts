@@ -20,7 +20,7 @@ export class Topping {
     @Column({ unique: true })
     name: string
 
-    @Column()
+    @Column({ type: "double precision" })
     price: number
 
     @Column({ name: 'created_at', type: "bigint" })

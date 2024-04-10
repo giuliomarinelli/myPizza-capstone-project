@@ -17,7 +17,7 @@ export interface Page<T> {
   totalPages: number
   size: number
   number: number
-  sort: {
+  sort?: {
     empty: boolean
     sorted: boolean
     unsorted: boolean

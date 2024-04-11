@@ -1,6 +1,6 @@
 export interface Page<T> {
   content: T[]
-  pageable: {
+  pageable?: {
     pageNumber: number
     pageSize: number
     sort: {
@@ -12,7 +12,7 @@ export interface Page<T> {
     unpaged: boolean
     paged: boolean
   }
-  last: boolean
+  last?: boolean
   totalElements: number
   totalPages: number
   size: number
@@ -22,7 +22,18 @@ export interface Page<T> {
     sorted: boolean
     unsorted: boolean
   }
-  first: boolean
-  numberOfElements: number
+  first?: boolean
+  numberOfElements?: number
   empty: boolean
+}
+
+export interface Pagination<T> {
+  items: T[]
+  meta: {
+    totalItems: number
+    itemCount: number
+    itemsPerPage: number
+    totalPages: number
+    currentPage: number
+  }
 }

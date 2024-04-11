@@ -19,9 +19,10 @@ export class GestisciVisualizzazioneMenuComponent {
     afterNextRender(() => {
       this.menuSvc.getMenu(5).subscribe(res => {
 
+        this.isLoading = false
+
         res.content.forEach(m => {
           this.menu.push(m)
-          this.isLoading = false
           appRef.tick()
 
         })

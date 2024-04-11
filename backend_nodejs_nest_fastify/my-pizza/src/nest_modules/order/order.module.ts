@@ -8,8 +8,18 @@ import { OrderSet } from './entities/order-set.entity';
 import { Order } from './entities/order.entity';
 import { TimeInterval } from './entities/time-interval.entity';
 import { WorkSession } from './entities/work-session.entity';
+import { OrderService } from './services/order.service';
+import { JwtUtilsService } from '../auth-user/services/jwt-utils.service';
+import { JwtService } from '@nestjs/jwt';
+import { SessionService } from './services/session.service';
+import { OrderController } from './controllers/order.controller';
+import { SessionController } from './controllers/session.controller';
+import { PublicOrderController } from './controllers/public-order.controller';
+
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Product, Topping, ProductRef, ToppingRef, OrderSet, Order, TimeInterval, WorkSession])]
+    imports: [TypeOrmModule.forFeature([Product, Topping, ProductRef, ToppingRef, OrderSet, Order, TimeInterval, WorkSession])],
+    providers: [OrderService, JwtUtilsService, JwtService, SessionService],
+    controllers: [OrderController, SessionController, PublicOrderController]
 })
 export class OrderModule {}

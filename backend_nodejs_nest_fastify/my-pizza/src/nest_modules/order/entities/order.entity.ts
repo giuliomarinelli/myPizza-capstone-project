@@ -9,6 +9,7 @@ import { User } from "src/nest_modules/auth-user/entities/user.entity";
 @Entity({ name: 'orders' })
 export class Order {
 
+    constructor() { }
 
     @PrimaryGeneratedColumn('uuid')
     id: UUID
@@ -20,16 +21,16 @@ export class Order {
     @JoinColumn({ name: 'address_id' })
     address: Address
 
-    @Column({ name: 'order_time', type: "bigint" })
+    @Column({ name: 'order_time', type: "bigint", default: null })
     orderTime: number;
 
-    @Column({ name: 'expected_delivery_time', type: "bigint" })
+    @Column({ name: 'expected_delivery_time', type: "bigint", default: null })
     expectedDeliveryTime: number;
 
-    @Column({ name: 'delivery_time', type: "bigint" })
+    @Column({ name: 'delivery_time', type: "bigint", default: null })
     deliveryTime: number;
 
-    @Column()
+    @Column({ default: null })
     asap: boolean;
 
     @Column()
@@ -41,16 +42,16 @@ export class Order {
     //JsonIgnore
     @ManyToOne(() => TimeInterval, (timeInterval) => timeInterval.id)
     @JoinColumn({ name: 'time_interval_id' })
-    TimeInterval: TimeInterval
-    
+    timeInterval: TimeInterval
+
     @ManyToOne(() => User, (user) => user.id)
     @JoinColumn({ name: 'user_id' })
     user: User
 
-    @Column({name: 'completed_at', type: 'bigint'})
+    @Column({ name: 'completed_at', type: 'bigint', default: null })
     completedAt: number
 
-    @Column()
+    @Column({ default: null })
     guest: boolean
 
 

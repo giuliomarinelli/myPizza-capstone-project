@@ -1,7 +1,7 @@
 import { UUID } from "crypto";
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity({ name: 'toppings_ref'})
+@Entity({ name: 'toppings_ref' })
 export class ToppingRef {
 
     constructor(name: string, price: number) {
@@ -15,7 +15,7 @@ export class ToppingRef {
     @Column()
     name: string
 
-    @Column()
+    @Column({ type: "double precision" })
     price: number
 
 }

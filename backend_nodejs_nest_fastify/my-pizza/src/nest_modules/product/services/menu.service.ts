@@ -31,7 +31,9 @@ export class MenuService {
 
 
     public async getMenu(options: IPaginationOptions): Promise<Pagination<MenuRes>> {
-        const results = await paginate<Menu>(this.menuRepository, options)
+        const results = await paginate<Menu>(this.menuRepository, options,
+            { order: { ord: 'ASC' } })
+        
         return new Pagination<MenuRes>(
             results.items.map((menu) => {
                 return {
@@ -47,20 +49,23 @@ export class MenuService {
     public async saveMenu(menuIds: UUID[]): Promise<ConfirmRes> {
 
         const newMenuList: Menu[] = []
-
-        menuIds.forEach(async (menuId) => {
+        for await (const [i, menuId] of menuIds.entries()) {
             const oldMenu: Menu | null | undefined = await this.menuRepository.findOneBy({ id: menuId })
             if (!oldMenu) throw new BadRequestException(`menu instance with id=${menuId} doesn't exist`,
                 { cause: new Error(), description: 'Bad Request' })
-            newMenuList.push(new Menu(oldMenu.item))
-        })
+            const menu = new Menu({ ...oldMenu.item })
+            menu.ord = i + 1
+            newMenuList.push(menu)
+        }
 
         await this.menuRepository.createQueryBuilder('menu')
             .delete()
-            .from(Menu)
+            .from(Menu) //
             .execute()
 
         await this.menuRepository.save(newMenuList)
+
+       
 
         return {
             statusCode: HttpStatus.NO_CONTENT,

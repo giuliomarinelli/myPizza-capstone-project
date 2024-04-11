@@ -1,18 +1,20 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment.development';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { CategoriesRes, Product, ProductNamesRes, Topping, ToppingDTO, ToppingRes } from '../Models/i-product';
 import { HttpClient } from '@angular/common/http';
 import { ManyProductsPostDTO, ProductDTO } from '../Models/i-product-dto';
-import { Page } from '../Models/i-page';
+import { Page, Pagination } from '../Models/i-page';
 import { ConfirmRes } from '../Models/confirm-res';
+import { BackendPlatform } from '../../environments/backend-platform.enum';
+import { PaginationAdapterService } from './pagination-adapter.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private paginationAdapter: PaginationAdapterService) { }
 
   private backendUrl: string = environment.backendUrl
 
@@ -52,8 +54,13 @@ export class ProductService {
   }
 
   public getProducts(size: number, page?: number): Observable<Page<Product>> {
-    const _page = page ? page : 0
-    return this.http.get<Page<Product>>(`${this.backendUrl}/api/products?size=${size}&page=${_page}`, { withCredentials: true })
+    if (environment.backendPlatform === BackendPlatform.JAVA) {
+      const _page = page ? page : 0
+      return this.http.get<Page<Product>>(`${this.backendUrl}/api/products?size=${size}&page=${_page}`, { withCredentials: true })
+    }
+    const _page = page ? page + 1 : 1
+      return this.http.get<Pagination<Product>>(`${this.backendUrl}/api/products?limit=${size}&page=${_page}`, { withCredentials: true })
+        .pipe(map(res => this.paginationAdapter.adapt(res) as Page<Product>))
   }
 
   public deleteProductByName(name: string): Observable<ConfirmRes> {

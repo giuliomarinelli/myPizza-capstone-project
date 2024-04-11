@@ -10,16 +10,16 @@ export class TimeInterval {
         this.endsAt = endsAt
     }
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     id: UUID
 
     @OneToMany(() => Order, (order) => order.id, { eager: true })
     orders: Order[]
 
-    @Column({ name: 'starts_at' })
+    @Column({ name: 'starts_at', type: "bigint" })
     startsAt: number
 
-    @Column({ name: 'ends_at' })
+    @Column({ name: 'ends_at', type: "bigint" })
     endsAt: number
 
     public static getTimeIntervals(startsAllAt: number, endsAllAt: number): TimeInterval[] {

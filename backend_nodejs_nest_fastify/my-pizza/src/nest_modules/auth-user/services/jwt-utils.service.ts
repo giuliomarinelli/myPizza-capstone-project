@@ -110,6 +110,14 @@ export class JwtUtilsService {
         }
     }
 
+    public async verifyWsRefreshToken(wsRefreshToken: string): Promise<void> {
+        try {
+            await this.jwtSvc.verifyAsync(wsRefreshToken, { secret: this.configSvc.get('KEYS.wsRefreshTokenSecret') })
+        } catch {
+            throw new WsException({ error: 'Unauthorized', message: 'invalid ws_refresh_token' })
+        }
+    }
+
 
     public async extractUserFromAccessToken(accessToken: string): Promise<User> {
         const userId = await this.extractUserIdFromAccessToken(accessToken)
@@ -119,6 +127,15 @@ export class JwtUtilsService {
     public async extractUserIdFromWsAccessToken(wsAccessToken: string): Promise<UUID> {
         await this.verifyWsAccessToken(wsAccessToken)
         return this.jwtSvc.decode(wsAccessToken).sub
+    }
+
+    public async extractUserFromWsRefreshToken(wsRefreshToken: string): Promise<User> {
+        return await this.getUserById(await this.extractUserIdFromWsRefreshToken(wsRefreshToken))
+    }
+
+    public async extractUserIdFromWsRefreshToken(wsRefreshToken: string): Promise<UUID> {
+        await this.verifyWsRefreshToken(wsRefreshToken)
+        return this.jwtSvc.decode(wsRefreshToken).sub
     }
 
     public async extractUserFromWsAccessToken(wsAccessToken: string): Promise<User> {
@@ -140,6 +157,15 @@ export class JwtUtilsService {
             return this.jwtSvc.decode(refreshToken).restore as boolean
         } catch {
             throw new UnauthorizedException(`Invalid refresh_token`, { cause: new Error(), description: 'Unauthorized' })
+        }
+
+    }
+    public async getRestoreFromWsRefreshToken(wsRefreshToken: string): Promise<boolean> {
+        try {
+            await this.jwtSvc.verifyAsync(wsRefreshToken, { ignoreExpiration: true, secret: this.configSvc.get('KEYS.wsRefreshTokenSecret') })
+            return this.jwtSvc.decode(wsRefreshToken).restore as boolean
+        } catch {
+            throw new UnauthorizedException(`Invalid ws_refresh_token`, { cause: new Error(), description: 'Unauthorized' })
         }
     }
 

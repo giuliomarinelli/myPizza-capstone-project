@@ -11,6 +11,7 @@ import { UUID } from 'crypto';
 import { Address } from 'src/nest_modules/address/entities/address.entity';
 import { AdminUserIdRes } from '../interfaces/admin-user-id-res-interface';
 import { UserScope } from '../enums/user-scope.enum';
+import { AuthoritiesRes } from '../interfaces/authorities-res.interface';
 
 @Injectable()
 export class ProfileService {
@@ -22,6 +23,14 @@ export class ProfileService {
         const user: UserRes | null | undefined = this.authSvc.generateUserResModel(await this.jwtUtils.getUserFromReq(req))
         if (!user) throw new UnauthorizedException()
         return user
+    }
+
+    public async getAuthorities(req: FastifyRequest): Promise<AuthoritiesRes> {
+        
+        return {
+            authorities: (await this.jwtUtils.getUserFromReq(req)).scope
+        }
+        
     }
 
     public async updatePutProfile(req: FastifyRequest, userPutDTO: UserPutDTO): Promise<UserRes> {
@@ -41,9 +50,7 @@ export class ProfileService {
     }
 
     public async getAdminUserId(): Promise<AdminUserIdRes> {
-        const users: User[] = await this.userRepository
-            .createQueryBuilder('user')
-            .getMany()
+        const users: User[] = await this.userRepository.find()
         const admin: User | undefined = users.find(user => user.scope.includes(UserScope.ADMIN))
         if (!admin)
             throw new NotFoundException('user with ADMIN authority not found', { cause: new Error(), description: 'Not Found' })

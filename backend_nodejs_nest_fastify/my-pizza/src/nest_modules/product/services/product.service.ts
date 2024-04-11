@@ -140,10 +140,13 @@ export class ProductService {
     }
 
     public async getAllCategoryNames(): Promise<string[]> {
-        return (await this.categoryRepository
+        const results = (await this.categoryRepository
             .createQueryBuilder('category')
             .select(['category.name'])
             .getMany()).map(category => category.name)
+        results.unshift('(seleziona una categoria)')
+        results.push('- Inserisci nuova -')
+        return results
     }
 
     public async productsHaveNotCategory(category: Category): Promise<boolean> {

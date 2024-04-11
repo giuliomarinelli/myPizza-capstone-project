@@ -35,7 +35,6 @@ export class SessionService {
     }
 
     public async getActiveSession(): Promise<WorkSession> {
-        console.log(await this.workSessionRepository.find())
         const activeSession = await this.workSessionRepository.findOneBy({ active: true })
         if (!activeSession) throw new BadRequestException("There isn't an active session at the moment")
         return activeSession

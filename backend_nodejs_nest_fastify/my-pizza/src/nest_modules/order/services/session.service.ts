@@ -25,17 +25,18 @@ export class SessionService {
     }
 
     public async getActiveSessionTimeIntervals(): Promise<TimeInterval[]> {
-        let timeIntervals = (await this.workSessionRepository.findOne({ where: { active: true } })).timeIntervals
+        let timeIntervals = (await this.getActiveSession()).timeIntervals
         if (!timeIntervals) timeIntervals = []
         return timeIntervals
     }
 
     public async isThereAnActiveSession(): Promise<boolean> {
-        return !!await this.workSessionRepository.find({ where: { active: true } })
+        return !!await this.getActiveSession()
     }
 
     public async getActiveSession(): Promise<WorkSession> {
-        const activeSession = await this.workSessionRepository.findOne({ where: { active: true } })
+        console.log(await this.workSessionRepository.find())
+        const activeSession = await this.workSessionRepository.findOneBy({ active: true })
         if (!activeSession) throw new BadRequestException("There isn't an active session at the moment")
         return activeSession
     }

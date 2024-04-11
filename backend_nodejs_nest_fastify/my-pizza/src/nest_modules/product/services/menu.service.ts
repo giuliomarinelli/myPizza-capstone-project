@@ -33,7 +33,7 @@ export class MenuService {
     public async getMenu(options: IPaginationOptions): Promise<Pagination<MenuRes>> {
         const results = await paginate<Menu>(this.menuRepository, options,
             { order: { ord: 'ASC' } })
-        console.log(results)
+        
         return new Pagination<MenuRes>(
             results.items.map((menu) => {
                 return {

@@ -13,13 +13,13 @@ export class Menu {
     @PrimaryGeneratedColumn("uuid")
     id: UUID
 
-    @Column()
+    @Column({ default: 1 })
     ord: number
 
     @OneToOne(() => MenuItem, (menuItem) => menuItem.id, { eager: true })
-    @JoinColumn({ name: 'item_id' })
+    @JoinColumn({ name: 'item_id', })
     item: MenuItem
 
-    
+
 
 }

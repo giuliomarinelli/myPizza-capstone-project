@@ -1,7 +1,7 @@
 import { BadRequestException, HttpStatus, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Topping } from '../entities/topping.entity';
-import { DataSource, Repository } from 'typeorm';
+import {  Repository } from 'typeorm';
 import { Product } from '../entities/product.entity';
 import { Category } from '../entities/category.entity';
 import { Menu } from '../entities/menu.entity';
@@ -15,6 +15,7 @@ import { ProductRes } from '../interfaces/product-res.interface';
 import { ProductDTO } from '../interfaces/product-dto.interface';
 
 
+
 @Injectable()
 export class ProductService {
 
@@ -24,8 +25,7 @@ export class ProductService {
         @InjectRepository(Topping) private toppingRepository: Repository<Topping>,
         @InjectRepository(Product) private productRepository: Repository<Product>,
         @InjectRepository(Category) private categoryRepository: Repository<Category>,
-        @InjectRepository(Menu) private menuRepository: Repository<Menu>,
-        private dataSource: DataSource
+        @InjectRepository(Menu) private menuRepository: Repository<Menu>
     ) { }
 
     // ._._._._._._._._._._._._._._ TOPPINGS ._._._._._._._._._._._._._._
@@ -255,7 +255,7 @@ export class ProductService {
          throw new BadRequestException(`the product with name='${oldName}' you're trying to update doesn't exist`)
            
         const menu: Menu = await this.menuRepository.findOneBy({ item: { id: product.id } })
-        await this.menuRepository.delete(menu.id)
+      
 
         const sentCategory: Category | null | undefined = await this.findCategoryByName(productDTO.category)
         const oldCategory: Category = product.category
@@ -265,20 +265,23 @@ export class ProductService {
             if (sentCategory !== product.category) {
                 product.category = sentCategory
                 await this.productRepository.save(product)
-
+                menu.item = product
+                await this.menuRepository.save(menu)
             }
         } else {
             const newCategory = new Category(productDTO.category)
             await this.categoryRepository.save(newCategory)
             await this.menuRepository.save(new Menu(newCategory))
-            product.category = newCategory
+            product.category = newCategory 
             await this.productRepository.save(product)
+            menu.item = product
+            await this.menuRepository.save(menu)
 
         }
 
         if (await this.productsHaveNotCategory(oldCategory)) {
-            await this.categoryRepository.delete(oldCategory.id)
             await this.menuRepository.delete({ item: { id: oldCategory.id } })
+            await this.categoryRepository.delete(oldCategory.id)
         }
 
         product.name = productDTO.name
@@ -306,9 +309,7 @@ export class ProductService {
                 }
             }
             throw new InternalServerErrorException('Database error')
-        } finally {
-            await this.menuRepository.save(new Menu(product))
-        }
+        } 
 
         return this.generateProductResModel(product)
 

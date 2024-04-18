@@ -15,11 +15,17 @@ import { SessionService } from './services/session.service';
 import { OrderController } from './controllers/order.controller';
 import { SessionController } from './controllers/session.controller';
 import { PublicOrderController } from './controllers/public-order.controller';
+import { Address } from '../address/entities/address.entity';
+import { ProductService } from '../product/services/product.service';
+import { Category } from '../product/entities/category.entity';
+import { Menu } from '../product/entities/menu.entity';
 
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Product, Topping, ProductRef, ToppingRef, OrderSet, Order, TimeInterval, WorkSession])],
-    providers: [OrderService, JwtUtilsService, JwtService, SessionService],
+    imports: [TypeOrmModule.forFeature(
+        [Product, Topping, ProductRef, ToppingRef, Address, OrderSet, Order, TimeInterval, WorkSession, Category, Menu]
+    )],
+    providers: [OrderService, JwtUtilsService, JwtService, SessionService, ProductService],
     controllers: [OrderController, SessionController, PublicOrderController]
 })
-export class OrderModule {}
+export class OrderModule { }

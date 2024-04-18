@@ -1,5 +1,5 @@
 import { UUID } from "crypto";
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { TimeInterval } from "./time-interval.entity";
 import { WorkSessionType } from "../enums/work-session-type.enum";
 
@@ -15,15 +15,10 @@ export class WorkSession {
         this.maxAdvicedOrdersPerTimeInterval = cookCount * ridersCount;
     }
 
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     id: UUID
 
-    @ManyToMany(() => TimeInterval, (timeInterval) => timeInterval.id, { eager: true })
-    @JoinTable({
-        name: 'work_sessions_time_intervals',
-        joinColumn: { name: 'work_session_id' },
-        inverseJoinColumn: { name: 'time_interval_id' }
-    })
+    @OneToMany(() => TimeInterval, (timeInterval) => timeInterval.workSession, { eager: true })
     timeIntervals: TimeInterval[]
 
     @Column()

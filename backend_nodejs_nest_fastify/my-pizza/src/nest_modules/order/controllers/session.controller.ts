@@ -22,7 +22,7 @@ export class SessionController {
     @Get('/is-there-an-active-session')
     public async isThereAnActiveSession(): Promise<IsThereAnActiveSessionRes> {
         return {
-            isThereAnActiveSession: await this._session.isThereAnActiveSession()
+            thereAnActiveSession: await this._session.isThereAnActiveSession()
         }
     }
 

@@ -18,6 +18,8 @@ import { SendOrderDTO } from '../interfaces/send-order-dto.interface';
 import { ConfirmRes } from 'src/nest_modules/auth-user/interfaces/confirm-res.interface';
 import { OrderRes } from '../interfaces/order-res-interface';
 import { SessionService } from './session.service';
+import { Address } from 'src/nest_modules/address/entities/address.entity';
+import { ProductService } from 'src/nest_modules/product/services/product.service';
 
 @Injectable()
 export class OrderService {
@@ -30,7 +32,9 @@ export class OrderService {
         @InjectRepository(ToppingRef) private toppingRefRepository: Repository<ToppingRef>,
         @InjectRepository(ProductRef) private productRefRepository: Repository<ProductRef>,
         @InjectRepository(TimeInterval) private timeIntervalrepository: Repository<TimeInterval>,
-        private _session: SessionService
+        @InjectRepository(Address) private addressRepository: Repository<Address>,
+        private _session: SessionService,
+        private productSvc: ProductService
     ) { }
 
     public async orderInit(orderInitDTO: OrderInitDTO): Promise<OrderInitRes> {
@@ -41,7 +45,8 @@ export class OrderService {
             throw new BadRequestException('Order sent is empty')
         const ordersets: OrderSet[] = []
         for await (const orderSetDTO of orderInitDTO.orderSetsDTO) {
-            const product = await this.productRepository.findOneBy({ id: orderSetDTO.productId })
+            const product = this.productSvc.generateProductResModel(await this.productRepository.findOneBy({ id: orderSetDTO.productId }))
+            console.log(product)
             if (!product) {
                 this.orderRepository.delete(order.id)
                 throw new BadRequestException(`Product with id='${orderSetDTO.productId}' doesn't exist`)
@@ -50,7 +55,6 @@ export class OrderService {
                 this.orderRepository.delete(order.id)
                 throw new BadRequestException(`Product with id='${product.id}': quantity must be an integer number major than 0`)
             }
-            product.setProductTotalAmount()
             const productRef = new ProductRef(product.name, product.price)
             productRef.toppingsRef = []
             if (product.toppings) {
@@ -67,7 +71,7 @@ export class OrderService {
         }
         await this.orderSetRepository.save(ordersets)
         await this.orderRepository.save(order)
-
+        console.log('ok')
         return {
             orderId: order.id,
             status: order.status
@@ -81,9 +85,13 @@ export class OrderService {
         } else {
             if (order.status !== OrderStatus.INIT) throw new BadRequestException('Order status must be INIT')
             const user = await this.jwtUtils.getUserFromReq(req)
-            const address = user.addresses.find(address => address._default)
+            const address = await this.addressRepository.createQueryBuilder('address')
+                .where('address.user_id = :id', { id: user.id })
+                .andWhere('address._default = true')
+                .getOne()
             if (!address) throw new BadRequestException('Cannot find default address, please set a default address before retrying')
             const totalAmount = order.orderSets.reduce((c, p) => c + p.productRef.price, 0) + order.deliveryCost
+            
             return {
                 orderId: order.id,
                 address,

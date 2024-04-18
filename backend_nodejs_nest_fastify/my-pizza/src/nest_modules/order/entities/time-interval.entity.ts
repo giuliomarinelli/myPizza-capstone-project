@@ -1,6 +1,7 @@
 import { UUID } from "crypto";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity,  ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Order } from "./order.entity";
+import { WorkSession } from "./work-session.entity";
 
 @Entity({ name: 'time_intervals' })
 export class TimeInterval {
@@ -21,6 +22,9 @@ export class TimeInterval {
 
     @Column({ name: 'ends_at', type: "bigint" })
     endsAt: number
+
+    @ManyToOne(() => WorkSession, (workSession) => workSession.timeIntervals, { lazy: true })
+    workSession: WorkSession
 
     public static getTimeIntervals(startsAllAt: number, endsAllAt: number): TimeInterval[] {
         const timeIntervals: TimeInterval[] = []

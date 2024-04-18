@@ -20,11 +20,10 @@ export class GestisciVisualizzazioneMenuComponent {
       this.menuSvc.getMenu(5).subscribe(res => {
 
         this.isLoading = false
-
+        appRef.tick()
         res.content.forEach(m => {
           this.menu.push(m)
           appRef.tick()
-
         })
 
 

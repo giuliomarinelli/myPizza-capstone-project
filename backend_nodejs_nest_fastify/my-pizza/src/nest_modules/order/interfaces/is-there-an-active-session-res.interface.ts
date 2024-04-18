@@ -1,3 +1,3 @@
 export interface IsThereAnActiveSessionRes {
-    isThereAnActiveSession: boolean
+    thereAnActiveSession: boolean
 }

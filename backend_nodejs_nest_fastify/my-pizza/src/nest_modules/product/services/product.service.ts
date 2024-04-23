@@ -236,8 +236,6 @@ export class ProductService {
             throw new InternalServerErrorException('Database error')
         }
 
-        await this.productRepository.save(addedProducts)
-
         const menuProducts: Menu[] = addedProducts.map(product => new Menu(product))
 
         await this.menuRepository.save(menuProducts)

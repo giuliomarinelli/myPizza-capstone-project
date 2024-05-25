@@ -22,7 +22,8 @@ export class AuthGuard implements CanActivate {
     const publicExactPaths: string[] = [
       '/api/user-profile/get-admin-userid',
       '/api/work-session/is-there-an-active-session',
-      '/api/work-session/get-delivery-times'
+      '/api/work-session/get-delivery-times',
+      '/ws/is-ws-auth-valid-or-refresh'
     ]
     if (path.startsWith('/auth') || path.startsWith('/public') ||
       path.startsWith('/socket.io') || publicExactPaths.includes(path))

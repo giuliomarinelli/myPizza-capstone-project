@@ -10,7 +10,7 @@ import { TimeInterval, _Session } from '../Models/i_session';
 
 
 
-const socket: Socket = io("http://localhost:8085", {
+const socket: Socket = io("http://localhost:8080", {
   withCredentials: true,
   transports: ['websocket'],
   reconnection: false,

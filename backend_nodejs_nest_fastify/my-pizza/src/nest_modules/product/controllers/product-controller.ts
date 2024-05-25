@@ -89,7 +89,7 @@ export class ProductController {
 
     @Delete('products/:name')
     public async deleteProduct(@Param('name') name: string): Promise<ConfirmRes> {
-        return this.productSvc.deleteProductByName(name)
+        return await this.productSvc.deleteProductByName(name)
     }
 
     

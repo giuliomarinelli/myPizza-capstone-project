@@ -7,6 +7,10 @@ export class SessionService {
 
     private readonly sessionTracker: Set<SessionManager> = new Set()
 
+    public get getSessionTracker(): Set<SessionManager> {
+        return this.sessionTracker
+    }
+
     public isOnLine(userId: UUID): boolean {
         for (const sessionManager of this.sessionTracker) {
             if (sessionManager.userId === userId) return true

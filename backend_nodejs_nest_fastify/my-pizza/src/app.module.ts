@@ -15,6 +15,7 @@ import { CookieParserService } from './cookie-parser.service';
 import { SocketIoGateway } from './nest_modules/socket.io/socket.io.gateway';
 import { ClientService } from './nest_modules/socket.io/services/client.service';
 import { Server } from 'socket.io';
+import { SessionService } from './nest_modules/socket.io/services/session.service';
 
 
 
@@ -47,6 +48,7 @@ import { Server } from 'socket.io';
     CookieParserService,
     SocketIoGateway,
     ClientService,
+    SessionService,
     Server
   ]
 })

@@ -1,35 +1,60 @@
-import { Logger, /*UseGuards*/ } from '@nestjs/common';
+import { Logger, UseGuards } from '@nestjs/common';
 import {
     OnGatewayConnection, OnGatewayDisconnect,
-    OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer
+    OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer,
+    WsException
 } from '@nestjs/websockets';
+import { UUID } from 'crypto';
 import { Server, Socket } from 'socket.io';
-// import { SocketIoGuard } from '../auth-user/guards/socket.io.guard';
+import { SocketIoGuard } from '../auth-user/guards/socket.io.guard';
 import { CookieParserService } from 'src/cookie-parser.service';
+import { JwtUtilsService } from '../auth-user/services/jwt-utils.service';
+import { SessionService } from './services/session.service';
+import { ClientService } from './services/client.service';
 
 
 @WebSocketGateway()
-// @UseGuards(SocketIoGuard)
 export class SocketIoGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 
-    constructor(private cookieParser: CookieParserService) { }
+    constructor(private cookieParser: CookieParserService, private jwtUtils: JwtUtilsService,
+        private sessionSvc: SessionService, private clientSvc: ClientService
+    ) { }
 
-    
+    private async getUserId(client: Socket): Promise<UUID> {
+        const wsAccessToken: string = this.cookieParser.parse(client.handshake.headers.cookie).get('__ws_access_tkn')
+        return await this.jwtUtils.extractUserIdFromWsAccessToken(wsAccessToken)
+    }
 
     private logger = new Logger('SocketIoGateway')
 
     @WebSocketServer()
     private io: Server
 
-    handleConnection(client: Socket): void {
-        this.logger.log(`${client.id} connected to Socket`)
+
+    async handleConnection(client: Socket): Promise<void> {
+        let userId: UUID
+        try {
+            userId = await this.jwtUtils
+                .extractUserIdFromWsAccessToken(this.cookieParser.parse(client.handshake.headers.cookie)
+                    .get('__ws_access_tkn'))
+        } catch (e) {
+            if (e instanceof WsException) client.disconnect()
+        }
+        this.logger.log(`${userId} connected to Socket`)
+        this.clientSvc.addClient(client)
+        this.sessionSvc.addSession(userId, client.id)
+        console.log(this.sessionSvc.isOnLine(userId))
+        this.logger.log(this.sessionSvc.getSessionTracker)
         const event = '_hello'
         const data = 'hello world'
-        this.io.emit(event, data) // messaggio al client
+        // this.io.emit(event, data) // messaggio al client
+        client.emit(event, data)
         this.logger.log(`Server sent message "${data}" to ${client.id}`)
     }
 
     handleDisconnect(client: Socket): void {
+        this.clientSvc.removeClient(client.id)
+        this.sessionSvc.removeSession(client.id)
         this.logger.log(`${client.id} disconnected from Socket`)
     }
 
@@ -37,6 +62,7 @@ export class SocketIoGateway implements OnGatewayInit, OnGatewayConnection, OnGa
         this.logger.log('Started Socket.io gateway')
     }
 
+    @UseGuards(SocketIoGuard)
     @SubscribeMessage('hello')
     handleEvent(client: Socket, data: string): string {
         this.logger.log(`${client.id} sent message to server: ${data}`)

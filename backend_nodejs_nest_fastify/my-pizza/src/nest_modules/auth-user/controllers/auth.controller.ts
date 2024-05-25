@@ -15,12 +15,12 @@ export class AuthController {
 
     private logger = new Logger('AuthController')
     
-    @Post('register')
+    @Post('/register')
     public async register(@Body() userPostDTO: UserPostDTO): Promise<UserRes> {
         return await this.authSvc.register(userPostDTO)
     }
 
-    @Post('login')
+    @Post('/login')
     public async login(@Body() loginDTO: LoginDTO, @Res({ passthrough: true }) res: FastifyReply): Promise<ConfirmRes> {
         const tokenMap = await this.authSvc.login(loginDTO)
         // this.logger.log(tokenMap.get(TokenPairType.HTTP))
@@ -95,7 +95,7 @@ export class AuthController {
         }
     }
 
-    @Get('logout')
+    @Get('/logout')
     public logout(@Res({ passthrough: true }) res: FastifyReply): ConfirmRes {
         res.clearCookie('__access_tkn')
         res.clearCookie('__refresh_tkn')
